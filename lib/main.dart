@@ -6,7 +6,9 @@ import 'package:flutter/services.dart';
 
 import 'package:audioplayers/audioplayers.dart';
 
-import '../widget/bar.dart';
+import 'model/chord_list.dart';
+import 'widget/score.dart';
+import 'widget/beat_indicator.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,54 +45,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _chordList = [
-    ["CM", 'C E G'],
-    ["C#M", 'C# E# G#'],
-    ["DM", 'D F# A'],
-    ["EbM", 'Eb G Bb'],
-    ["EM", 'E G# B'],
-    ["FM", 'F A C'],
-    ["F#M", 'F# A# C#'],
-    ["GM", 'G B D'],
-    ["AbM", 'Ab C Eb'],
-    ["AM", 'A C# E'],
-    ["BbM", 'Bb D F'],
-    ["BM", 'B D# F#'],
-    ["Cm", 'C Eb G'],
-    ["C#m", 'C# E G#'],
-    ["Dm", 'D F A'],
-    ["Ebm", 'Eb Gb B'],
-    ["Em", 'E G B'],
-    ["Fm", 'F Ab C'],
-    ["F#m", 'F# A C#'],
-    ["Gm", 'G Bb D'],
-    ["Abm", 'Ab Cb Eb'],
-    ["Am", 'A C E'],
-    ["Bbm", 'Bb Db F'],
-    ["Bm", 'B D F#'],
-  ];
-
-  final _fMajorChordList = [
-    ['FM', 'F A C'],
-    ['FM7', 'F A C E'],
-    ['Fsus4', 'F Bb C'],
-    ['Gm', 'G Bb D'],
-    ['Gm7', 'G Bb D F'],
-    ['Gsus4', 'G C D'],
-    ['Am', 'A C E'],
-    ['Am7', 'A C E G'],
-    ['Asus4', 'A D E'],
-    ['BbM', 'Bb, D F'],
-    ['BbM', 'Bb, D F A'],
-    ['CM', 'C E G'],
-    ['C7', 'C E G Bb'],
-    ['Csus4', 'C F G'],
-    ['Dm', 'D F A'],
-    ['Dm7', 'D F A C'],
-    ['Dsus4', 'D G A'],
-    ['Edim', 'E G Bb'],
-    ['Em7(b5)', 'E G Bb D'],
-  ];
+  final _chordList = ChordList.getFMajChordList();
 
   final playerABeat = AudioPlayer();
   final playerBBeat = AudioPlayer();
@@ -118,19 +73,21 @@ class _MyHomePageState extends State<MyHomePage> {
   var rng = Random(DateTime.now().millisecond);
   final List<int> _randomChordIndexList = [];
 
+  final int _beatSet = 4;
+  final int _chordPerLine = 4;
+
   late Timer _timer;
-  var _codeCounter = 0;
+  var _chordCounter = 0;
   int _beatCounter = 0;
   bool _isTimerStarted = false;
   double _bpm = 60.0;
-  int _beatSet = 4;
-  int _codePerLine = 4;
+  bool _chordConstructOn = true;
 
   Future<void> _startTimer() async {
     _timer =
         Timer.periodic(Duration(milliseconds: (60 / _bpm * 1000).round()), (t) {
       setState(() {
-        _beatCounter = (_beatCounter + 1) % (_beatSet * _codePerLine);
+        _beatCounter = (_beatCounter + 1) % (_beatSet * _chordPerLine);
       });
       if (_beatCounter % _beatSet == 0) {
         _playBeat(true);
@@ -149,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _nextCode() {
     setState(() {
-      _codeCounter = (_codeCounter + 1) % 4;
+      _chordCounter = (_chordCounter + 1) % 4;
     });
   }
 
@@ -165,11 +122,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _stopTimer() {
+  void _stop() {
     _stopBeat();
     _timer.cancel();
     setState(() {
-      _codeCounter = 0;
+      _chordCounter = 0;
+      _beatCounter = 0;
       _isTimerStarted = false;
     });
   }
@@ -191,14 +149,6 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
-  Color _colorMetronomeIndicator(int indicatorNumber) {
-    if ((_beatCounter % _beatSet) == indicatorNumber) {
-      return Colors.orange;
-    } else {
-      return Colors.blue;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     var mq = MediaQuery.of(context);
@@ -212,19 +162,25 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('metronome'),
+                  Switch(
+                    value: _chordConstructOn,
+                    activeColor: Colors.blue,
+                    onChanged: (onOff) {
+                      setState(() {
+                        _chordConstructOn = onOff;
+                      });
+                    },
                   ),
                   _isTimerStarted
                       ? ElevatedButton(
-                          onPressed: _stopTimer,
+                          onPressed: _stop,
                           child: const Icon(Icons.stop_circle))
                       : ElevatedButton(
                           onPressed: _startTimer,
                           child: const Icon(Icons.play_circle),
                         ),
                   if (mq.orientation == Orientation.landscape)
+                    // bpm slider
                     Slider(
                         value: _bpm,
                         min: 40,
@@ -237,19 +193,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           });
                         }),
                   if (mq.orientation == Orientation.landscape)
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: _colorMetronomeIndicator(0),
-                        ),
-                        CircleAvatar(
-                            backgroundColor: _colorMetronomeIndicator(1)),
-                        CircleAvatar(
-                            backgroundColor: _colorMetronomeIndicator(2)),
-                        CircleAvatar(
-                            backgroundColor: _colorMetronomeIndicator(3)),
-                      ],
-                    ),
+                    // beat indicator
+                    BeatIndicator(beatCounter: _beatCounter, beatSet: _beatSet),
                   ElevatedButton(
                     onPressed: () {},
                     child: const Icon(Icons.settings),
@@ -257,53 +202,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Bar(
-                      chord: _chordList[_randomChordIndexList[0]],
-                      isCur: 0 == _codeCounter,
-                    ),
-                    Bar(
-                      chord: _chordList[_randomChordIndexList[1]],
-                      isCur: 1 == _codeCounter,
-                    ),
-                    Bar(
-                      chord: _chordList[_randomChordIndexList[2]],
-                      isCur: 2 == _codeCounter,
-                    ),
-                    Bar(
-                      chord: _chordList[_randomChordIndexList[3]],
-                      isCur: 3 == _codeCounter,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Bar(
-                      chord: _chordList[_randomChordIndexList[4]],
-                      isCur: 4 == _codeCounter,
-                    ),
-                    Bar(
-                      chord: _chordList[_randomChordIndexList[5]],
-                      isCur: 5 == _codeCounter,
-                    ),
-                    Bar(
-                      chord: _chordList[_randomChordIndexList[6]],
-                      isCur: 6 == _codeCounter,
-                    ),
-                    Bar(
-                      chord: _chordList[_randomChordIndexList[7]],
-                      isCur: 7 == _codeCounter,
-                    ),
-                  ],
-                ),
-              ],
-            )
+            Score(
+              _chordConstructOn,
+              chordList: _chordList,
+              randomChordIndexList: _randomChordIndexList,
+              chordCounter: _chordCounter,
+            ),
           ],
         ),
       ),

@@ -3,7 +3,14 @@ import 'package:flutter/material.dart';
 class Bar extends StatelessWidget {
   final List<String> chord;
   final bool isCur;
-  const Bar({required this.chord, required this.isCur, super.key});
+  final bool _chordConstructOn;
+
+  const Bar(
+    this._chordConstructOn, {
+    required this.chord,
+    required this.isCur,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +34,13 @@ class Bar extends StatelessWidget {
               style: TextStyle(
                   fontSize: 30, color: isCur ? Colors.blue : Colors.black),
             ),
-            SizedBox(height: 10),
-            Text(
-              chord[1],
-              style: TextStyle(
-                  fontSize: 20, color: isCur ? Colors.blue : Colors.black),
-            ),
+            const SizedBox(height: 10),
+            if (_chordConstructOn == true)
+              Text(
+                chord[1],
+                style: TextStyle(
+                    fontSize: 20, color: isCur ? Colors.blue : Colors.black),
+              ),
           ],
         ),
       ),
