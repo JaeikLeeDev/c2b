@@ -180,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Switch(
+                  Switch.adaptive(
                     value: _chordConstructOn,
                     activeColor: Colors.blue,
                     onChanged: (onOff) {
@@ -199,7 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                   if (mq.orientation == Orientation.landscape)
                     // bpm slider
-                    Slider(
+                    Slider.adaptive(
                         value: _bpm,
                         min: 40,
                         max: 180,
