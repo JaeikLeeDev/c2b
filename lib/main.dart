@@ -4,8 +4,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:audioplayers/audioplayers.dart';
-
 import 'model/chord_list.dart';
 import 'widget/score.dart';
 import 'widget/beat_indicator.dart';
@@ -47,29 +45,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final _chordList = ChordList.getFMajChordList();
 
-  final playerABeat = AudioPlayer();
-  final playerBBeat = AudioPlayer();
-
-  Future<void> _setPlayer() async {
-    await playerABeat
-        .setSource(AssetSource('../assets/assets_tone_tone1_a.wav'));
-    await playerBBeat
-        .setSource(AssetSource('../assets/assets_tone_tone1_b.wav'));
-  }
-
-  Future<void> _playBeat(bool isFirstBeat) async {
-    isFirstBeat
-        ? await playerBBeat
-            .play(AssetSource('../assets/assets_tone_tone1_b.wav'))
-        : await playerABeat
-            .play(AssetSource('../assets/assets_tone_tone1_a.wav'));
-  }
-
-  Future<void> _stopBeat() async {
-    await playerABeat.stop();
-    await playerBBeat.stop();
-  }
-
   var rng = Random(DateTime.now().millisecond);
   final List<int> _randomChordIndexList = [];
 
@@ -90,10 +65,10 @@ class _MyHomePageState extends State<MyHomePage> {
         _beatCounter = (_beatCounter + 1) % (_beatSet * _chordPerLine);
       });
       if (_beatCounter % _beatSet == 0) {
-        _playBeat(true);
+        // 1st beat
         _nextCode();
       } else {
-        _playBeat(false);
+        // 2nd, 3rd, 4th beat
       }
       if (_beatCounter == 0) {
         _nextPhrase();
@@ -123,7 +98,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _stop() {
-    _stopBeat();
     _timer.cancel();
     setState(() {
       _chordCounter = 0;
@@ -142,7 +116,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    _setPlayer();
     for (var i = 0; i < 8; i++) {
       _randomChordIndexList.add(rng.nextInt(_chordList.length));
     }
