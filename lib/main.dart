@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:soundpool/soundpool.dart';
 
 import 'model/chord_list.dart';
 import 'widget/score.dart';
@@ -50,15 +51,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final int _beatSet = 4;
   final int _chordPerLine = 4;
-
   late Timer _timer;
-  var _chordCounter = 0;
-  int _beatCounter = 0;
   bool _isTimerStarted = false;
   double _bpm = 60.0;
+  var _chordCounter = 0;
+  int _beatCounter = 0;
   bool _chordConstructOn = true;
 
+  // For sound
+  final _soundpoolOptions =
+      const SoundpoolOptions(streamType: StreamType.notification);
+  late Soundpool _pool;
+
+  int? _1stBeatStreamId;
+  int? _2ndBeatStreamId;
+  late Future<int> _1stBeatSoundId;
+  late Future<int> _2ndBeatSoundId;
+
   Future<void> _startTimer() async {
+    _play1stBeat();
     _timer =
         Timer.periodic(Duration(milliseconds: (60 / _bpm * 1000).round()), (t) {
       setState(() {
@@ -66,9 +77,11 @@ class _MyHomePageState extends State<MyHomePage> {
       });
       if (_beatCounter % _beatSet == 0) {
         // 1st beat
-        _nextCode();
+        _play1stBeat();
+        _nextChord();
       } else {
         // 2nd, 3rd, 4th beat
+        _play2ndBeat();
       }
       if (_beatCounter == 0) {
         _nextPhrase();
@@ -79,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _nextCode() {
+  void _nextChord() {
     setState(() {
       _chordCounter = (_chordCounter + 1) % 4;
     });
@@ -114,8 +127,40 @@ class _MyHomePageState extends State<MyHomePage> {
     return randomPhrase;
   }
 
+  Future<int> _loadSound(String filePath) async {
+    var asset = await rootBundle.load(filePath);
+    return await _pool.load(asset);
+  }
+
+  Future<void> _play1stBeat() async {
+    var _1stBeatSound = await _1stBeatSoundId;
+    _1stBeatStreamId = await _pool.play(_1stBeatSound);
+  }
+
+  Future<void> _play2ndBeat() async {
+    var _2ndBeatSound = await _2ndBeatSoundId;
+    _2ndBeatStreamId = await _pool.play(_2ndBeatSound);
+  }
+
+  Future<void> _stop1stBeat() async {
+    if (_1stBeatStreamId != null) {
+      await _pool.stop(_1stBeatStreamId!);
+    }
+  }
+
+  Future<void> _stop2ndBeat() async {
+    if (_2ndBeatStreamId != null) {
+      await _pool.stop(_2ndBeatStreamId!);
+    }
+  }
+
   @override
   void initState() {
+    _pool = Soundpool.fromOptions(options: _soundpoolOptions);
+    _1stBeatSoundId = _loadSound("assets/assets_tone_tone1_b.wav");
+    _2ndBeatSoundId = _loadSound("assets/assets_tone_tone1_a.wav");
+    _play1stBeat();
+    _play2ndBeat();
     for (var i = 0; i < 8; i++) {
       _randomChordIndexList.add(rng.nextInt(_chordList.length));
     }
