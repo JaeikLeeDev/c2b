@@ -14,11 +14,16 @@ class Bar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
     return Container(
-      width: MediaQuery.of(context).size.width * 0.25,
+      height: screenSize.height * 0.35,
+      width: screenSize.width * 0.25,
       padding: const EdgeInsets.all(10.0),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 10.0),
+        padding: EdgeInsets.symmetric(
+          vertical: screenSize.height * 0.05,
+          horizontal: screenSize.width * 0.01,
+        ),
         decoration: const BoxDecoration(
           border: Border(
             left: BorderSide(

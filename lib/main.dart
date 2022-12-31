@@ -199,17 +199,20 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                   if (mq.orientation == Orientation.landscape)
                     // bpm slider
-                    Slider.adaptive(
-                        value: _bpm,
-                        min: 40,
-                        max: 180,
-                        divisions: 280,
-                        label: '${_bpm.toStringAsFixed(1)}bpm',
-                        onChanged: (bpm) {
-                          setState(() {
-                            _bpm = bpm;
-                          });
-                        }),
+                    SizedBox(
+                      width: mq.size.width * 0.2,
+                      child: Slider.adaptive(
+                          value: _bpm,
+                          min: 40,
+                          max: 180,
+                          divisions: 280,
+                          label: '${_bpm.toStringAsFixed(1)}bpm',
+                          onChanged: (bpm) {
+                            setState(() {
+                              _bpm = bpm;
+                            });
+                          }),
+                    ),
                   if (mq.orientation == Orientation.landscape)
                     // beat indicator
                     BeatIndicator(beatCounter: _beatCounter, beatSet: _beatSet),
