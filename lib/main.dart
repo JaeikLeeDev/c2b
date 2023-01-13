@@ -57,6 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var _chordCounter = 0;
   int _beatCounter = 0;
   bool _chordConstructOn = true;
+  double _beatVolume = 0.5;
 
   // For sound
   final _soundpoolOptions =
@@ -154,6 +155,13 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _updateVolume(newVolume) async {
+    var _1stBeatSound = await _1stBeatSoundId;
+    _pool.setVolume(soundId: _1stBeatSound, volume: newVolume);
+    var _2ndBeatSound = await _2ndBeatSoundId;
+    _pool.setVolume(soundId: _2ndBeatSound, volume: newVolume);
+  }
+
   @override
   void initState() {
     _pool = Soundpool.fromOptions(options: _soundpoolOptions);
@@ -199,27 +207,59 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                   if (mq.orientation == Orientation.landscape)
                     // bpm slider
-                    SizedBox(
-                      width: mq.size.width * 0.2,
-                      child: Slider.adaptive(
-                          value: _bpm,
-                          min: 40,
-                          max: 180,
-                          divisions: 280,
-                          label: '${_bpm.toStringAsFixed(1)}bpm',
-                          onChanged: (bpm) {
-                            setState(() {
-                              _bpm = bpm;
-                            });
-                          }),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: mq.size.width * 0.2,
+                          child: SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              thumbShape: RoundSliderThumbShape(
+                                // enabledThumbRadius: 10.0,
+                                pressedElevation: 8.0,
+                              ),
+                            ),
+                            child: Slider(
+                              value: _beatVolume,
+                              min: 0.0,
+                              max: 1.0,
+                              divisions: 10,
+                              label: 'vol: ${_beatVolume.toStringAsFixed(1)}',
+                              onChanged: (beatVolume) {
+                                setState(() {
+                                  _beatVolume = beatVolume;
+                                });
+                                _updateVolume(_beatVolume);
+                              },
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: mq.size.width * 0.2,
+                          child: Slider(
+                            value: _bpm,
+                            min: 40,
+                            max: 180,
+                            divisions: 280,
+                            label: '${_bpm.toStringAsFixed(1)}bpm',
+                            onChanged: (bpm) {
+                              setState(() {
+                                _bpm = bpm;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   if (mq.orientation == Orientation.landscape)
                     // beat indicator
-                    BeatIndicator(beatCounter: _beatCounter, beatSet: _beatSet),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Icon(Icons.settings),
-                  ),
+                    BeatIndicator(
+                        beatCounter: _beatCounter,
+                        beatSet: _beatSet,
+                        radius: mq.size.width * 0.025),
+                  // ElevatedButton(
+                  //   onPressed: () {},
+                  //   child: const Icon(Icons.settings),
+                  // ),
                 ],
               ),
             ),
