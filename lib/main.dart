@@ -135,11 +135,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _play1stBeat() async {
     var _1stBeatSound = await _1stBeatSoundId;
+    _pool.setVolume(soundId: _1stBeatSound, volume: _beatVolume);
     _1stBeatStreamId = await _pool.play(_1stBeatSound);
   }
 
   Future<void> _play2ndBeat() async {
     var _2ndBeatSound = await _2ndBeatSoundId;
+    _pool.setVolume(soundId: _2ndBeatSound, volume: _beatVolume);
     _2ndBeatStreamId = await _pool.play(_2ndBeatSound);
   }
 
