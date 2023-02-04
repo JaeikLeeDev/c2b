@@ -16,12 +16,12 @@ class Bar extends StatelessWidget {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     return Container(
-      height: screenSize.height * 0.35,
+      height: screenSize.height * 0.33,
       width: screenSize.width * 0.25,
       padding: const EdgeInsets.all(10.0),
       child: Container(
         padding: EdgeInsets.symmetric(
-          vertical: screenSize.height * 0.05,
+          vertical: screenSize.height * 0.03,
           horizontal: screenSize.width * 0.01,
         ),
         decoration: const BoxDecoration(
