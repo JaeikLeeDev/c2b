@@ -184,31 +184,14 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.all(30.0),
+              padding: const EdgeInsets.symmetric(
+                vertical: 30.0,
+                horizontal: 10.0,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Switch.adaptive(
-                    value: _chordConstructOn,
-                    activeColor: Colors.blue,
-                    onChanged: (onOff) {
-                      setState(() {
-                        _chordConstructOn = onOff;
-                      });
-                    },
-                  ),
-                  _isTimerStarted
-                      ? ElevatedButton(
-                          onPressed: _stop,
-                          child: const Icon(Icons.stop_circle))
-                      : ElevatedButton(
-                          onPressed: _startTimer,
-                          child: const Icon(Icons.play_circle),
-                        ),
-                  if (mq.orientation == Orientation.landscape)
-                    // bpm slider
-                    Row(
-                      children: [
+                  // volume slider
                         SizedBox(
                           width: mq.size.width * 0.2,
                           child: SliderTheme(
@@ -233,6 +216,31 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ),
                         ),
+                  Switch.adaptive(
+                    value: _chordConstructOn,
+                    activeColor: Colors.blue,
+                    onChanged: (onOff) {
+                      setState(() {
+                        _chordConstructOn = onOff;
+                      });
+                    },
+                  ),
+                  ChordSetButton(_setChordTrainingSet),
+                  _isTimerStarted
+                      ? ElevatedButton(
+                          onPressed: _stop,
+                          child: const Icon(Icons.stop_circle),
+                        )
+                      : ElevatedButton(
+                          onPressed: _startTimer,
+                          child: const Icon(Icons.play_circle),
+                        ),
+                  // beat indicator
+                  BeatIndicator(
+                      beatCounter: _beatCounter,
+                      beatSet: _beatSet,
+                      radius: mq.size.width * 0.025),
+                  // bpm slider
                         SizedBox(
                           width: mq.size.width * 0.2,
                           child: Slider(
@@ -248,18 +256,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             },
                           ),
                         ),
-                      ],
-                    ),
-                  if (mq.orientation == Orientation.landscape)
-                    // beat indicator
-                    BeatIndicator(
-                        beatCounter: _beatCounter,
-                        beatSet: _beatSet,
-                        radius: mq.size.width * 0.025),
-                  // ElevatedButton(
-                  //   onPressed: () {},
-                  //   child: const Icon(Icons.settings),
-                  // ),
                 ],
               ),
             ),
