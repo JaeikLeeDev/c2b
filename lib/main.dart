@@ -8,6 +8,7 @@ import 'package:soundpool/soundpool.dart';
 import 'model/chord_list.dart';
 import 'widget/score.dart';
 import 'widget/beat_indicator.dart';
+import 'widget/chord_set_button.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,7 +45,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _chordList = ChordList.getFMajChordList();
+  var _chordList = ChordList.getFMajChordList();
 
   var rng = Random(DateTime.now().millisecond);
   final List<int> _randomChordIndexList = [];
@@ -68,6 +69,11 @@ class _MyHomePageState extends State<MyHomePage> {
   int? _2ndBeatStreamId;
   late Future<int> _1stBeatSoundId;
   late Future<int> _2ndBeatSoundId;
+
+  void _setChordTrainingSet(List<List<String>> chordTrainingSet) {
+    // _chordList = chordTrainingSet;
+    // initState();
+  }
 
   Future<void> _startTimer() async {
     _play1stBeat();
@@ -192,30 +198,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // volume slider
-                        SizedBox(
-                          width: mq.size.width * 0.2,
-                          child: SliderTheme(
-                            data: SliderTheme.of(context).copyWith(
-                              thumbShape: const RoundSliderThumbShape(
-                                // enabledThumbRadius: 10.0,
-                                pressedElevation: 8.0,
-                              ),
-                            ),
-                            child: Slider(
-                              value: _beatVolume,
-                              min: 0.0,
-                              max: 1.0,
-                              divisions: 10,
-                              label: 'vol: ${_beatVolume.toStringAsFixed(1)}',
-                              onChanged: (beatVolume) {
-                                setState(() {
-                                  _beatVolume = beatVolume;
-                                });
-                                _updateVolume(_beatVolume);
-                              },
-                            ),
-                          ),
+                  SizedBox(
+                    width: mq.size.width * 0.2,
+                    child: SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        thumbShape: const RoundSliderThumbShape(
+                          // enabledThumbRadius: 10.0,
+                          pressedElevation: 8.0,
                         ),
+                      ),
+                      child: Slider(
+                        value: _beatVolume,
+                        min: 0.0,
+                        max: 1.0,
+                        divisions: 10,
+                        label: 'vol: ${_beatVolume.toStringAsFixed(1)}',
+                        onChanged: (beatVolume) {
+                          setState(() {
+                            _beatVolume = beatVolume;
+                          });
+                          _updateVolume(_beatVolume);
+                        },
+                      ),
+                    ),
+                  ),
                   Switch.adaptive(
                     value: _chordConstructOn,
                     activeColor: Colors.blue,
@@ -241,21 +247,21 @@ class _MyHomePageState extends State<MyHomePage> {
                       beatSet: _beatSet,
                       radius: mq.size.width * 0.025),
                   // bpm slider
-                        SizedBox(
-                          width: mq.size.width * 0.2,
-                          child: Slider(
-                            value: _bpm,
-                            min: 40,
-                            max: 180,
-                            divisions: 280,
-                            label: '${_bpm.toStringAsFixed(1)}bpm',
-                            onChanged: (bpm) {
-                              setState(() {
-                                _bpm = bpm;
-                              });
-                            },
-                          ),
-                        ),
+                  SizedBox(
+                    width: mq.size.width * 0.2,
+                    child: Slider(
+                      value: _bpm,
+                      min: 40,
+                      max: 180,
+                      divisions: 280,
+                      label: '${_bpm.toStringAsFixed(1)}bpm',
+                      onChanged: (bpm) {
+                        setState(() {
+                          _bpm = bpm;
+                        });
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
