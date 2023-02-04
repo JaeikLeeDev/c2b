@@ -111,8 +111,9 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _stop() {
+  void _stop() async {
     _timer.cancel();
+    await _stopBeat();
     setState(() {
       _chordCounter = 0;
       _beatCounter = 0;
@@ -134,34 +135,31 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _play1stBeat() async {
-    var _1stBeatSound = await _1stBeatSoundId;
-    _pool.setVolume(soundId: _1stBeatSound, volume: _beatVolume);
-    _1stBeatStreamId = await _pool.play(_1stBeatSound);
+    var firstBeatSound = await _1stBeatSoundId;
+    _pool.setVolume(soundId: firstBeatSound, volume: _beatVolume);
+    _1stBeatStreamId = await _pool.play(firstBeatSound);
   }
 
   Future<void> _play2ndBeat() async {
-    var _2ndBeatSound = await _2ndBeatSoundId;
-    _pool.setVolume(soundId: _2ndBeatSound, volume: _beatVolume);
-    _2ndBeatStreamId = await _pool.play(_2ndBeatSound);
+    var secondBeatSound = await _2ndBeatSoundId;
+    _pool.setVolume(soundId: secondBeatSound, volume: _beatVolume);
+    _2ndBeatStreamId = await _pool.play(secondBeatSound);
   }
 
-  Future<void> _stop1stBeat() async {
+  Future<void> _stopBeat() async {
     if (_1stBeatStreamId != null) {
       await _pool.stop(_1stBeatStreamId!);
     }
-  }
-
-  Future<void> _stop2ndBeat() async {
     if (_2ndBeatStreamId != null) {
       await _pool.stop(_2ndBeatStreamId!);
     }
   }
 
   Future<void> _updateVolume(newVolume) async {
-    var _1stBeatSound = await _1stBeatSoundId;
-    _pool.setVolume(soundId: _1stBeatSound, volume: newVolume);
-    var _2ndBeatSound = await _2ndBeatSoundId;
-    _pool.setVolume(soundId: _2ndBeatSound, volume: newVolume);
+    var firstBeatSound = await _1stBeatSoundId;
+    _pool.setVolume(soundId: firstBeatSound, volume: newVolume);
+    var secondBeatSound = await _2ndBeatSoundId;
+    _pool.setVolume(soundId: secondBeatSound, volume: newVolume);
   }
 
   @override
@@ -215,7 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           width: mq.size.width * 0.2,
                           child: SliderTheme(
                             data: SliderTheme.of(context).copyWith(
-                              thumbShape: RoundSliderThumbShape(
+                              thumbShape: const RoundSliderThumbShape(
                                 // enabledThumbRadius: 10.0,
                                 pressedElevation: 8.0,
                               ),

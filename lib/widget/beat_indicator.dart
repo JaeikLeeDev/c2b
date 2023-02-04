@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class BeatIndicator extends StatelessWidget {
-  final beatCounter;
-  final beatSet;
-  final radius;
+  final int beatCounter;
+  final int beatSet;
+  final double radius;
 
   const BeatIndicator({
     required this.beatCounter,

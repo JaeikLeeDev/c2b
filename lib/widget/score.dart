@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import '../widget/bar.dart';
 
 class Score extends StatelessWidget {
-  final chordList;
-  final randomChordIndexList;
-  final chordCounter;
-  final _chordConstructOn;
+  final bool _chordConstructOn;
+  final List<List<String>> chordList;
+  final List<int> randomChordIndexList;
+  final int chordCounter;
 
   const Score(this._chordConstructOn,
       {required this.chordList,
