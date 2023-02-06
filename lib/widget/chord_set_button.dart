@@ -12,6 +12,11 @@ class ChordSetButton extends StatelessWidget {
       onPressed: () {
         _navigateAndDisplaySelection(context);
       },
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+        minimumSize: const Size(36, 36),
+        fixedSize: const Size(50, 36),
+      ),
       child: const Icon(Icons.settings),
     );
   }

@@ -199,7 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   // volume slider
                   SizedBox(
-                    width: mq.size.width * 0.2,
+                    width: mq.size.width * 0.17,
                     child: SliderTheme(
                       data: SliderTheme.of(context).copyWith(
                         thumbShape: const RoundSliderThumbShape(
@@ -243,9 +243,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                   // beat indicator
                   BeatIndicator(
-                      beatCounter: _beatCounter,
-                      beatSet: _beatSet,
-                      radius: mq.size.width * 0.025),
+                      currentBeat: (_beatCounter % _beatSet),
+                      radius: mq.size.width * 0.02),
                   // bpm slider
                   SizedBox(
                     width: mq.size.width * 0.2,
