@@ -65,10 +65,10 @@ class _MyHomePageState extends State<MyHomePage> {
       const SoundpoolOptions(streamType: StreamType.notification);
   late Soundpool _pool;
 
-  int? _1stBeatStreamId;
-  int? _2ndBeatStreamId;
-  late Future<int> _1stBeatSoundId;
-  late Future<int> _2ndBeatSoundId;
+  int? _firstBeatStreamId;
+  int? _secondBeatStreamId;
+  late Future<int> _firstBeatSoundId;
+  late Future<int> _secondBeatSoundId;
 
   void _setChordTrainingSet(List<List<String>> chordTrainingSet) {
     // _chordList = chordTrainingSet;
@@ -141,38 +141,38 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _play1stBeat() async {
-    var firstBeatSound = await _1stBeatSoundId;
+    var firstBeatSound = await _firstBeatSoundId;
     _pool.setVolume(soundId: firstBeatSound, volume: _beatVolume);
-    _1stBeatStreamId = await _pool.play(firstBeatSound);
+    _firstBeatStreamId = await _pool.play(firstBeatSound);
   }
 
   Future<void> _play2ndBeat() async {
-    var secondBeatSound = await _2ndBeatSoundId;
+    var secondBeatSound = await _secondBeatSoundId;
     _pool.setVolume(soundId: secondBeatSound, volume: _beatVolume);
-    _2ndBeatStreamId = await _pool.play(secondBeatSound);
+    _secondBeatStreamId = await _pool.play(secondBeatSound);
   }
 
   Future<void> _stopBeat() async {
-    if (_1stBeatStreamId != null) {
-      await _pool.stop(_1stBeatStreamId!);
+    if (_firstBeatStreamId != null) {
+      await _pool.stop(_firstBeatStreamId!);
     }
-    if (_2ndBeatStreamId != null) {
-      await _pool.stop(_2ndBeatStreamId!);
+    if (_secondBeatStreamId != null) {
+      await _pool.stop(_secondBeatStreamId!);
     }
   }
 
   Future<void> _updateVolume(newVolume) async {
-    var firstBeatSound = await _1stBeatSoundId;
+    var firstBeatSound = await _firstBeatSoundId;
     _pool.setVolume(soundId: firstBeatSound, volume: newVolume);
-    var secondBeatSound = await _2ndBeatSoundId;
+    var secondBeatSound = await _secondBeatSoundId;
     _pool.setVolume(soundId: secondBeatSound, volume: newVolume);
   }
 
   @override
   void initState() {
     _pool = Soundpool.fromOptions(options: _soundpoolOptions);
-    _1stBeatSoundId = _loadSound("assets/assets_tone_tone1_b.wav");
-    _2ndBeatSoundId = _loadSound("assets/assets_tone_tone1_a.wav");
+    _firstBeatSoundId = _loadSound("assets/assets_tone_tone1_b.wav");
+    _secondBeatSoundId = _loadSound("assets/assets_tone_tone1_a.wav");
     _play1stBeat();
     _play2ndBeat();
     for (var i = 0; i < 8; i++) {
