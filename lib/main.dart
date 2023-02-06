@@ -45,8 +45,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var _chordList = ChordList.getFMajChordList();
-
+  List<List<String>> _chordList = [];
   var rng = Random(DateTime.now().millisecond);
   final List<int> _randomChordIndexList = [];
 
@@ -70,9 +69,39 @@ class _MyHomePageState extends State<MyHomePage> {
   late Future<int> _firstBeatSoundId;
   late Future<int> _secondBeatSoundId;
 
+  void _nextChord() {
+    setState(() {
+      _chordCounter = (_chordCounter + 1) % 4;
+    });
+  }
+
+  void _nextPhrase() {
+    setState(() {
+      _randomChordIndexList.replaceRange(
+          0, 3, _randomChordIndexList.sublist(4, 7));
+      _randomChordIndexList.replaceRange(
+        4,
+        7,
+        genRandChordIdxs(4),
+      );
+    });
+  }
+
   void _setChordTrainingSet(List<List<String>> chordTrainingSet) {
-    // _chordList = chordTrainingSet;
-    // initState();
+    setState(() {
+      _chordList.clear();
+      _chordList = [for (var value in chordTrainingSet) List.from(value)];
+      _randomChordIndexList.clear();
+      _randomChordIndexList.addAll(genRandChordIdxs(8));
+    });
+  }
+
+  List<int> genRandChordIdxs(int amount) {
+    List<int> randomChords = [];
+    for (var i = 0; i < amount; i++) {
+      randomChords.add(rng.nextInt(_chordList.length));
+    }
+    return randomChords;
   }
 
   Future<void> _startTimer() async {
@@ -99,24 +128,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _nextChord() {
-    setState(() {
-      _chordCounter = (_chordCounter + 1) % 4;
-    });
-  }
-
-  void _nextPhrase() {
-    setState(() {
-      _randomChordIndexList.replaceRange(
-          0, 3, _randomChordIndexList.sublist(4, 7));
-      _randomChordIndexList.replaceRange(
-        4,
-        7,
-        randomPhrase(),
-      );
-    });
-  }
-
   void _stop() async {
     _timer.cancel();
     await _stopBeat();
@@ -125,14 +136,6 @@ class _MyHomePageState extends State<MyHomePage> {
       _beatCounter = 0;
       _isTimerStarted = false;
     });
-  }
-
-  List<int> randomPhrase() {
-    List<int> randomPhrase = [];
-    for (var i = 0; i < 4; i++) {
-      randomPhrase.add(rng.nextInt(_chordList.length));
-    }
-    return randomPhrase;
   }
 
   Future<int> _loadSound(String filePath) async {
@@ -175,9 +178,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _secondBeatSoundId = _loadSound("assets/assets_tone_tone1_a.wav");
     _play1stBeat();
     _play2ndBeat();
-    for (var i = 0; i < 8; i++) {
-      _randomChordIndexList.add(rng.nextInt(_chordList.length));
-    }
+    _chordList.addAll(ChordList.getFMajChordList());
+    _randomChordIndexList.addAll(genRandChordIdxs(8));
     super.initState();
   }
 

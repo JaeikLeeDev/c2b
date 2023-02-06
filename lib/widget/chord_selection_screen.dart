@@ -19,7 +19,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context, 'return string');
+                  Navigator.pop(context, 'return');
                 },
                 child: const Text('Done'),
               ),
