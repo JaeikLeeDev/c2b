@@ -129,7 +129,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _stop() async {
-    _timer.cancel();
+    if (_isTimerStarted) {
+      _timer.cancel();
+    }
     await _stopBeat();
     setState(() {
       _chordCounter = 0;
@@ -233,7 +235,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       });
                     },
                   ),
-                  ChordSetButton(_setChordTrainingSet),
+                  ChordSetButton(_setChordTrainingSet, _stop),
                   _isTimerStarted
                       ? ElevatedButton(
                           onPressed: _stop,

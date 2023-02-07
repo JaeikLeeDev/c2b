@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import './chord_selection_screen.dart';
 
 class ChordSetButton extends StatelessWidget {
-  final Function setChordTrainingSet;
-  const ChordSetButton(this.setChordTrainingSet, {super.key});
+  final Function setChordTrainingSetCallback;
+  final Function stopCallback;
+  const ChordSetButton(this.setChordTrainingSetCallback, this.stopCallback,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
+        stopCallback();
         _navigateAndDisplaySelection(context);
       },
       style: ElevatedButton.styleFrom(
@@ -28,8 +31,10 @@ class ChordSetButton extends StatelessWidget {
       context,
       MaterialPageRoute(builder: (context) => const ChordSelectionScreen()),
     );
-
-    setChordTrainingSet([
+    if (result.isEmpty) {
+      result.add('null');
+    }
+    setChordTrainingSetCallback([
       ...result.map(
         (chord) {
           return [chord, "none"];
