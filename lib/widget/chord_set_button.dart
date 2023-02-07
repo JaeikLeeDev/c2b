@@ -24,14 +24,17 @@ class ChordSetButton extends StatelessWidget {
   _navigateAndDisplaySelection(BuildContext context) async {
     // Navigator.push() return Future.
     // Future will be completed after Navigator.pop() is called
-    final String result = await Navigator.push(
+    final List<String> result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const ChordSelectionScreen()),
     );
 
     setChordTrainingSet([
-      [result, 'sadasdf'],
-      ['sddf', result],
+      ...result.map(
+        (chord) {
+          return [chord, "none"];
+        },
+      )
     ]);
   }
 }
