@@ -37,14 +37,18 @@ class Bar extends StatelessWidget {
             Text(
               chord[0],
               style: TextStyle(
-                  fontSize: 30, color: isCur ? Colors.blue : Colors.black),
+                  fontFamily: 'Noto Music',
+                  fontSize: 30,
+                  color: isCur ? Colors.blue : Colors.black),
             ),
             const SizedBox(height: 10),
             if (_chordConstructOn == true)
               Text(
                 chord[1],
                 style: TextStyle(
-                    fontSize: 20, color: isCur ? Colors.blue : Colors.black),
+                    fontFamily: 'Noto Music',
+                    fontSize: 15,
+                    color: isCur ? Colors.blue : Colors.black),
               ),
           ],
         ),

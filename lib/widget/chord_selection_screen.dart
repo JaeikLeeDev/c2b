@@ -10,30 +10,30 @@ class ChordSelectionScreen extends StatefulWidget {
 class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
   final keyListSharp = [
     "C",
-    "C#",
+    "C♯",
     "D",
-    "D#",
+    "D♯",
     "E",
     "F",
-    "F#",
+    "F♯",
     "G",
-    "G#",
+    "G♯",
     "A",
-    "A#",
+    "A♯",
     "B",
   ];
   final keyListFlat = [
     "C",
-    "Db",
+    "D♭",
     "D",
-    "Eb",
+    "E♭",
     "E",
     "F",
-    "Gb",
+    "G♭",
     "G",
-    "Ab",
+    "A♭",
     "A",
-    "Bb",
+    "B♭",
     "B",
   ];
   final chordSuffix = [
@@ -49,7 +49,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
     "dim7",
     "aug7",
     "mM7",
-    "m7(b5)",
+    "m7(♭5)",
     "6",
     "m6",
   ];
@@ -84,7 +84,10 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                   onPressed: () => setState(() {
                     selectedKeyIndex = index;
                   }),
-                  child: Text(keyListSharp[index]),
+                  child: Text(
+                    keyListSharp[index],
+                    style: TextStyle(fontFamily: 'Noto Music'),
+                  ),
                 );
               },
               itemCount: keyListSharp.length,
@@ -95,7 +98,9 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(
-                      '${keyListSharp[selectedKeyIndex]}${chordSuffix[index]}'),
+                    '${keyListSharp[selectedKeyIndex]}${chordSuffix[index]}',
+                    style: TextStyle(fontFamily: 'Noto Music'),
+                  ),
                   leading: Checkbox(
                     value: chordCheckboxVal[selectedKeyIndex][index],
                     onChanged: (isSelected) {
@@ -124,7 +129,10 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
             child: ListView.builder(
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(selectedChords[index]),
+                  title: Text(
+                    selectedChords[index],
+                    style: TextStyle(fontFamily: 'Noto Music'),
+                  ),
                   // leading: Checkbox(
                   //   value: null,
                   //   onChanged: null,
