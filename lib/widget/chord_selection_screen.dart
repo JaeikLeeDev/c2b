@@ -65,12 +65,16 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         actions: [
-          ElevatedButton(
+          TextButton(
             onPressed: () {
               Navigator.pop(context, selectedChords);
             },
-            child: const Text('Done'),
+            child: const Text(
+              'Done',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
