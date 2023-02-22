@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:soundpool/soundpool.dart';
 
-import 'model/chord_list.dart';
+import 'models/chord_list.dart';
 import 'widget/score.dart';
 import 'widget/beat_indicator.dart';
 import 'widget/chord_set_button.dart';
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           primarySwatch: Colors.blue,
           textTheme: const TextTheme(
-            bodyText1: TextStyle(fontSize: 30),
+            bodyLarge: TextStyle(fontSize: 30),
           )),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -176,8 +176,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     _pool = Soundpool.fromOptions(options: _soundpoolOptions);
-    _firstBeatSoundId = _loadSound("assets/assets_tone_tone1_b.wav");
-    _secondBeatSoundId = _loadSound("assets/assets_tone_tone1_a.wav");
+    _firstBeatSoundId = _loadSound("assets/audio/assets_tone_tone1_b.wav");
+    _secondBeatSoundId = _loadSound("assets/audio/assets_tone_tone1_a.wav");
     _play1stBeat();
     _play2ndBeat();
     _chordList.addAll(ChordList.getFMajChordList());
