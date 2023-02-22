@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+
 import 'package:soundpool/soundpool.dart';
 
 import 'models/chord_list.dart';
@@ -16,6 +18,8 @@ Future main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
+  debugRepaintRainbowEnabled = true;
+  debugRepaintTextRainbowEnabled = true;
   runApp(const MyApp());
 }
 
@@ -25,6 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'C2B',
       theme: ThemeData(
           primarySwatch: Colors.blue,
