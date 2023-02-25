@@ -1,6 +1,9 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+import "../models/chord.dart";
+import "../models/preset.dart";
+
 class PresetDatabase {
   final String tableName;
   final String _dbName = 'chord_presets.db';
@@ -17,7 +20,6 @@ class PresetDatabase {
   Future<void> getDbPath() async {
     var path = await getDatabasesPath();
     _databasesPath = join(path, _dbName);
-    print(_databasesPath);
   }
 
   Future<void> openDb() async {
@@ -26,7 +28,7 @@ class PresetDatabase {
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
-            'CREATE TABLE $tableName (id INTEGER PRIMARY KEY, name TEXT, chords TEXT)');
+            'CREATE TABLE $tableName (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, chords TEXT)');
       },
     );
   }
@@ -38,23 +40,22 @@ class PresetDatabase {
   Future<void> cleanUpDb() async {
     await closeDb();
     await deleteDatabase(_databasesPath);
-    await openDb();
   }
 
-  Future<void> savePreset(String presetName, List<String> chords) async {
-    var count = Sqflite.firstIntValue(
-        await _chordPresetDb.rawQuery('SELECT COUNT(*) FROM $tableName'));
-    count ??= 0;
+  Future<void> saveAsPreset(String presetName, List<Chord> chords) async {
+    final preset = Preset(name: presetName, chordList: chords);
 
     await _chordPresetDb.transaction((txn) async {
       var id = await txn.rawInsert(
-          'INSERT INTO $tableName(id, name, chords) VALUES(?, ?, ?)',
-          [count! + 1, presetName, chords.join(',')]);
-      print('inserted: $id');
+        'INSERT INTO $tableName(name, chords) VALUES(?, ?)',
+        [presetName, preset.toString()],
+      );
     });
   }
 
-  Future<List<Map<String, Object?>>> query(String q) async {
-    return await _chordPresetDb.rawQuery(q);
+  Future<List<Preset>> getPresetList() async {
+    final result = await _chordPresetDb.rawQuery('SELECT * FROM $tableName');
+    return List.generate(
+        result.length, (index) => Preset.fromDb(result[index]));
   }
 }

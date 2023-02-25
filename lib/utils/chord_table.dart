@@ -28,7 +28,7 @@ const keyListFlat = [
   "B♭",
   "B",
 ];
-const chordSuffix = [
+const chordSuffixes = [
   "M",
   "m",
   "dim",

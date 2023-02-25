@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-// import "../models/chord.dart";
+import "../models/chord.dart";
+import "../models/preset.dart";
 import "../utils/chord_table.dart";
 import "../utils/preset_database.dart";
 
@@ -13,19 +14,32 @@ class ChordSelectionScreen extends StatefulWidget {
 
 class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
   // 12 key, 15 chord suffix
-  List<List<bool>> chordCheckboxVal = List.generate(
-      12, (i) => List.generate(15, (i) => false, growable: false),
-      growable: false);
-
-  final _presetNameTextController = TextEditingController();
+  List<List<bool>> _chordCheckboxVal = [];
   int _selectedKeyIndex = 0;
-  List<String> _selectedChords = [];
-  List<Map> _presetList = [];
-  final _tableName = 'Presets';
+  List<Chord> _selectedChords = [];
+  final _presetNameTextController = TextEditingController();
+  List<Preset> _presetList = [];
   final _db = PresetDatabase(tableName: 'Presets');
 
-  void _savePreset() async {
-    await _db.savePreset(
+  void _setChordCheckbox({List<Chord> checkedChords = const []}) {
+    setState(() {
+      _chordCheckboxVal = List.generate(
+        keyListSharp.length,
+        (i) => List.generate(
+          chordSuffixes.length,
+          (i) => false,
+          growable: false,
+        ),
+        growable: false,
+      );
+      for (var chord in checkedChords) {
+        _chordCheckboxVal[chord.key][chord.suffix] = true;
+      }
+    });
+  }
+
+  void _saveAsPreset() async {
+    await _db.saveAsPreset(
       _presetNameTextController.text,
       _selectedChords,
     );
@@ -34,38 +48,53 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
   }
 
   Future<void> _loadPresetList() async {
-    var presetList = await _db.query('SELECT * FROM $_tableName');
+    var presetList = await _db.getPresetList();
     setState(() {
       _presetList = presetList;
     });
-    print("preset list:");
-    print(_presetList);
   }
 
-  void _selectPreset(int index) {
-    // index != id. id doesn't guarantee consistent increment
+  void _selectPreset(List<Chord> chordList) {
+    var chords = chordList.toList();
+    _setChordCheckbox(checkedChords: chords);
     setState(() {
-      _selectedChords = (_presetList[index]['chords']).toString().split(',');
+      _selectedChords = chords;
     });
-    print(_selectedChords);
+  }
+
+  void _addToSelectedChords(int key, int suffix) {
+    setState(() {
+      _selectedChords.add(Chord(
+        key: key,
+        suffix: suffix,
+      ));
+    });
+  }
+
+  void _removeFromSelectedChords(int key, int suffix) {
+    setState(() {
+      _selectedChords
+          .removeWhere((chord) => key == chord.key && suffix == chord.suffix);
+    });
   }
 
   void _reset() {
-    _loadPresetList();
+    _setChordCheckbox();
     setState(() {
       _selectedKeyIndex = 0;
       _selectedChords = [];
     });
   }
 
-  void initPreset() async {
+  void _initPreset() async {
     await _db.init();
     await _loadPresetList();
   }
 
   @override
   void initState() {
-    initPreset();
+    _initPreset();
+    _setChordCheckbox();
     super.initState();
   }
 
@@ -81,6 +110,15 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: [
+          /* Reset */
+          TextButton(
+            onPressed: _reset,
+            child: const Text(
+              'Reset',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          /* Save Preset */
           TextButton(
             onPressed: () => {
               showDialog(
@@ -106,7 +144,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                             TextButton(
                               child: const Text('OK'),
                               onPressed: () {
-                                _savePreset();
+                                _saveAsPreset();
                                 Navigator.of(context).pop();
                               },
                             ),
@@ -123,6 +161,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
               style: TextStyle(color: Colors.white),
             ),
           ),
+          /* clean up db */
           TextButton(
             onPressed: () async {
               await _db.cleanUpDb();
@@ -133,9 +172,17 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
               style: TextStyle(color: Colors.white),
             ),
           ),
+          /* Done */
           TextButton(
             onPressed: () {
-              Navigator.pop(context, _selectedChords);
+              var trainingSet = [
+                ..._selectedChords.map(
+                  (chord) {
+                    return [chord.name, "none"];
+                  },
+                )
+              ];
+              Navigator.pop(context, trainingSet);
             },
             child: const Text(
               'Done',
@@ -147,6 +194,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
       body: Row(
         // mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          /* List of keys */
           Flexible(
             child: ListView.builder(
               itemBuilder: (context, index) {
@@ -163,44 +211,43 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
               itemCount: keyListSharp.length,
             ),
           ),
+          /* List of chords that can user select*/
           Flexible(
             child: ListView.builder(
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(
-                    '${keyListSharp[_selectedKeyIndex]}${chordSuffix[index]}',
+                    '${keyListSharp[_selectedKeyIndex]}${chordSuffixes[index]}',
                     style: const TextStyle(fontFamily: 'Noto Music'),
                   ),
                   leading: Checkbox(
-                    value: chordCheckboxVal[_selectedKeyIndex][index],
+                    value: _chordCheckboxVal[_selectedKeyIndex][index],
                     onChanged: (isSelected) {
-                      setState(() {
-                        if (isSelected != null) {
-                          chordCheckboxVal[_selectedKeyIndex][index] =
+                      if (isSelected != null) {
+                        setState(() {
+                          _chordCheckboxVal[_selectedKeyIndex][index] =
                               isSelected;
-                          if (isSelected) {
-                            _selectedChords.add(
-                                '${keyListSharp[_selectedKeyIndex]}${chordSuffix[index]}');
-                          } else {
-                            _selectedChords.removeWhere((chord) =>
-                                chord ==
-                                '${keyListSharp[_selectedKeyIndex]}${chordSuffix[index]}');
-                          }
+                        });
+                        if (isSelected) {
+                          _addToSelectedChords(_selectedKeyIndex, index);
+                        } else {
+                          _removeFromSelectedChords(_selectedKeyIndex, index);
                         }
-                      });
+                      }
                     },
                   ),
                 );
               },
-              itemCount: chordSuffix.length,
+              itemCount: chordSuffixes.length,
             ),
           ),
+          /* List of selected chords */
           Flexible(
             child: ListView.builder(
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(
-                    _selectedChords[index],
+                    _selectedChords[index].name,
                     style: const TextStyle(fontFamily: 'Noto Music'),
                   ),
                   // leading: Checkbox(
@@ -212,13 +259,13 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
               itemCount: _selectedChords.length,
             ),
           ),
-          // List of presets
+          /* List of presets */
           Flexible(
             child: ListView.builder(
               itemBuilder: (context, index) {
                 return ListTile(
-                  onTap: () => _selectPreset(index),
-                  title: Text(_presetList[index]['name']),
+                  onTap: () => _selectPreset(_presetList[index].chordList),
+                  title: Text(_presetList[index].name),
                 );
               },
               itemCount: _presetList.length,

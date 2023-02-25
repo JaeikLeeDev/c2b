@@ -18,8 +18,8 @@ Future main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
-  debugRepaintRainbowEnabled = true;
-  debugRepaintTextRainbowEnabled = true;
+  // debugRepaintRainbowEnabled = true;
+  // debugRepaintTextRainbowEnabled = true;
   runApp(const MyApp());
 }
 
@@ -93,6 +93,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _setChordTrainingSet(List<List<String>> chordTrainingSet) {
+    if (chordTrainingSet.isEmpty) return;
+
     setState(() {
       _chordList.clear();
       _chordList = [for (var value in chordTrainingSet) List.from(value)];
