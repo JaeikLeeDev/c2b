@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-
-import "../models/chord.dart";
+// import "../models/chord.dart";
+import "../utils/chord_table.dart";
+import "../utils/preset_database.dart";
 
 class ChordSelectionScreen extends StatefulWidget {
   const ChordSelectionScreen({super.key});
@@ -13,109 +12,29 @@ class ChordSelectionScreen extends StatefulWidget {
 }
 
 class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
-  final keyListSharp = [
-    "C",
-    "C♯",
-    "D",
-    "D♯",
-    "E",
-    "F",
-    "F♯",
-    "G",
-    "G♯",
-    "A",
-    "A♯",
-    "B",
-  ];
-  final keyListFlat = [
-    "C",
-    "D♭",
-    "D",
-    "E♭",
-    "E",
-    "F",
-    "G♭",
-    "G",
-    "A♭",
-    "A",
-    "B♭",
-    "B",
-  ];
-  final chordSuffix = [
-    "M",
-    "m",
-    "dim",
-    "aug",
-    "sus2",
-    "sus4",
-    "M7",
-    "m7",
-    "7",
-    "dim7",
-    "aug7",
-    "mM7",
-    "m7(♭5)",
-    "6",
-    "m6",
-  ];
-
   // 12 key, 15 chord suffix
   List<List<bool>> chordCheckboxVal = List.generate(
       12, (i) => List.generate(15, (i) => false, growable: false),
       growable: false);
 
-  TextEditingController _presetNameTextController = TextEditingController();
+  final _presetNameTextController = TextEditingController();
   int _selectedKeyIndex = 0;
   List<String> _selectedChords = [];
   List<Map> _presetList = [];
+  final _tableName = 'Presets';
+  final _db = PresetDatabase(tableName: 'Presets');
 
-  late final Database _chordPresetDb;
-  final String _dbName = 'chord_presets.db';
-  final String _tableName = 'Presets';
-  late final String _databasesPath;
-
-  Future<void> _getDbPath() async {
-    var path = await getDatabasesPath();
-    _databasesPath = join(path, _dbName);
-    print(_databasesPath);
-  }
-
-  Future<void> _openDb() async {
-    _chordPresetDb = await openDatabase(
-      _databasesPath,
-      version: 1,
-      onCreate: (Database db, int version) async {
-        await db.execute(
-            'CREATE TABLE $_tableName (id INTEGER PRIMARY KEY, name TEXT, chords TEXT)');
-      },
+  void _savePreset() async {
+    await _db.savePreset(
+      _presetNameTextController.text,
+      _selectedChords,
     );
-  }
-
-  Future<void> _closeDb() async {
-    await _chordPresetDb.close();
-  }
-
-  void _cleanUpDb() async {
-    await _closeDb();
-    await deleteDatabase(_databasesPath);
-    await _openDb();
-  }
-
-  Future<void> _savePreset(String presetName) async {
-    var count = Sqflite.firstIntValue(
-        await _chordPresetDb.rawQuery('SELECT COUNT(*) FROM $_tableName'));
-    if (count == null) count = 0;
-
-    await _chordPresetDb.transaction((txn) async {
-      var id = await txn.rawInsert(
-          'INSERT INTO $_tableName(id, name, chords) VALUES(?, ?, ?)',
-          [count! + 1, presetName, _selectedChords.join(',')]);
-      print('inserted: $id');
-    });
+    await _loadPresetList();
+    _presetNameTextController.clear();
   }
 
   Future<void> _loadPresetList() async {
-    var presetList = await _chordPresetDb.rawQuery('SELECT * FROM $_tableName');
+    var presetList = await _db.query('SELECT * FROM $_tableName');
     setState(() {
       _presetList = presetList;
     });
@@ -131,12 +50,6 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
     print(_selectedChords);
   }
 
-  void _initPresetList() async {
-    await _getDbPath();
-    await _openDb();
-    await _loadPresetList();
-  }
-
   void _reset() {
     _loadPresetList();
     setState(() {
@@ -145,15 +58,20 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
     });
   }
 
+  void initPreset() async {
+    await _db.init();
+    await _loadPresetList();
+  }
+
   @override
   void initState() {
-    _initPresetList();
+    initPreset();
     super.initState();
   }
 
   @override
   void dispose() {
-    _closeDb();
+    _db.closeDb();
     super.dispose();
   }
 
@@ -171,7 +89,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                   // Dialog - get preset name
                   return _selectedChords.isNotEmpty
                       ? AlertDialog(
-                          title: Text('Save preset'),
+                          title: const Text('Save preset'),
                           content: TextFormField(
                             controller: _presetNameTextController,
                             decoration:
@@ -179,35 +97,35 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                           ),
                           actions: <Widget>[
                             TextButton(
-                              child: Text('CANCEL'),
+                              child: const Text('CANCEL'),
                               onPressed: () {
                                 _presetNameTextController.clear();
                                 Navigator.of(context).pop();
                               },
                             ),
                             TextButton(
-                              child: Text('OK'),
-                              onPressed: () async {
-                                await _savePreset(
-                                    _presetNameTextController.text);
-                                await _loadPresetList();
-                                _presetNameTextController.clear();
+                              child: const Text('OK'),
+                              onPressed: () {
+                                _savePreset();
                                 Navigator.of(context).pop();
                               },
                             ),
                           ],
                         )
-                      : AlertDialog(
+                      : const AlertDialog(
                           content: Text("No chord selected"),
                         );
                 },
               )
             },
-            child: Text("Save Preset"),
+            child: const Text(
+              "Save Preset",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
           TextButton(
-            onPressed: () {
-              _cleanUpDb();
+            onPressed: () async {
+              await _db.cleanUpDb();
               _reset();
             },
             child: const Text(
@@ -251,7 +169,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                 return ListTile(
                   title: Text(
                     '${keyListSharp[_selectedKeyIndex]}${chordSuffix[index]}',
-                    style: TextStyle(fontFamily: 'Noto Music'),
+                    style: const TextStyle(fontFamily: 'Noto Music'),
                   ),
                   leading: Checkbox(
                     value: chordCheckboxVal[_selectedKeyIndex][index],
@@ -283,7 +201,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                 return ListTile(
                   title: Text(
                     _selectedChords[index],
-                    style: TextStyle(fontFamily: 'Noto Music'),
+                    style: const TextStyle(fontFamily: 'Noto Music'),
                   ),
                   // leading: Checkbox(
                   //   value: null,

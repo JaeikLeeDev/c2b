@@ -1,0 +1,47 @@
+// chord_table.dart
+
+const keyListSharp = [
+  "C",
+  "C♯",
+  "D",
+  "D♯",
+  "E",
+  "F",
+  "F♯",
+  "G",
+  "G♯",
+  "A",
+  "A♯",
+  "B",
+];
+const keyListFlat = [
+  "C",
+  "D♭",
+  "D",
+  "E♭",
+  "E",
+  "F",
+  "G♭",
+  "G",
+  "A♭",
+  "A",
+  "B♭",
+  "B",
+];
+const chordSuffix = [
+  "M",
+  "m",
+  "dim",
+  "aug",
+  "sus2",
+  "sus4",
+  "M7",
+  "m7",
+  "7",
+  "dim7",
+  "aug7",
+  "mM7",
+  "m7(♭5)",
+  "6",
+  "m6",
+];
