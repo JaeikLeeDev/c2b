@@ -21,21 +21,72 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
   List<Preset> _presetList = [];
   final _db = PresetDatabase(tableName: 'Presets');
 
-  void _setChordCheckbox({List<Chord> checkedChords = const []}) {
+  void _setChordSelection({List<Chord> checkedChords = const []}) {
+    // Reset
     setState(() {
+      _selectedChords = [];
       _chordCheckboxVal = List.generate(
-        keyListSharp.length,
+        keyListSharpUtil.length,
         (i) => List.generate(
-          chordSuffixes.length,
+          chordSuffixesUtil.length,
           (i) => false,
           growable: false,
         ),
         growable: false,
       );
-      for (var chord in checkedChords) {
-        _chordCheckboxVal[chord.key][chord.suffix] = true;
-      }
     });
+    for (var chord in checkedChords) {
+      _selectChord(chord.key, chord.suffixIndex);
+    }
+  }
+
+  void _setDiatonicSelection() {
+    _selectChord(_selectedKeyIndex, suffixIndexMapUtil['M']!);
+    _selectChord(_selectedKeyIndex, suffixIndexMapUtil['M7']!);
+    _selectChord(_selectedKeyIndex + 1, suffixIndexMapUtil['m']!);
+    _selectChord(_selectedKeyIndex + 1, suffixIndexMapUtil['m7']!);
+    _selectChord(_selectedKeyIndex + 2, suffixIndexMapUtil['m']!);
+    _selectChord(_selectedKeyIndex + 2, suffixIndexMapUtil['m7']!);
+    _selectChord(_selectedKeyIndex + 3, suffixIndexMapUtil['M']!);
+    _selectChord(_selectedKeyIndex + 3, suffixIndexMapUtil['M7']!);
+    _selectChord(_selectedKeyIndex + 4, suffixIndexMapUtil['M']!);
+    _selectChord(_selectedKeyIndex + 4, suffixIndexMapUtil['7']!);
+    _selectChord(_selectedKeyIndex + 4, suffixIndexMapUtil['sus4']!);
+    _selectChord(_selectedKeyIndex + 4, suffixIndexMapUtil['7sus4']!);
+    _selectChord(_selectedKeyIndex + 5, suffixIndexMapUtil['m']!);
+    _selectChord(_selectedKeyIndex + 5, suffixIndexMapUtil['m7']!);
+    _selectChord(_selectedKeyIndex + 6, suffixIndexMapUtil['dim']!);
+    _selectChord(_selectedKeyIndex + 6, suffixIndexMapUtil['m7♭5']!);
+  }
+
+  void _selectChord(int key, int suffixIndex) {
+    setState(() {
+      _chordCheckboxVal[key][suffixIndex] = true;
+      _selectedChords.add(Chord(
+        key: key,
+        suffixIndex: suffixIndex,
+      ));
+    });
+  }
+
+  void _deSelectChord(int key, int suffixIndex) {
+    setState(() {
+      _chordCheckboxVal[key][suffixIndex] = false;
+      _selectedChords.removeWhere(
+          (chord) => key == chord.key && suffixIndex == chord.suffixIndex);
+    });
+  }
+
+  void _reset() {
+    _setChordSelection();
+    setState(() {
+      _selectedKeyIndex = 0;
+    });
+  }
+
+  void _initPreset() async {
+    await _db.init();
+    await _loadPresetList();
   }
 
   void _saveAsPreset() async {
@@ -54,47 +105,10 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
     });
   }
 
-  void _selectPreset(List<Chord> chordList) {
-    var chords = chordList.toList();
-    _setChordCheckbox(checkedChords: chords);
-    setState(() {
-      _selectedChords = chords;
-    });
-  }
-
-  void _addToSelectedChords(int key, int suffix) {
-    setState(() {
-      _selectedChords.add(Chord(
-        key: key,
-        suffix: suffix,
-      ));
-    });
-  }
-
-  void _removeFromSelectedChords(int key, int suffix) {
-    setState(() {
-      _selectedChords
-          .removeWhere((chord) => key == chord.key && suffix == chord.suffix);
-    });
-  }
-
-  void _reset() {
-    _setChordCheckbox();
-    setState(() {
-      _selectedKeyIndex = 0;
-      _selectedChords = [];
-    });
-  }
-
-  void _initPreset() async {
-    await _db.init();
-    await _loadPresetList();
-  }
-
   @override
   void initState() {
     _initPreset();
-    _setChordCheckbox();
+    _setChordSelection();
     super.initState();
   }
 
@@ -110,6 +124,14 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: [
+          /* Diatonic */
+          TextButton(
+            onPressed: _setDiatonicSelection,
+            child: const Text(
+              'Diatonic',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
           /* Reset */
           TextButton(
             onPressed: _reset,
@@ -178,7 +200,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
               var trainingSet = [
                 ..._selectedChords.map(
                   (chord) {
-                    return [chord.name, "none"];
+                    return [chord.name, chordNotesUtil(chord.toDecodedChord())];
                   },
                 )
               ];
@@ -203,12 +225,12 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                     _selectedKeyIndex = index;
                   }),
                   child: Text(
-                    keyListSharp[index],
+                    keyListSharpUtil[index],
                     style: TextStyle(fontFamily: 'Noto Music'),
                   ),
                 );
               },
-              itemCount: keyListSharp.length,
+              itemCount: keyListSharpUtil.length,
             ),
           ),
           /* List of chords that can user select*/
@@ -217,7 +239,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(
-                    '${keyListSharp[_selectedKeyIndex]}${chordSuffixes[index]}',
+                    '${keyListSharpUtil[_selectedKeyIndex]}${chordNameUtil(index)}',
                     style: const TextStyle(fontFamily: 'Noto Music'),
                   ),
                   leading: Checkbox(
@@ -229,16 +251,16 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                               isSelected;
                         });
                         if (isSelected) {
-                          _addToSelectedChords(_selectedKeyIndex, index);
+                          _selectChord(_selectedKeyIndex, index);
                         } else {
-                          _removeFromSelectedChords(_selectedKeyIndex, index);
+                          _deSelectChord(_selectedKeyIndex, index);
                         }
                       }
                     },
                   ),
                 );
               },
-              itemCount: chordSuffixes.length,
+              itemCount: chordSuffixesUtil.length,
             ),
           ),
           /* List of selected chords */
@@ -264,7 +286,8 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
             child: ListView.builder(
               itemBuilder: (context, index) {
                 return ListTile(
-                  onTap: () => _selectPreset(_presetList[index].chordList),
+                  onTap: () => _setChordSelection(
+                      checkedChords: (_presetList[index].chordList).toList()),
                   title: Text(_presetList[index].name),
                 );
               },

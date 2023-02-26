@@ -2,12 +2,11 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import 'package:soundpool/soundpool.dart';
 
-import 'models/chord_list.dart';
+import "/utils/chord_table.dart";
 import 'widget/score.dart';
 import 'widget/beat_indicator.dart';
 import 'widget/chord_set_button.dart';
@@ -187,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _secondBeatSoundId = _loadSound("assets/audio/assets_tone_tone1_a.wav");
     _play1stBeat();
     _play2ndBeat();
-    _chordList.addAll(ChordList.getFMajChordList());
+    _chordList.addAll(fMajorChordListUtil);
     _randomChordIndexList.addAll(genRandChordIdxs(8));
     super.initState();
   }
