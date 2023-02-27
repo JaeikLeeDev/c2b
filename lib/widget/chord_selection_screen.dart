@@ -61,6 +61,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
   }
 
   void _selectChord(int key, int suffixIndex) {
+    if (_chordCheckboxVal[key][suffixIndex] == true) return;
     setState(() {
       /* TODO:
        * Remove input manipulation (converting to be within range 0~11) from high level function.
@@ -75,6 +76,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
   }
 
   void _deSelectChord(int key, int suffixIndex) {
+    if (_chordCheckboxVal[key][suffixIndex] == false) return;
     setState(() {
       /* TODO:
        * Remove input manipulation (converting to be within range 0~11) from high level function.
@@ -162,7 +164,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                           content: TextFormField(
                             controller: _presetNameTextController,
                             decoration:
-                                InputDecoration(hintText: "Preset name"),
+                                const InputDecoration(hintText: "Preset name"),
                           ),
                           actions: <Widget>[
                             TextButton(
@@ -227,6 +229,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
         children: [
           /* List of keys */
           Flexible(
+            flex: 2,
             child: ListView.builder(
               itemBuilder: (context, index) {
                 return TextButton(
@@ -235,15 +238,18 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                   }),
                   child: Text(
                     keyListSharpUtil[index],
-                    style: TextStyle(fontFamily: 'Noto Music'),
+                    style:
+                        const TextStyle(fontFamily: 'Noto Music', fontSize: 18),
                   ),
                 );
               },
               itemCount: keyListSharpUtil.length,
             ),
           ),
+          const RowDivider(),
           /* List of chords that can user select*/
           Flexible(
+            flex: 3,
             child: ListView.builder(
               itemBuilder: (context, index) {
                 return ListTile(
@@ -252,46 +258,46 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                     style: const TextStyle(fontFamily: 'Noto Music'),
                   ),
                   leading: Checkbox(
-                    value: _chordCheckboxVal[_selectedKeyIndex][index],
-                    onChanged: (isSelected) {
-                      if (isSelected != null) {
-                        setState(() {
-                          _chordCheckboxVal[_selectedKeyIndex][index] =
-                              isSelected;
-                        });
-                        if (isSelected) {
+                      value: _chordCheckboxVal[_selectedKeyIndex][index],
+                      onChanged: (isSelected) {
+                        if (isSelected!) {
                           _selectChord(_selectedKeyIndex, index);
                         } else {
                           _deSelectChord(_selectedKeyIndex, index);
                         }
-                      }
-                    },
-                  ),
+                      }),
                 );
               },
               itemCount: chordSuffixesUtil.length,
             ),
           ),
+          const RowDivider(),
           /* List of selected chords */
           Flexible(
+            flex: 3,
             child: ListView.builder(
               itemBuilder: (context, index) {
+                var chord = _selectedChords[index];
                 return ListTile(
                   title: Text(
-                    _selectedChords[index].name,
+                    chord.name,
                     style: const TextStyle(fontFamily: 'Noto Music'),
                   ),
-                  // leading: Checkbox(
-                  //   value: null,
-                  //   onChanged: null,
-                  // ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.remove_circle_rounded),
+                    onPressed: () {
+                      _deSelectChord(chord.key, chord.suffixIndex);
+                    },
+                  ),
                 );
               },
               itemCount: _selectedChords.length,
             ),
           ),
+          const RowDivider(),
           /* List of presets */
           Flexible(
+            flex: 4,
             child: ListView.builder(
               itemBuilder: (context, index) {
                 return ListTile(
@@ -305,6 +311,20 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class RowDivider extends StatelessWidget {
+  const RowDivider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const VerticalDivider(
+      color: Colors.grey,
+      thickness: 1,
+      indent: 5,
+      endIndent: 5,
     );
   }
 }
