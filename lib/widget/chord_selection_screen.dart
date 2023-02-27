@@ -40,6 +40,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
     }
   }
 
+  //TODO: Remove or encapsulate
   void _setDiatonicSelection() {
     _selectChord(_selectedKeyIndex, suffixIndexMapUtil['M']!);
     _selectChord(_selectedKeyIndex, suffixIndexMapUtil['M7']!);
@@ -61,7 +62,11 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
 
   void _selectChord(int key, int suffixIndex) {
     setState(() {
-      _chordCheckboxVal[key][suffixIndex] = true;
+      /* TODO:
+       * Remove input manipulation (converting to be within range 0~11) from high level function.
+       * Move to wrapper implementation not to make user care of it.
+       */
+      _chordCheckboxVal[key % 12][suffixIndex] = true;
       _selectedChords.add(Chord(
         key: key,
         suffixIndex: suffixIndex,
@@ -71,7 +76,11 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
 
   void _deSelectChord(int key, int suffixIndex) {
     setState(() {
-      _chordCheckboxVal[key][suffixIndex] = false;
+      /* TODO:
+       * Remove input manipulation (converting to be within range 0~11) from high level function.
+       * Move to wrapper implementation not to make user care of it.
+       */
+      _chordCheckboxVal[key % 12][suffixIndex] = false;
       _selectedChords.removeWhere(
           (chord) => key == chord.key && suffixIndex == chord.suffixIndex);
     });
