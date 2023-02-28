@@ -5,56 +5,73 @@ import "../models/chord.dart";
 import "../models/preset.dart";
 
 class PresetDatabase {
-  final String tableName;
-  final String _dbName = 'chord_presets.db';
-  late final String _databasesPath;
-  late final Database _chordPresetDb;
+  PresetDatabase._();
+  static final PresetDatabase _instance = PresetDatabase._();
+  factory PresetDatabase() {
+    return _instance;
+  }
 
-  PresetDatabase({required this.tableName});
+  bool _isOpened = false;
+  bool _isInit = false;
+  final String _tableName = 'Presets';
+  final String _dbName = 'c2b_jaeiklee_chord_presets.db';
+  late final String _databasesPath;
+  late Database _chordPresetDb;
 
   Future<void> init() async {
     await getDbPath();
     await openDb();
+    _isInit = true;
   }
 
   Future<void> getDbPath() async {
+    if (_isInit) return;
     var path = await getDatabasesPath();
     _databasesPath = join(path, _dbName);
   }
 
   Future<void> openDb() async {
+    if (_isOpened) return;
+
     _chordPresetDb = await openDatabase(
       _databasesPath,
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
-            'CREATE TABLE $tableName (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, chords TEXT)');
+            'CREATE TABLE $_tableName (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, chords TEXT)');
       },
     );
+    _isOpened = true;
   }
 
+  // Out of the class, `closeDb()` should be called nowhere
+  // but only in the top node of the widget tree
+  // since PresetDatabase is singleton.
   Future<void> closeDb() async {
+    if (_isOpened) return;
+
     await _chordPresetDb.close();
+    _isOpened = false;
   }
 
   Future<void> cleanUpDb() async {
     await closeDb();
     await deleteDatabase(_databasesPath);
+    await openDb();
   }
 
   Future<void> saveAsPreset(String presetName, List<Chord> chords) async {
     final preset = Preset(name: presetName, chordList: chords);
-
     await _chordPresetDb.transaction((txn) async {
       var id = await txn.rawInsert(
-        'INSERT INTO $tableName(name, chords) VALUES(?, ?)',
+        'INSERT INTO $_tableName(name, chords) VALUES(?, ?)',
         [presetName, preset.toString()],
       );
     });
   }
 
   Future<List<Preset>> getPresetList() async {
-    final result = await _chordPresetDb.rawQuery('SELECT * FROM $tableName');
+    final result = await _chordPresetDb.rawQuery('SELECT * FROM $_tableName');
     return List.generate(
         result.length, (index) => Preset.fromDb(result[index]));
   }

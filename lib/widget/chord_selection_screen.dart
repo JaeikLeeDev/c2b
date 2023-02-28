@@ -19,7 +19,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
   List<Chord> _selectedChords = [];
   final _presetNameTextController = TextEditingController();
   List<Preset> _presetList = [];
-  final _db = PresetDatabase(tableName: 'Presets');
+  final _db = PresetDatabase();
 
   void _setChordSelection({List<Chord> checkedChords = const []}) {
     // Reset
@@ -125,7 +125,6 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
 
   @override
   void dispose() {
-    _db.closeDb();
     super.dispose();
   }
 

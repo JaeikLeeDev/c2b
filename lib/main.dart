@@ -6,7 +6,8 @@ import 'package:flutter/services.dart';
 
 import 'package:soundpool/soundpool.dart';
 
-import "/utils/chord_table.dart";
+import "utils/chord_table.dart";
+import "utils/preset_database.dart";
 import 'widget/score.dart';
 import 'widget/beat_indicator.dart';
 import 'widget/chord_set_button.dart';
@@ -49,6 +50,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final _presetDb = PresetDatabase();
   List<List<String>> _chordList = [];
   var rng = Random(DateTime.now().millisecond);
   final List<int> _randomChordIndexList = [];
@@ -181,6 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    _presetDb.init();
     _pool = Soundpool.fromOptions(options: _soundpoolOptions);
     _firstBeatSoundId = _loadSound("assets/audio/assets_tone_tone1_b.wav");
     _secondBeatSoundId = _loadSound("assets/audio/assets_tone_tone1_a.wav");
@@ -189,6 +192,12 @@ class _MyHomePageState extends State<MyHomePage> {
     _chordList.addAll(fMajorChordListUtil);
     _randomChordIndexList.addAll(genRandChordIdxs(8));
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _presetDb.closeDb();
+    super.dispose();
   }
 
   @override
@@ -207,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // volume slider
+                  /* volume slider */
                   SizedBox(
                     width: mq.size.width * 0.17,
                     child: SliderTheme(
@@ -232,6 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
+                  /* Show/Hide chord notes */
                   Switch.adaptive(
                     value: _chordConstructOn,
                     activeColor: Colors.blue,
@@ -241,7 +251,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       });
                     },
                   ),
+                  /* Go to chord selection screen */
                   ChordSetButton(_setChordTrainingSet, _stop),
+                  /* Start/Stop Training */
                   _isTimerStarted
                       ? ElevatedButton(
                           onPressed: _stop,
@@ -251,11 +263,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           onPressed: _startTimer,
                           child: const Icon(Icons.play_circle),
                         ),
-                  // beat indicator
+                  /* beat indicator */
                   BeatIndicator(
                       currentBeat: (_beatCounter % _beatSet),
                       radius: mq.size.width * 0.02),
-                  // bpm slider
+                  /* bpm slider */
                   SizedBox(
                     width: mq.size.width * 0.2,
                     child: Slider(
