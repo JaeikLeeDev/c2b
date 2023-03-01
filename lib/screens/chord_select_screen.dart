@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -183,7 +184,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
               const RowDivider(),
               /* List of chords that can user select*/
               Flexible(
-                flex: 3,
+                flex: 4,
                 child: ListView.builder(
                   itemBuilder: (context, index) {
                     return ListTile(
@@ -211,7 +212,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
               const RowDivider(),
               /* List of selected chords */
               Flexible(
-                flex: 3,
+                flex: 4,
                 child: ListView.builder(
                   itemBuilder: (context, index) {
                     var chord = _selectController.atIndex(index);
@@ -235,17 +236,65 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
               const RowDivider(),
               /* List of presets */
               Flexible(
-                flex: 4,
-                child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      onTap: () => _selectController.set(
-                          checkedChords:
-                              (_presetList[index].chordList).toList()),
-                      title: Text(_presetList[index].name),
-                    );
-                  },
-                  itemCount: _presetList.length,
+                flex: 3,
+                child: ClipRect(
+                  child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      var preset = _presetList[index];
+                      return Dismissible(
+                        key: Key(preset.id.toString()),
+                        direction: DismissDirection.endToStart,
+                        dismissThresholds: const {
+                          DismissDirection.endToStart: 0.5
+                        },
+                        onDismissed: (direction) async {
+                          await _db.deletePreset(preset.id);
+                        },
+                        confirmDismiss: (direction) {
+                          return showDialog(
+                              context: context,
+                              builder: (ctx) {
+                                return AlertDialog(
+                                  title: const Text('Are you sure?'),
+                                  content:
+                                      Text('Delete preset "${preset.name}"?'),
+                                  actions: <Widget>[
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        return Navigator.of(context).pop(false);
+                                      },
+                                      child: const Text('CANCEL'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        return Navigator.of(context).pop(true);
+                                      },
+                                      child: const Text('DELETE'),
+                                    ),
+                                  ],
+                                );
+                              }).then((value) => Future.value(value));
+                        },
+                        background: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 15.0,
+                          ),
+                          alignment: Alignment.centerRight,
+                          color: Colors.red,
+                          child: const Icon(Icons.delete),
+                        ),
+                        child: ListTile(
+                          onTap: () => _selectController.set(
+                              checkedChords: (preset.chordList).toList()),
+                          title: Text(
+                            preset.name,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      );
+                    },
+                    itemCount: _presetList.length,
+                  ),
                 ),
               ),
             ],

@@ -1,17 +1,18 @@
 import "../models/chord.dart";
 
 class Preset {
-  // final int id;
+  late final int id;
   late final String name;
   late final List<Chord> chordList;
 
   Preset({
-    // required this.id,
+    required this.id,
     required this.name,
     required this.chordList,
   });
 
   Preset.fromDb(Map<String, Object?> result) {
+    id = result['id'] as int;
     name = result['name'] as String;
     chordList = _toChordList(result['chords'].toString());
   }

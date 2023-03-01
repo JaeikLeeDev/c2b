@@ -61,13 +61,22 @@ class PresetDatabase {
   }
 
   Future<void> saveAsPreset(String presetName, List<Chord> chords) async {
-    final preset = Preset(name: presetName, chordList: chords);
+    final encodedChords =
+        List.generate(chords.length, (index) => chords[index].encodedChord);
     await _chordPresetDb.transaction((txn) async {
       var id = await txn.rawInsert(
         'INSERT INTO $_tableName(name, chords) VALUES(?, ?)',
-        [presetName, preset.toString()],
+        [presetName, encodedChords.join(',')],
       );
     });
+  }
+
+  Future<void> deletePreset(int id) async {
+    await _chordPresetDb.delete(
+      _tableName,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   Future<List<Preset>> getPresetList() async {
