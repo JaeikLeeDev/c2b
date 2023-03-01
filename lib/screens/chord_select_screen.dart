@@ -182,7 +182,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
           return Row(
             // mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              /* List of keys */
+              /* List of roots */
               Flexible(
                 flex: 2,
                 child: ListView.builder(
@@ -192,7 +192,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                         _selectedRootIndex = index;
                       }),
                       child: Text(
-                        keyStringUtil(_selectController.getKeyIndex(), index),
+                        rootStringUtil(_selectController.getKeyIndex(), index),
                         style: const TextStyle(
                             fontFamily: 'Noto Music', fontSize: 18),
                       ),
@@ -209,7 +209,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Text(
-                        '${keyStringUtil(_selectController.getKeyIndex(), _selectedRootIndex)}${qualityToStringUtil(index)}',
+                        '${rootStringUtil(_selectController.getKeyIndex(), _selectedRootIndex)}${qualityToStringUtil(index)}',
                         style: const TextStyle(fontFamily: 'Noto Music'),
                       ),
                       leading: Checkbox(

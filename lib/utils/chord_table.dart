@@ -307,10 +307,10 @@ String chordNotesUtil(Chord chord) {
   return notesStr;
 }
 
-String keyStringUtil(int keyScale, int keyIndex) {
-  return isSharpGroup(keyScale)
-      ? rootListSharpUtil[keyIndex]
-      : rootListFlatUtil[keyIndex];
+String rootStringUtil(int keyIndex, int rootIndex) {
+  return isSharpGroup(keyIndex)
+      ? rootListSharpUtil[rootIndex]
+      : rootListFlatUtil[rootIndex];
 }
 
 bool isSharpGroup(int keyIndex) {
