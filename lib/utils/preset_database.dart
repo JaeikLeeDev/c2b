@@ -61,12 +61,11 @@ class PresetDatabase {
   }
 
   Future<void> saveAsPreset(String presetName, List<Chord> chords) async {
-    final encodedChords =
-        List.generate(chords.length, (index) => chords[index].encodedChord);
+    final encodedPreset = _encode(chords);
     await _chordPresetDb.transaction((txn) async {
       var id = await txn.rawInsert(
         'INSERT INTO $_tableName(name, chords) VALUES(?, ?)',
-        [presetName, encodedChords.join(',')],
+        [presetName, encodedPreset],
       );
     });
   }
@@ -80,8 +79,35 @@ class PresetDatabase {
   }
 
   Future<List<Preset>> getPresetList() async {
-    final result = await _chordPresetDb.rawQuery('SELECT * FROM $_tableName');
-    return List.generate(
-        result.length, (index) => Preset.fromDb(result[index]));
+    final presetList =
+        await _chordPresetDb.rawQuery('SELECT * FROM $_tableName');
+
+    return List.generate(presetList.length, (index) {
+      var id = presetList[index]['id'] as int;
+      var name = presetList[index]['name'] as String;
+      var chordList = _decode(presetList[index]['chords'] as String);
+      return Preset(id: id, name: name, chordList: chordList);
+    });
+  }
+
+  String _encode(List<Chord> chords) {
+    final encodedChordList = List.generate(chords.length, (index) {
+      return '${chords[index].rootIndex}-${chords[index].qualityIndex}';
+    });
+    final encodedPreset = encodedChordList.join(',');
+    return encodedPreset;
+  }
+
+  List<Chord> _decode(String encodedPreset) {
+    var encodedChordList = encodedPreset.split(',');
+    return List.generate(encodedChordList.length, (index) {
+      final decodedChord = encodedChordList[index].split('-');
+      final rootIndex = int.parse(decodedChord[0]);
+      final qualityIndex = int.parse(decodedChord[1]);
+      return Chord(
+        rootIndex: rootIndex,
+        qualityIndex: qualityIndex,
+      );
+    });
   }
 }

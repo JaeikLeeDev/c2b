@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -17,7 +16,8 @@ class ChordSelectScreen extends StatefulWidget {
 
 class _ChordSelectScreenState extends State<ChordSelectScreen> {
   final SelectController _selectController = Get.find();
-  int _selectedKeyIndex = 0;
+
+  int _selectedRootIndex = 0;
   final _presetNameTextController = TextEditingController();
   List<Preset> _presetList = [];
   final _db = PresetDatabase();
@@ -26,7 +26,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
   void _reset() {
     _selectController.set();
     setState(() {
-      _selectedKeyIndex = 0;
+      _selectedRootIndex = 0;
     });
   }
 
@@ -68,9 +68,29 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: [
+          /* Key */
+          DropdownButton(
+            value: _selectController.getKeyIndex(),
+            items: keyListUtil.map((value) {
+              return DropdownMenuItem(
+                value: keyIndexUtil(value),
+                child: Text(
+                  value,
+                  style: const TextStyle(
+                    fontFamily: 'Noto Music',
+                  ),
+                ),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                _selectController.setKeyIndex(value!);
+              });
+            },
+          ),
           /* Diatonic */
           TextButton(
-            onPressed: () => _selectController.setDiatonic(_selectedKeyIndex),
+            onPressed: () => _selectController.setDiatonic(),
             child: const Text(
               'Diatonic',
               style: TextStyle(color: Colors.white),
@@ -144,7 +164,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
               var trainingSet = [
                 ..._selectController.get().map(
                   (chord) {
-                    return [chord.name, chordNotesUtil(chord.toDecodedChord())];
+                    return [chord.name(), chordNotesUtil(chord)];
                   },
                 )
               ];
@@ -169,16 +189,16 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                   itemBuilder: (context, index) {
                     return TextButton(
                       onPressed: () => setState(() {
-                        _selectedKeyIndex = index;
+                        _selectedRootIndex = index;
                       }),
                       child: Text(
-                        keyListSharpUtil[index],
+                        keyStringUtil(_selectController.getKeyIndex(), index),
                         style: const TextStyle(
                             fontFamily: 'Noto Music', fontSize: 18),
                       ),
                     );
                   },
-                  itemCount: keyListSharpUtil.length,
+                  itemCount: numOfKeysUtil,
                 ),
               ),
               const RowDivider(),
@@ -189,24 +209,24 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Text(
-                        '${keyListSharpUtil[_selectedKeyIndex]}${chordNameUtil(index)}',
+                        '${keyStringUtil(_selectController.getKeyIndex(), _selectedRootIndex)}${qualityToStringUtil(index)}',
                         style: const TextStyle(fontFamily: 'Noto Music'),
                       ),
                       leading: Checkbox(
                           value: _selectController.isCheckedAt(
-                              _selectedKeyIndex, index),
+                              _selectedRootIndex, index),
                           onChanged: (isSelected) {
                             if (isSelected!) {
                               _selectController.select(
-                                  _selectedKeyIndex, index);
+                                  _selectedRootIndex, index);
                             } else {
                               _selectController.deselect(
-                                  _selectedKeyIndex, index);
+                                  _selectedRootIndex, index);
                             }
                           }),
                     );
                   },
-                  itemCount: chordSuffixesUtil.length,
+                  itemCount: qualityUtil.length,
                 ),
               ),
               const RowDivider(),
@@ -218,14 +238,14 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                     var chord = _selectController.atIndex(index);
                     return ListTile(
                       title: Text(
-                        chord.name,
+                        chord.name(),
                         style: const TextStyle(fontFamily: 'Noto Music'),
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.remove_circle_rounded),
                         onPressed: () {
                           _selectController.deselect(
-                              chord.key, chord.suffixIndex);
+                              chord.rootIndex, chord.qualityIndex);
                         },
                       ),
                     );
@@ -242,13 +262,14 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                     itemBuilder: (context, index) {
                       var preset = _presetList[index];
                       return Dismissible(
-                        key: Key(preset.id.toString()),
+                        key: UniqueKey(),
                         direction: DismissDirection.endToStart,
                         dismissThresholds: const {
                           DismissDirection.endToStart: 0.5
                         },
                         onDismissed: (direction) async {
                           await _db.deletePreset(preset.id);
+                          _loadPresetList();
                         },
                         confirmDismiss: (direction) {
                           return showDialog(

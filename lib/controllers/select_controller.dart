@@ -4,6 +4,7 @@ import "../models/chord.dart";
 import "../utils/chord_table.dart";
 
 class SelectController extends GetxController {
+  int _selectedKeyIndex = 0;
   List<Chord> _selected = [];
   List<List<bool>> _checked = [];
 
@@ -33,71 +34,79 @@ class SelectController extends GetxController {
     return _selected.isNotEmpty;
   }
 
-  bool isCheckedAt(int keyIndex, int suffixIndex) {
-    return _checked[keyIndex][suffixIndex];
+  bool isCheckedAt(int rootIndex, int qualityIndex) {
+    return _checked[rootIndex][qualityIndex];
+  }
+
+  void setKeyIndex(int index) {
+    _selectedKeyIndex = index;
+  }
+
+  int getKeyIndex() {
+    return _selectedKeyIndex;
   }
 
   void set({List<Chord> checkedChords = const []}) {
     // Reset
     _selected = [];
     _checked = List.generate(
-      keyListSharpUtil.length,
+      numOfKeysUtil,
       (i) => List.generate(
-        chordSuffixesUtil.length,
+        qualityUtil.length,
         (i) => false,
         growable: false,
       ),
       growable: false,
     );
     for (var chord in checkedChords) {
-      select(chord.key, chord.suffixIndex);
+      select(chord.rootIndex, chord.qualityIndex);
     }
     update();
   }
 
-  void setDiatonic(int keyIndex) {
-    select(keyIndex, suffixIndexMapUtil['M']!);
-    select(keyIndex, suffixIndexMapUtil['M7']!);
-    select(keyIndex + 1, suffixIndexMapUtil['m']!);
-    select(keyIndex + 1, suffixIndexMapUtil['m7']!);
-    select(keyIndex + 2, suffixIndexMapUtil['m']!);
-    select(keyIndex + 2, suffixIndexMapUtil['m7']!);
-    select(keyIndex + 3, suffixIndexMapUtil['M']!);
-    select(keyIndex + 3, suffixIndexMapUtil['M7']!);
-    select(keyIndex + 4, suffixIndexMapUtil['M']!);
-    select(keyIndex + 4, suffixIndexMapUtil['7']!);
-    select(keyIndex + 4, suffixIndexMapUtil['sus4']!);
-    select(keyIndex + 4, suffixIndexMapUtil['7sus4']!);
-    select(keyIndex + 5, suffixIndexMapUtil['m']!);
-    select(keyIndex + 5, suffixIndexMapUtil['m7']!);
-    select(keyIndex + 6, suffixIndexMapUtil['dim']!);
-    select(keyIndex + 6, suffixIndexMapUtil['m7♭5']!);
+  void setDiatonic() {
+    select(_selectedKeyIndex, qualityIndexOf('M'));
+    select(_selectedKeyIndex, qualityIndexOf('M7'));
+    select(_selectedKeyIndex + 1, qualityIndexOf('m'));
+    select(_selectedKeyIndex + 1, qualityIndexOf('m7'));
+    select(_selectedKeyIndex + 2, qualityIndexOf('m'));
+    select(_selectedKeyIndex + 2, qualityIndexOf('m7'));
+    select(_selectedKeyIndex + 3, qualityIndexOf('M'));
+    select(_selectedKeyIndex + 3, qualityIndexOf('M7'));
+    select(_selectedKeyIndex + 4, qualityIndexOf('M'));
+    select(_selectedKeyIndex + 4, qualityIndexOf('7'));
+    select(_selectedKeyIndex + 4, qualityIndexOf('sus4'));
+    select(_selectedKeyIndex + 4, qualityIndexOf('7sus4'));
+    select(_selectedKeyIndex + 5, qualityIndexOf('m'));
+    select(_selectedKeyIndex + 5, qualityIndexOf('m7'));
+    select(_selectedKeyIndex + 6, qualityIndexOf('dim'));
+    select(_selectedKeyIndex + 6, qualityIndexOf('m7♭5'));
     update();
   }
 
-  void select(int key, int suffixIndex) {
-    if (_checked[key][suffixIndex] == true) return;
+  void select(int rootIndex, int qualityIndex) {
+    if (_checked[rootIndex][qualityIndex] == true) return;
     /* TODO:
      * Remove input manipulation (converting to be within range 0~11) from high level function.
      * Move to wrapper implementation not to make user care of it.
      */
-    _checked[key % 12][suffixIndex] = true;
+    _checked[rootIndex % 12][qualityIndex] = true;
     _selected.add(Chord(
-      key: key,
-      suffixIndex: suffixIndex,
+      rootIndex: rootIndex,
+      qualityIndex: qualityIndex,
     ));
     update();
   }
 
-  void deselect(int key, int suffixIndex) {
-    if (_checked[key][suffixIndex] == false) return;
+  void deselect(int rootIndex, int qualityIndex) {
+    if (_checked[rootIndex][qualityIndex] == false) return;
     /* TODO:
      * Remove input manipulation (converting to be within range 0~11) from high level function.
      * Move to wrapper implementation not to make user care of it.
      */
-    _checked[key % 12][suffixIndex] = false;
-    _selected.removeWhere(
-        (chord) => key == chord.key && suffixIndex == chord.suffixIndex);
+    _checked[rootIndex % 12][qualityIndex] = false;
+    _selected.removeWhere((chord) =>
+        rootIndex == chord.rootIndex && qualityIndex == chord.qualityIndex);
     update();
   }
 }

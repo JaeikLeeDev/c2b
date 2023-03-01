@@ -1,6 +1,10 @@
 // chord_table.dart
 
+import "../models/chord.dart";
+
 // sample chord training set
+final numOfKeysUtil = keyListUtil.length;
+
 const fMajorChordListUtil = [
   ['FM', 'F A C'],
   ['FM7', 'F A C E'],
@@ -35,37 +39,51 @@ const fMajorChordListUtil = [
   ['Em7(♭5)', 'E G B♭ D'],
 ];
 
-const keyListSharpUtil = [
-  "C",
-  "C♯",
-  "D",
-  "D♯",
-  "E",
-  "F",
-  "F♯",
-  "G",
-  "G♯",
-  "A",
-  "A♯",
-  "B",
+const keyListUtil = [
+  "C", // 0
+  "D♭", // 1
+  "D", // 2
+  "E♭", // 3
+  "E", // 4
+  "F", // 5
+  "G♭", // 6
+  "G", // 7
+  "A♭", // 8
+  "A", // 9
+  "B♭", // 10
+  "B", // 11
+];
+const rootListSharpUtil = [
+  "C", // 0
+  "C♯", // 1
+  "D", // 2
+  "D♯", // 3
+  "E", // 4
+  "F", // 5
+  "F♯", // 6
+  "G", // 7
+  "G♯", // 8
+  "A", // 9
+  "A♯", // 10
+  "B", // 11
 ];
 
-const keyListFlatUtil = [
-  "C",
-  "D♭",
-  "D",
-  "E♭",
-  "E",
-  "F",
-  "G♭",
-  "G",
-  "A♭",
-  "A",
-  "B♭",
-  "B",
+const rootListFlatUtil = [
+  "C", // 0
+  "D♭", // 1
+  "D", // 2
+  "E♭", // 3
+  "E", // 4
+  "F", // 5
+  "G♭", // 6
+  "G", // 7
+  "A♭", // 8
+  "A", // 9
+  "B♭", // 10
+  "B", // 11
 ];
 
-const chordSuffixesUtil = [
+const qualityUtil = [
   [
     "11",
     [0, 4, 7, 10, 14, 17]
@@ -104,7 +122,10 @@ const chordSuffixesUtil = [
     "7",
     [0, 4, 7, 10]
   ],
-// ["7alt", [0, 4, 6, 10, 13]],
+  [
+    "7alt",
+    [0, 4, 6, 10, 13]
+  ],
   [
     "7♭13",
     [0, 4, 7, 10, 14, 17, 20]
@@ -252,32 +273,72 @@ const chordSuffixesUtil = [
   ],
 ];
 
-// final Map<String, List<int>> chordNotesMapUtil = {
-//   for (var e in chordSuffixesUtil) e[0] as String: e[1] as List<int>,
-// };
-
-final Map<String, int> suffixIndexMapUtil = {
-  for (int suffixIndex = 0;
-      suffixIndex < chordSuffixesUtil.length;
-      suffixIndex++)
-    chordSuffixesUtil[suffixIndex][0] as String: suffixIndex,
-};
-
-String chordNameUtil(int suffix) {
-  return chordSuffixesUtil[suffix][0] as String;
+int keyIndexUtil(String index) {
+  return keyListUtil.indexOf(index);
 }
 
-String chordNotesUtil(Map<String, int> chord) {
-  var noteList = chordSuffixesUtil[chord['suffixIndex']!][1] as List<int>;
-  var keyIndex = chord['key']!;
-  String noteStr = keyListSharpUtil[keyIndex];
+// key: chord quality
+// value: location(index) of a chord quality in qualityUtil
+final Map<String, int> _qualityToIndexMapUtil = {
+  for (int qulityIndex = 0; qulityIndex < qualityUtil.length; qulityIndex++)
+    qualityUtil[qulityIndex][0] as String: qulityIndex,
+};
+
+int qualityIndexOf(String quality) {
+  return _qualityToIndexMapUtil[quality] as int;
+}
+
+String qualityToStringUtil(int index) {
+  return qualityUtil[index][0] as String;
+}
+
+String chordNotesUtil(Chord chord) {
+  var noteList = qualityUtil[chord.qualityIndex][1] as List<int>;
+  var rootIndex = chord.rootIndex;
+  var rootList = isSharpGroup(rootIndex) ? rootListSharpUtil : rootListFlatUtil;
+
+  String notesStr = rootList[rootIndex];
 
   // Get notes of the chord using the key
   // and the distance (integer notation) from the root.
   for (int i = 1; i < noteList.length; i++) {
-    noteStr += " ${keyListSharpUtil[(keyIndex + noteList[i]) % 12]}";
+    notesStr += " ${rootList[(rootIndex + noteList[i]) % 12]}";
   }
-  return noteStr;
+  return notesStr;
+}
+
+String keyStringUtil(int keyScale, int keyIndex) {
+  return isSharpGroup(keyScale)
+      ? rootListSharpUtil[keyIndex]
+      : rootListFlatUtil[keyIndex];
+}
+
+bool isSharpGroup(int keyIndex) {
+  bool isSharp;
+
+  switch (keyIndex) {
+    case 0: // C
+    case 7: // G
+    case 2: // D
+    case 9: // A
+    case 4: // E
+    case 11: // B
+      isSharp = true;
+      break;
+    case 5: // F, Gb
+    case 10: // Bb
+    case 3: // Eb, D#
+    case 8: // Ab, G#
+    case 1: // Db, C#
+    case 6: // Gb, F#
+      isSharp = false;
+      break;
+    default:
+      isSharp = true;
+      break;
+  }
+
+  return isSharp;
 }
 
 /* Integer Notation

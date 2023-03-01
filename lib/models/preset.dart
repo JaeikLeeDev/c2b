@@ -10,23 +10,4 @@ class Preset {
     required this.name,
     required this.chordList,
   });
-
-  Preset.fromDb(Map<String, Object?> result) {
-    id = result['id'] as int;
-    name = result['name'] as String;
-    chordList = _toChordList(result['chords'].toString());
-  }
-
-  @override
-  String toString() {
-    final encodedChords = List.generate(
-        chordList.length, (index) => chordList[index].encodedChord);
-    return encodedChords.join(',');
-  }
-
-  List<Chord> _toChordList(String encodedChordStr) {
-    final encodedChords = encodedChordStr.split(',');
-    return List.generate(
-        encodedChords.length, (index) => Chord.fromCode(encodedChords[index]));
-  }
 }
