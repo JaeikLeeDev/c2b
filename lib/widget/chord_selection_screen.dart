@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:get/get.dart';
+
 import "../models/chord.dart";
 import "../models/preset.dart";
 import "../utils/chord_table.dart";
 import "../utils/preset_database.dart";
+import "../controllers/selected_chords.dart";
 
 class ChordSelectionScreen extends StatefulWidget {
   const ChordSelectionScreen({super.key});
@@ -13,83 +16,15 @@ class ChordSelectionScreen extends StatefulWidget {
 }
 
 class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
-  // 12 key, 15 chord suffix
-  List<List<bool>> _chordCheckboxVal = [];
+  final _selectedController = Get.put(SelectedChords());
   int _selectedKeyIndex = 0;
-  List<Chord> _selectedChords = [];
   final _presetNameTextController = TextEditingController();
   List<Preset> _presetList = [];
   final _db = PresetDatabase();
 
-  void _setChordSelection({List<Chord> checkedChords = const []}) {
-    // Reset
-    setState(() {
-      _selectedChords = [];
-      _chordCheckboxVal = List.generate(
-        keyListSharpUtil.length,
-        (i) => List.generate(
-          chordSuffixesUtil.length,
-          (i) => false,
-          growable: false,
-        ),
-        growable: false,
-      );
-    });
-    for (var chord in checkedChords) {
-      _selectChord(chord.key, chord.suffixIndex);
-    }
-  }
-
   //TODO: Remove or encapsulate
-  void _setDiatonicSelection() {
-    _selectChord(_selectedKeyIndex, suffixIndexMapUtil['M']!);
-    _selectChord(_selectedKeyIndex, suffixIndexMapUtil['M7']!);
-    _selectChord(_selectedKeyIndex + 1, suffixIndexMapUtil['m']!);
-    _selectChord(_selectedKeyIndex + 1, suffixIndexMapUtil['m7']!);
-    _selectChord(_selectedKeyIndex + 2, suffixIndexMapUtil['m']!);
-    _selectChord(_selectedKeyIndex + 2, suffixIndexMapUtil['m7']!);
-    _selectChord(_selectedKeyIndex + 3, suffixIndexMapUtil['M']!);
-    _selectChord(_selectedKeyIndex + 3, suffixIndexMapUtil['M7']!);
-    _selectChord(_selectedKeyIndex + 4, suffixIndexMapUtil['M']!);
-    _selectChord(_selectedKeyIndex + 4, suffixIndexMapUtil['7']!);
-    _selectChord(_selectedKeyIndex + 4, suffixIndexMapUtil['sus4']!);
-    _selectChord(_selectedKeyIndex + 4, suffixIndexMapUtil['7sus4']!);
-    _selectChord(_selectedKeyIndex + 5, suffixIndexMapUtil['m']!);
-    _selectChord(_selectedKeyIndex + 5, suffixIndexMapUtil['m7']!);
-    _selectChord(_selectedKeyIndex + 6, suffixIndexMapUtil['dim']!);
-    _selectChord(_selectedKeyIndex + 6, suffixIndexMapUtil['m7♭5']!);
-  }
-
-  void _selectChord(int key, int suffixIndex) {
-    if (_chordCheckboxVal[key][suffixIndex] == true) return;
-    setState(() {
-      /* TODO:
-       * Remove input manipulation (converting to be within range 0~11) from high level function.
-       * Move to wrapper implementation not to make user care of it.
-       */
-      _chordCheckboxVal[key % 12][suffixIndex] = true;
-      _selectedChords.add(Chord(
-        key: key,
-        suffixIndex: suffixIndex,
-      ));
-    });
-  }
-
-  void _deSelectChord(int key, int suffixIndex) {
-    if (_chordCheckboxVal[key][suffixIndex] == false) return;
-    setState(() {
-      /* TODO:
-       * Remove input manipulation (converting to be within range 0~11) from high level function.
-       * Move to wrapper implementation not to make user care of it.
-       */
-      _chordCheckboxVal[key % 12][suffixIndex] = false;
-      _selectedChords.removeWhere(
-          (chord) => key == chord.key && suffixIndex == chord.suffixIndex);
-    });
-  }
-
   void _reset() {
-    _setChordSelection();
+    _selectedController.set();
     setState(() {
       _selectedKeyIndex = 0;
     });
@@ -103,7 +38,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
   void _saveAsPreset() async {
     await _db.saveAsPreset(
       _presetNameTextController.text,
-      _selectedChords,
+      _selectedController.list(),
     );
     await _loadPresetList();
     _presetNameTextController.clear();
@@ -119,7 +54,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
   @override
   void initState() {
     _initPreset();
-    _setChordSelection();
+    _selectedController.set();
     super.initState();
   }
 
@@ -136,7 +71,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
         actions: [
           /* Diatonic */
           TextButton(
-            onPressed: _setDiatonicSelection,
+            onPressed: () => _selectedController.setDiatonic(_selectedKeyIndex),
             child: const Text(
               'Diatonic',
               style: TextStyle(color: Colors.white),
@@ -157,7 +92,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   // Dialog - get preset name
-                  return _selectedChords.isNotEmpty
+                  return _selectedController.isNotEmpty()
                       ? AlertDialog(
                           title: const Text('Save preset'),
                           content: TextFormField(
@@ -208,7 +143,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
           TextButton(
             onPressed: () {
               var trainingSet = [
-                ..._selectedChords.map(
+                ..._selectedController.list().map(
                   (chord) {
                     return [chord.name, chordNotesUtil(chord.toDecodedChord())];
                   },
@@ -223,92 +158,97 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
           ),
         ],
       ),
-      body: Row(
-        // mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          /* List of keys */
-          Flexible(
-            flex: 2,
-            child: ListView.builder(
-              itemBuilder: (context, index) {
-                return TextButton(
-                  onPressed: () => setState(() {
-                    _selectedKeyIndex = index;
-                  }),
-                  child: Text(
-                    keyListSharpUtil[index],
-                    style:
-                        const TextStyle(fontFamily: 'Noto Music', fontSize: 18),
-                  ),
-                );
-              },
-              itemCount: keyListSharpUtil.length,
-            ),
-          ),
-          const RowDivider(),
-          /* List of chords that can user select*/
-          Flexible(
-            flex: 3,
-            child: ListView.builder(
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(
-                    '${keyListSharpUtil[_selectedKeyIndex]}${chordNameUtil(index)}',
-                    style: const TextStyle(fontFamily: 'Noto Music'),
-                  ),
-                  leading: Checkbox(
-                      value: _chordCheckboxVal[_selectedKeyIndex][index],
-                      onChanged: (isSelected) {
-                        if (isSelected!) {
-                          _selectChord(_selectedKeyIndex, index);
-                        } else {
-                          _deSelectChord(_selectedKeyIndex, index);
-                        }
+      body: GetBuilder<SelectedChords>(
+        builder: (ctrlr) {
+          return Row(
+            // mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              /* List of keys */
+              Flexible(
+                flex: 2,
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return TextButton(
+                      onPressed: () => setState(() {
+                        _selectedKeyIndex = index;
                       }),
-                );
-              },
-              itemCount: chordSuffixesUtil.length,
-            ),
-          ),
-          const RowDivider(),
-          /* List of selected chords */
-          Flexible(
-            flex: 3,
-            child: ListView.builder(
-              itemBuilder: (context, index) {
-                var chord = _selectedChords[index];
-                return ListTile(
-                  title: Text(
-                    chord.name,
-                    style: const TextStyle(fontFamily: 'Noto Music'),
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.remove_circle_rounded),
-                    onPressed: () {
-                      _deSelectChord(chord.key, chord.suffixIndex);
-                    },
-                  ),
-                );
-              },
-              itemCount: _selectedChords.length,
-            ),
-          ),
-          const RowDivider(),
-          /* List of presets */
-          Flexible(
-            flex: 4,
-            child: ListView.builder(
-              itemBuilder: (context, index) {
-                return ListTile(
-                  onTap: () => _setChordSelection(
-                      checkedChords: (_presetList[index].chordList).toList()),
-                  title: Text(_presetList[index].name),
-                );
-              },
-              itemCount: _presetList.length,
-            ),
-          ),
-        ],
+                      child: Text(
+                        keyListSharpUtil[index],
+                        style: const TextStyle(
+                            fontFamily: 'Noto Music', fontSize: 18),
+                      ),
+                    );
+                  },
+                  itemCount: keyListSharpUtil.length,
+                ),
+              ),
+              const RowDivider(),
+              /* List of chords that can user select*/
+              Flexible(
+                flex: 3,
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        '${keyListSharpUtil[_selectedKeyIndex]}${chordNameUtil(index)}',
+                        style: const TextStyle(fontFamily: 'Noto Music'),
+                      ),
+                      leading: Checkbox(
+                          value: ctrlr.isCheckedAt(_selectedKeyIndex, index),
+                          onChanged: (isSelected) {
+                            if (isSelected!) {
+                              ctrlr.select(_selectedKeyIndex, index);
+                            } else {
+                              ctrlr.deselect(_selectedKeyIndex, index);
+                            }
+                          }),
+                    );
+                  },
+                  itemCount: chordSuffixesUtil.length,
+                ),
+              ),
+              const RowDivider(),
+              /* List of selected chords */
+              Flexible(
+                flex: 3,
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    var chord = ctrlr.atIndex(index);
+                    return ListTile(
+                      title: Text(
+                        chord.name,
+                        style: const TextStyle(fontFamily: 'Noto Music'),
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.remove_circle_rounded),
+                        onPressed: () {
+                          ctrlr.deselect(chord.key, chord.suffixIndex);
+                        },
+                      ),
+                    );
+                  },
+                  itemCount: ctrlr.length(),
+                ),
+              ),
+              const RowDivider(),
+              /* List of presets */
+              Flexible(
+                flex: 4,
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      onTap: () => ctrlr.set(
+                          checkedChords:
+                              (_presetList[index].chordList).toList()),
+                      title: Text(_presetList[index].name),
+                    );
+                  },
+                  itemCount: _presetList.length,
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

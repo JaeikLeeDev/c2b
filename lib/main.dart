@@ -3,8 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:soundpool/soundpool.dart';
+import 'package:get/get.dart';
 
 import "utils/chord_table.dart";
 import "utils/preset_database.dart";
@@ -18,7 +20,7 @@ Future main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
-  // debugRepaintRainbowEnabled = true;
+  debugRepaintRainbowEnabled = true;
   // debugRepaintTextRainbowEnabled = true;
   runApp(const MyApp());
 }
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'C2B',
       theme: ThemeData(
