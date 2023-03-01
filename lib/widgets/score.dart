@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widget/bar.dart';
+import '../widgets/bar.dart';
 
 class Score extends StatelessWidget {
   final bool _chordConstructOn;

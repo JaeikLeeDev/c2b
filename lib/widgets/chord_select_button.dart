@@ -1,11 +1,12 @@
+
 import 'package:flutter/material.dart';
 
-import './chord_selection_screen.dart';
+import '../screens/chord_select_screen.dart';
 
-class ChordSetButton extends StatelessWidget {
+class ChordSelectButton extends StatelessWidget {
   final Function setChordTrainingSetCallback;
   final Function stopCallback;
-  const ChordSetButton(this.setChordTrainingSetCallback, this.stopCallback,
+  const ChordSelectButton(this.setChordTrainingSetCallback, this.stopCallback,
       {super.key});
 
   @override
@@ -29,7 +30,7 @@ class ChordSetButton extends StatelessWidget {
     // Future will be completed after Navigator.pop() is called
     final List<List<String>> result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const ChordSelectionScreen()),
+      MaterialPageRoute(builder: (context) => const ChordSelectScreen()),
     );
     setChordTrainingSetCallback(result);
   }

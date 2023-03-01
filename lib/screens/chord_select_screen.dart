@@ -7,14 +7,14 @@ import "../utils/chord_table.dart";
 import "../utils/preset_database.dart";
 import '../controllers/select_controller.dart';
 
-class ChordSelectionScreen extends StatefulWidget {
-  const ChordSelectionScreen({super.key});
+class ChordSelectScreen extends StatefulWidget {
+  const ChordSelectScreen({super.key});
 
   @override
-  State<ChordSelectionScreen> createState() => _ChordSelectionScreenState();
+  State<ChordSelectScreen> createState() => _ChordSelectScreenState();
 }
 
-class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
+class _ChordSelectScreenState extends State<ChordSelectScreen> {
   final SelectController _selectController = Get.find();
   int _selectedKeyIndex = 0;
   final _presetNameTextController = TextEditingController();
