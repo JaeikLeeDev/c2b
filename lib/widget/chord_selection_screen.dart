@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import "../models/chord.dart";
 import "../models/preset.dart";
 import "../utils/chord_table.dart";
 import "../utils/preset_database.dart";
-import "../controllers/selected_chords.dart";
+import '../controllers/select_controller.dart';
 
 class ChordSelectionScreen extends StatefulWidget {
   const ChordSelectionScreen({super.key});
@@ -16,7 +15,7 @@ class ChordSelectionScreen extends StatefulWidget {
 }
 
 class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
-  final _selectedController = Get.put(SelectedChords());
+  final SelectController _selectController = Get.find();
   int _selectedKeyIndex = 0;
   final _presetNameTextController = TextEditingController();
   List<Preset> _presetList = [];
@@ -24,7 +23,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
 
   //TODO: Remove or encapsulate
   void _reset() {
-    _selectedController.set();
+    _selectController.set();
     setState(() {
       _selectedKeyIndex = 0;
     });
@@ -38,7 +37,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
   void _saveAsPreset() async {
     await _db.saveAsPreset(
       _presetNameTextController.text,
-      _selectedController.list(),
+      _selectController.get(),
     );
     await _loadPresetList();
     _presetNameTextController.clear();
@@ -54,7 +53,6 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
   @override
   void initState() {
     _initPreset();
-    _selectedController.set();
     super.initState();
   }
 
@@ -71,7 +69,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
         actions: [
           /* Diatonic */
           TextButton(
-            onPressed: () => _selectedController.setDiatonic(_selectedKeyIndex),
+            onPressed: () => _selectController.setDiatonic(_selectedKeyIndex),
             child: const Text(
               'Diatonic',
               style: TextStyle(color: Colors.white),
@@ -92,7 +90,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   // Dialog - get preset name
-                  return _selectedController.isNotEmpty()
+                  return _selectController.isNotEmpty()
                       ? AlertDialog(
                           title: const Text('Save preset'),
                           content: TextFormField(
@@ -143,7 +141,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
           TextButton(
             onPressed: () {
               var trainingSet = [
-                ..._selectedController.list().map(
+                ..._selectController.get().map(
                   (chord) {
                     return [chord.name, chordNotesUtil(chord.toDecodedChord())];
                   },
@@ -158,8 +156,8 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
           ),
         ],
       ),
-      body: GetBuilder<SelectedChords>(
-        builder: (ctrlr) {
+      body: GetBuilder<SelectController>(
+        builder: (_) {
           return Row(
             // mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -194,12 +192,15 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                         style: const TextStyle(fontFamily: 'Noto Music'),
                       ),
                       leading: Checkbox(
-                          value: ctrlr.isCheckedAt(_selectedKeyIndex, index),
+                          value: _selectController.isCheckedAt(
+                              _selectedKeyIndex, index),
                           onChanged: (isSelected) {
                             if (isSelected!) {
-                              ctrlr.select(_selectedKeyIndex, index);
+                              _selectController.select(
+                                  _selectedKeyIndex, index);
                             } else {
-                              ctrlr.deselect(_selectedKeyIndex, index);
+                              _selectController.deselect(
+                                  _selectedKeyIndex, index);
                             }
                           }),
                     );
@@ -213,7 +214,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                 flex: 3,
                 child: ListView.builder(
                   itemBuilder: (context, index) {
-                    var chord = ctrlr.atIndex(index);
+                    var chord = _selectController.atIndex(index);
                     return ListTile(
                       title: Text(
                         chord.name,
@@ -222,12 +223,13 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                       trailing: IconButton(
                         icon: const Icon(Icons.remove_circle_rounded),
                         onPressed: () {
-                          ctrlr.deselect(chord.key, chord.suffixIndex);
+                          _selectController.deselect(
+                              chord.key, chord.suffixIndex);
                         },
                       ),
                     );
                   },
-                  itemCount: ctrlr.length(),
+                  itemCount: _selectController.length(),
                 ),
               ),
               const RowDivider(),
@@ -237,7 +239,7 @@ class _ChordSelectionScreenState extends State<ChordSelectionScreen> {
                 child: ListView.builder(
                   itemBuilder: (context, index) {
                     return ListTile(
-                      onTap: () => ctrlr.set(
+                      onTap: () => _selectController.set(
                           checkedChords:
                               (_presetList[index].chordList).toList()),
                       title: Text(_presetList[index].name),

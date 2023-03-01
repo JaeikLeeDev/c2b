@@ -13,6 +13,7 @@ import "utils/preset_database.dart";
 import 'widget/score.dart';
 import 'widget/beat_indicator.dart';
 import 'widget/chord_set_button.dart';
+import 'controllers/select_controller.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,6 +53,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final _selectController = Get.put(SelectController());
   final _presetDb = PresetDatabase();
   List<List<String>> _chordList = [];
   var rng = Random(DateTime.now().millisecond);

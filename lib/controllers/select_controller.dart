@@ -3,15 +3,21 @@ import 'package:get/get.dart';
 import "../models/chord.dart";
 import "../utils/chord_table.dart";
 
-class SelectedChords extends GetxController {
+class SelectController extends GetxController {
   List<Chord> _selected = [];
   List<List<bool>> _checked = [];
+
+  @override
+  void onInit() {
+    set();
+    super.onInit();
+  }
 
   Chord atIndex(int index) {
     return _selected[index];
   }
 
-  List<Chord> list() {
+  List<Chord> get() {
     return _selected;
   }
 
