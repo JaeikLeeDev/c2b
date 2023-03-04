@@ -2,14 +2,13 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-import 'package:soundpool/soundpool.dart';
 import 'package:get/get.dart';
 
 import '../controllers/select_controller.dart';
 import "../utils/chord_table.dart";
 import "../utils/preset_database.dart";
+import "../utils/metronome.dart";
 import '../widgets/score.dart';
 import '../widgets/beat_indicator.dart';
 import '../widgets/chord_select_button.dart';
@@ -29,39 +28,38 @@ class _HomeScreenState extends State<HomeScreen> {
   var rng = Random(DateTime.now().millisecond);
   final List<int> _randomChordIndexList = [];
 
-  final int _beatSet = 4;
-  final int _chordPerLine = 4;
+  double _bpm = 60.0;
+  int _beatsPerBar = 4; // Time siqnature top: the number of beats in a bar
+  int _chordPerPhrase = 4; // The number of chords(measures) per a phrase
+  int _meter = 1; // The number of divisions in one beat
+  int _divisionCounter = 0; // [0, _timeSignTop * _chordPerPhrase * _meter)
+  int _chordCounter = 0; // [0, _chordPerPhrase)
+
   late Timer _timer;
   bool _isTimerStarted = false;
-  double _bpm = 60.0;
-  var _chordCounter = 0;
-  int _beatCounter = 0;
-  bool _chordConstructOn = true;
-  double _beatVolume = 0.5;
+
+  bool _answerOn = true;
+  double _metronomeVolume = 0.5;
 
   // For sound
-  final _soundpoolOptions =
-      const SoundpoolOptions(streamType: StreamType.notification);
-  late Soundpool _pool;
-
-  int? _firstBeatStreamId;
-  int? _secondBeatStreamId;
-  late Future<int> _firstBeatSoundId;
-  late Future<int> _secondBeatSoundId;
+  final _metronome = Metronome();
 
   void _nextChord() {
     setState(() {
-      _chordCounter = (_chordCounter + 1) % 4;
+      _chordCounter = (_chordCounter + 1) % _chordPerPhrase;
     });
   }
 
   void _nextPhrase() {
     setState(() {
       _randomChordIndexList.replaceRange(
-          0, 3, _randomChordIndexList.sublist(4, 7));
+        0,
+        _chordPerPhrase - 1,
+        _randomChordIndexList.sublist(_chordPerPhrase, _chordPerPhrase * 2),
+      );
       _randomChordIndexList.replaceRange(
-        4,
-        7,
+        _chordPerPhrase,
+        _chordPerPhrase * 2,
         genRandChordIdxs(4),
       );
     });
@@ -74,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _chordList.clear();
       _chordList = [for (var value in chordTrainingSet) List.from(value)];
       _randomChordIndexList.clear();
-      _randomChordIndexList.addAll(genRandChordIdxs(8));
+      _randomChordIndexList.addAll(genRandChordIdxs(_chordPerPhrase * 2));
     });
   }
 
@@ -87,24 +85,29 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _startTimer() async {
-    _play1stBeat();
-    _timer =
-        Timer.periodic(Duration(milliseconds: (60 / _bpm * 1000).round()), (t) {
-      setState(() {
-        _beatCounter = (_beatCounter + 1) % (_beatSet * _chordPerLine);
-      });
-      if (_beatCounter % _beatSet == 0) {
-        // 1st beat
-        _play1stBeat();
-        _nextChord();
-      } else {
-        // 2nd, 3rd, 4th beat
-        _play2ndBeat();
-      }
-      if (_beatCounter == 0) {
-        _nextPhrase();
-      }
-    });
+    _metronome.playSoundB();
+    _timer = Timer.periodic(
+      Duration(
+        milliseconds: (60 / (_bpm * _meter) * 1000).round(),
+      ),
+      (timer) {
+        setState(() {
+          _divisionCounter = (_divisionCounter + 1) %
+              (_beatsPerBar * _chordPerPhrase * _meter);
+        });
+        if (_divisionCounter % (_beatsPerBar * _meter) == 0) {
+          // 1st beat
+          _metronome.playSoundB();
+          _nextChord();
+        } else {
+          // 2nd, 3rd, 4th beat
+          _metronome.playSoundA();
+        }
+        if (_divisionCounter == 0) {
+          _nextPhrase();
+        }
+      },
+    );
     setState(() {
       _isTimerStarted = true;
     });
@@ -114,57 +117,20 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_isTimerStarted) {
       _timer.cancel();
     }
-    await _stopBeat();
+    await _metronome.stopBeat();
     setState(() {
       _chordCounter = 0;
-      _beatCounter = 0;
+      _divisionCounter = 0;
       _isTimerStarted = false;
     });
-  }
-
-  Future<int> _loadSound(String filePath) async {
-    var asset = await rootBundle.load(filePath);
-    return await _pool.load(asset);
-  }
-
-  Future<void> _play1stBeat() async {
-    var firstBeatSound = await _firstBeatSoundId;
-    _pool.setVolume(soundId: firstBeatSound, volume: _beatVolume);
-    _firstBeatStreamId = await _pool.play(firstBeatSound);
-  }
-
-  Future<void> _play2ndBeat() async {
-    var secondBeatSound = await _secondBeatSoundId;
-    _pool.setVolume(soundId: secondBeatSound, volume: _beatVolume);
-    _secondBeatStreamId = await _pool.play(secondBeatSound);
-  }
-
-  Future<void> _stopBeat() async {
-    if (_firstBeatStreamId != null) {
-      await _pool.stop(_firstBeatStreamId!);
-    }
-    if (_secondBeatStreamId != null) {
-      await _pool.stop(_secondBeatStreamId!);
-    }
-  }
-
-  Future<void> _updateVolume(newVolume) async {
-    var firstBeatSound = await _firstBeatSoundId;
-    _pool.setVolume(soundId: firstBeatSound, volume: newVolume);
-    var secondBeatSound = await _secondBeatSoundId;
-    _pool.setVolume(soundId: secondBeatSound, volume: newVolume);
   }
 
   @override
   void initState() {
     _presetDb.init();
-    _pool = Soundpool.fromOptions(options: _soundpoolOptions);
-    _firstBeatSoundId = _loadSound("assets/audio/assets_tone_tone1_b.wav");
-    _secondBeatSoundId = _loadSound("assets/audio/assets_tone_tone1_a.wav");
-    _play1stBeat();
-    _play2ndBeat();
+    _metronome.init();
     _chordList.addAll(fMajorChordListUtil);
-    _randomChordIndexList.addAll(genRandChordIdxs(8));
+    _randomChordIndexList.addAll(genRandChordIdxs(_chordPerPhrase * 2));
     super.initState();
   }
 
@@ -201,27 +167,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       child: Slider(
-                        value: _beatVolume,
+                        value: _metronomeVolume,
                         min: 0.0,
                         max: 1.0,
                         divisions: 10,
-                        label: 'vol: ${_beatVolume.toStringAsFixed(1)}',
+                        label: 'vol: ${_metronomeVolume.toStringAsFixed(1)}',
                         onChanged: (beatVolume) {
                           setState(() {
-                            _beatVolume = beatVolume;
+                            _metronomeVolume = beatVolume;
                           });
-                          _updateVolume(_beatVolume);
+                          _metronome.updateVolume(_metronomeVolume);
                         },
                       ),
                     ),
                   ),
                   /* Show/Hide chord notes */
                   Switch.adaptive(
-                    value: _chordConstructOn,
+                    value: _answerOn,
                     activeColor: Colors.blue,
                     onChanged: (onOff) {
                       setState(() {
-                        _chordConstructOn = onOff;
+                        _answerOn = onOff;
                       });
                     },
                   ),
@@ -239,7 +205,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                   /* beat indicator */
                   BeatIndicator(
-                      currentBeat: (_beatCounter % _beatSet),
+                      currentBeat:
+                          ((_divisionCounter % (_beatsPerBar * _meter)) /
+                                  _meter)
+                              .floor(),
+                      beatsPerBar: _beatsPerBar,
                       radius: mq.size.width * 0.02),
                   /* bpm slider */
                   SizedBox(
@@ -261,10 +231,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Score(
-              _chordConstructOn,
+              _answerOn,
               chordList: _chordList,
               randomChordIndexList: _randomChordIndexList,
               chordCounter: _chordCounter,
+              chordPerPhrase: _chordPerPhrase,
             ),
           ],
         ),

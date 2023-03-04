@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 class BeatIndicator extends StatelessWidget {
   final int currentBeat;
+  final int beatsPerBar;
   final double radius;
 
   const BeatIndicator({
     required this.currentBeat,
     required this.radius,
+    required this.beatsPerBar,
     super.key,
   });
 
@@ -14,22 +16,11 @@ class BeatIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        BeatCircle(
-          isCurrentBeat: currentBeat == 0,
-          radius: radius,
-        ),
-        BeatCircle(
-          isCurrentBeat: currentBeat == 1,
-          radius: radius,
-        ),
-        BeatCircle(
-          isCurrentBeat: currentBeat == 2,
-          radius: radius,
-        ),
-        BeatCircle(
-          isCurrentBeat: currentBeat == 3,
-          radius: radius,
-        ),
+        for (int i = 0; i < beatsPerBar; i++)
+          BeatCircle(
+            isCurrentBeat: currentBeat == i,
+            radius: radius,
+          )
       ],
     );
   }
