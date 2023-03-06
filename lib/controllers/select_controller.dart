@@ -67,32 +67,41 @@ class SelectController extends GetxController {
   void setDiatonic() {
     select(_selectedKeyIndex, qualityIndexOf('M'));
     select(_selectedKeyIndex, qualityIndexOf('M7'));
-    select(_selectedKeyIndex + 1, qualityIndexOf('m'));
-    select(_selectedKeyIndex + 1, qualityIndexOf('m7'));
+    select(_selectedKeyIndex, qualityIndexOf('M9'));
     select(_selectedKeyIndex + 2, qualityIndexOf('m'));
     select(_selectedKeyIndex + 2, qualityIndexOf('m7'));
-    select(_selectedKeyIndex + 3, qualityIndexOf('M'));
-    select(_selectedKeyIndex + 3, qualityIndexOf('M7'));
-    select(_selectedKeyIndex + 4, qualityIndexOf('M'));
-    select(_selectedKeyIndex + 4, qualityIndexOf('7'));
-    select(_selectedKeyIndex + 4, qualityIndexOf('sus4'));
-    select(_selectedKeyIndex + 4, qualityIndexOf('7sus4'));
-    select(_selectedKeyIndex + 5, qualityIndexOf('m'));
-    select(_selectedKeyIndex + 5, qualityIndexOf('m7'));
-    select(_selectedKeyIndex + 6, qualityIndexOf('dim'));
-    select(_selectedKeyIndex + 6, qualityIndexOf('m7♭5'));
+    select(_selectedKeyIndex + 2, qualityIndexOf('m9'));
+    select(_selectedKeyIndex + 4, qualityIndexOf('m'));
+    select(_selectedKeyIndex + 4, qualityIndexOf('m7'));
+    select(_selectedKeyIndex + 4, qualityIndexOf('m7♭9'));
+    select(_selectedKeyIndex + 5, qualityIndexOf('M'));
+    select(_selectedKeyIndex + 5, qualityIndexOf('M7'));
+    select(_selectedKeyIndex + 5, qualityIndexOf('M9'));
+    select(_selectedKeyIndex + 7, qualityIndexOf('M'));
+    select(_selectedKeyIndex + 7, qualityIndexOf('7'));
+    select(_selectedKeyIndex + 7, qualityIndexOf('9'));
+    select(_selectedKeyIndex + 7, qualityIndexOf('sus4'));
+    select(_selectedKeyIndex + 7, qualityIndexOf('7sus4'));
+    select(_selectedKeyIndex + 7, qualityIndexOf('9sus4'));
+    select(_selectedKeyIndex + 9, qualityIndexOf('m'));
+    select(_selectedKeyIndex + 9, qualityIndexOf('m7'));
+    select(_selectedKeyIndex + 9, qualityIndexOf('m9'));
+    select(_selectedKeyIndex + 11, qualityIndexOf('dim'));
+    select(_selectedKeyIndex + 11, qualityIndexOf('m7♭5'));
+    select(_selectedKeyIndex + 11, qualityIndexOf('m7♭9♭5'));
     update();
   }
 
   void select(int rootIndex, int qualityIndex) {
-    if (_checked[rootIndex][qualityIndex] == true) return;
+    int rootIndexBounded = rootIndex % 12;
+    if (_checked[rootIndexBounded][qualityIndex] == true) return;
     /* TODO:
      * Remove input manipulation (converting to be within range 0~11) from high level function.
      * Move to wrapper implementation not to make user care of it.
      */
-    _checked[rootIndex % 12][qualityIndex] = true;
+    _checked[rootIndexBounded][qualityIndex] = true;
     _selected.add(Chord(
-      rootIndex: rootIndex,
+      rootIndex: rootIndexBounded,
       qualityIndex: qualityIndex,
     ));
     update();
