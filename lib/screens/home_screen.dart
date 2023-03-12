@@ -216,9 +216,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: mq.size.width * 0.2,
                     child: Slider(
                       value: _bpm,
-                      min: 40,
+                      min: 20,
                       max: 180,
-                      divisions: 280,
+                      divisions: 160,
                       label: '${_bpm.toStringAsFixed(1)}bpm',
                       onChanged: (bpm) {
                         setState(() {
