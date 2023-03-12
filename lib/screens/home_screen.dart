@@ -39,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isTimerStarted = false;
 
   bool _answerOn = true;
-  double _metronomeVolume = 0.5;
 
   // For sound
   final _metronome = Metronome();
@@ -167,16 +166,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       child: Slider(
-                        value: _metronomeVolume,
+                        value: _metronome.volume,
                         min: 0.0,
                         max: 1.0,
                         divisions: 10,
-                        label: 'vol: ${_metronomeVolume.toStringAsFixed(1)}',
-                        onChanged: (beatVolume) {
+                        label: 'vol: ${_metronome.volume.toStringAsFixed(1)}',
+                        onChanged: (newVolume) {
                           setState(() {
-                            _metronomeVolume = beatVolume;
+                            _metronome.updateVolume(newVolume);
                           });
-                          _metronome.updateVolume(_metronomeVolume);
                         },
                       ),
                     ),
