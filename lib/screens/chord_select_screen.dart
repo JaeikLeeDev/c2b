@@ -71,11 +71,13 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
           /* Key */
           DropdownButton(
             value: _selectController.getKeyIndex(),
-            items: keyListUtil.map((value) {
+            items: keyListUtil.map((keyStr) {
+              var keyIndex = keyIndexUtil(keyStr);
+              var relativeKeyStr = keyListUtil[(keyIndex + 9) % 12];
               return DropdownMenuItem(
-                value: keyIndexUtil(value),
+                value: keyIndexUtil(keyStr),
                 child: Text(
-                  value,
+                  '${keyStr}M(${relativeKeyStr}m)',
                   style: const TextStyle(
                     fontFamily: 'Noto Music',
                   ),
