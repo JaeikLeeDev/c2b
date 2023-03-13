@@ -39,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isTimerStarted = false;
 
   bool _answerOn = true;
+  bool _repeatOn = false;
 
   // For sound
   final _metronome = Metronome();
@@ -102,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // 2nd, 3rd, 4th beat
           _metronome.playSoundA();
         }
-        if (_divisionCounter == 0) {
+        if (_divisionCounter == 0 && _repeatOn == false) {
           _nextPhrase();
         }
       },
@@ -169,8 +170,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         value: _metronome.volume,
                         min: 0.0,
                         max: 1.0,
-                        divisions: 10,
-                        label: 'vol: ${_metronome.volume.toStringAsFixed(1)}',
+                        divisions: 20,
+                        label:
+                            'vol: ${(_metronome.volume * 100).toStringAsFixed(0)}',
                         onChanged: (newVolume) {
                           setState(() {
                             _metronome.updateVolume(newVolume);
@@ -180,14 +182,39 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   /* Show/Hide chord notes */
-                  Switch.adaptive(
-                    value: _answerOn,
-                    activeColor: Colors.blue,
-                    onChanged: (onOff) {
-                      setState(() {
-                        _answerOn = onOff;
-                      });
-                    },
+                  Column(
+                    children: [
+                      Switch.adaptive(
+                        value: _answerOn,
+                        activeColor: Colors.blue,
+                        onChanged: (onOff) {
+                          setState(() {
+                            _answerOn = onOff;
+                          });
+                        },
+                      ),
+                      Text(
+                        "Answer",
+                        style: TextStyle(fontSize: mq.size.width * 0.015),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Switch.adaptive(
+                        value: _repeatOn,
+                        activeColor: Colors.blue,
+                        onChanged: (onOff) {
+                          setState(() {
+                            _repeatOn = onOff;
+                          });
+                        },
+                      ),
+                      Text(
+                        "Repeat",
+                        style: TextStyle(fontSize: mq.size.width * 0.015),
+                      ),
+                    ],
                   ),
                   /* Go to chord selection screen */
                   ChordSelectButton(_setChordTrainingSet, _stop),
