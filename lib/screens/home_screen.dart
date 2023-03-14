@@ -84,6 +84,28 @@ class _HomeScreenState extends State<HomeScreen> {
     return randomChords;
   }
 
+  void _shuffle() {
+    if (_repeatOn) {
+      var phrase = _randomChordIndexList.sublist(0, _chordPerPhrase);
+      phrase.shuffle();
+      setState(() {
+        _randomChordIndexList.replaceRange(
+          0,
+          _chordPerPhrase,
+          phrase,
+        );
+      });
+    } else {
+      setState(() {
+        _randomChordIndexList.replaceRange(
+          0,
+          _chordPerPhrase * 2,
+          genRandChordIdxs(8),
+        );
+      });
+    }
+  }
+
   Future<void> _startTimer() async {
     _metronome.playSoundB();
     _timer = Timer.periodic(
@@ -180,6 +202,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
                     ),
+                  ),
+                  /* shuffle */
+                  ElevatedButton(
+                    onPressed: _shuffle,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 0, horizontal: 5),
+                      minimumSize: const Size(36, 36),
+                      fixedSize: const Size(50, 36),
+                    ),
+                    child: const Icon(Icons.shuffle),
                   ),
                   /* Show/Hide chord notes */
                   Column(
