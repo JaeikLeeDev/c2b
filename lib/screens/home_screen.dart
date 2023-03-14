@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _randomChordIndexList.replaceRange(
         0,
-        _chordPerPhrase - 1,
+        _chordPerPhrase,
         _randomChordIndexList.sublist(_chordPerPhrase, _chordPerPhrase * 2),
       );
       _randomChordIndexList.replaceRange(
