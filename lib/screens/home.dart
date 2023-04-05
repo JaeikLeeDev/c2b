@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:c2b/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:get/get.dart';
 
@@ -37,9 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late Timer _timer;
   bool _isTimerStarted = false;
-
-  bool _answerOn = true;
-  bool _repeatOn = false;
+  List<bool> _onOffOptions = [true, false];
 
   // For sound
   final _metronome = Metronome();
@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _shuffle() {
-    if (_repeatOn) {
+    if (_onOffOptions[1]) {
       var phrase = _randomChordIndexList.sublist(0, _chordPerPhrase);
       phrase.shuffle();
       setState(() {
@@ -125,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // 2nd, 3rd, 4th beat
           _metronome.playSoundA();
         }
-        if (_divisionCounter == 0 && _repeatOn == false) {
+        if (_divisionCounter == 0 && _onOffOptions[1] == false) {
           _nextPhrase();
         }
       },
@@ -149,6 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     _presetDb.init();
     _metronome.init();
     _chordList.addAll(fMajorChordListUtil);
@@ -160,6 +161,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _presetDb.closeDb();
     super.dispose();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
   }
 
   @override
@@ -181,26 +184,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   /* volume slider */
                   SizedBox(
                     width: mq.size.width * 0.17,
-                    child: SliderTheme(
-                      data: SliderTheme.of(context).copyWith(
-                        thumbShape: const RoundSliderThumbShape(
-                          // enabledThumbRadius: 10.0,
-                          pressedElevation: 8.0,
-                        ),
-                      ),
-                      child: Slider(
-                        value: _metronome.volume,
-                        min: 0.0,
-                        max: 1.0,
-                        divisions: 20,
-                        label:
-                            'vol: ${(_metronome.volume * 100).toStringAsFixed(0)}',
-                        onChanged: (newVolume) {
-                          setState(() {
-                            _metronome.updateVolume(newVolume);
-                          });
-                        },
-                      ),
+                    child: Slider(
+                      value: _metronome.volume,
+                      min: 0.0,
+                      max: 1.0,
+                      divisions: 20,
+                      label:
+                          'vol: ${(_metronome.volume * 100).toStringAsFixed(0)}',
+                      onChanged: (newVolume) {
+                        setState(() {
+                          _metronome.updateVolume(newVolume);
+                        });
+                      },
+                      activeColor: AppColors.primary,
                     ),
                   ),
                   /* shuffle */
@@ -208,40 +204,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: _shuffle,
                     child: const Icon(Icons.shuffle),
                   ),
-                  /* Show/Hide chord notes */
-                  Column(
+                  /* ON/OFF options */
+                  ToggleButtons(
                     children: [
-                      Switch.adaptive(
-                        value: _answerOn,
-                        activeColor: Colors.blue,
-                        onChanged: (onOff) {
-                          setState(() {
-                            _answerOn = onOff;
-                          });
-                        },
-                      ),
-                      Text(
-                        "Answer",
-                        style: TextStyle(fontSize: mq.size.width * 0.015),
-                      ),
+                      Icon(Icons.abc), // Show/Hide chord notes
+                      Icon(Icons.repeat), // ON/OFF interval repetition
                     ],
-                  ),
-                  Column(
-                    children: [
-                      Switch.adaptive(
-                        value: _repeatOn,
-                        activeColor: Colors.blue,
-                        onChanged: (onOff) {
-                          setState(() {
-                            _repeatOn = onOff;
-                          });
-                        },
-                      ),
-                      Text(
-                        "Repeat",
-                        style: TextStyle(fontSize: mq.size.width * 0.015),
-                      ),
-                    ],
+                    isSelected: _onOffOptions,
+                    onPressed: (int index) {
+                      setState(() {
+                        _onOffOptions[index] = !_onOffOptions[index];
+                      });
+                    },
                   ),
                   /* Go to chord selection screen */
                   ChordSelectButton(_setChordTrainingSet, _stop),
@@ -277,13 +251,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           _bpm = bpm;
                         });
                       },
+                      activeColor: AppColors.primary,
                     ),
                   ),
                 ],
               ),
             ),
             Score(
-              _answerOn,
+              _onOffOptions[0],
               chordList: _chordList,
               randomChordIndexList: _randomChordIndexList,
               chordCounter: _chordCounter,

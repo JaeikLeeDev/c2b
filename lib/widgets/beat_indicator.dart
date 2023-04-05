@@ -1,3 +1,4 @@
+import 'package:c2b/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class BeatIndicator extends StatelessWidget {
@@ -38,14 +39,14 @@ class BeatCircle extends StatelessWidget {
         ? Padding(
             padding: const EdgeInsets.all(2.0),
             child: CircleAvatar(
-              backgroundColor: Colors.orange,
+              backgroundColor: AppColors.secondary,
               radius: radius,
             ),
           )
         : Padding(
             padding: const EdgeInsets.all(2.0),
             child: CircleAvatar(
-              backgroundColor: Colors.blue,
+              backgroundColor: AppColors.primary,
               radius: radius * 0.9,
             ),
           );

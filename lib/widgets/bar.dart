@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:c2b/theme/app_colors.dart';
+
 class Bar extends StatelessWidget {
   final List<String> chord;
   final bool isCur;
@@ -28,7 +30,7 @@ class Bar extends StatelessWidget {
           border: Border(
             left: BorderSide(
               color: Colors.black,
-              width: 3.0,
+              width: 1.0,
             ),
           ),
         ),
@@ -39,7 +41,7 @@ class Bar extends StatelessWidget {
               style: TextStyle(
                   fontFamily: 'Noto Music',
                   fontSize: screenSize.width * 0.033,
-                  color: isCur ? Colors.blue : Colors.black),
+                  color: isCur ? AppColors.primary : Colors.black),
             ),
             const SizedBox(height: 10),
             if (_chordConstructOn == true)
@@ -48,7 +50,7 @@ class Bar extends StatelessWidget {
                 style: TextStyle(
                     fontFamily: 'Noto Music',
                     fontSize: screenSize.width * 0.025,
-                    color: isCur ? Colors.blue : Colors.black),
+                    color: isCur ? AppColors.primary : Colors.black),
               ),
           ],
         ),
