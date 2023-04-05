@@ -18,17 +18,12 @@ class Bar extends StatelessWidget {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     return Container(
-      height: screenSize.height * 0.33,
-      width: screenSize.width * 0.25,
-      padding: const EdgeInsets.all(10.0),
+      height: screenSize.height * 0.30,
+      width: screenSize.width * 0.24,
       child: Container(
         decoration: const BoxDecoration(
           border: Border(
             left: BorderSide(
-              color: Colors.black,
-              width: 1.0,
-            ),
-            right: BorderSide(
               color: Colors.black,
               width: 1.0,
             ),
@@ -41,7 +36,7 @@ class Bar extends StatelessWidget {
               chord[0],
               style: TextStyle(
                   fontFamily: 'Noto Music',
-                  fontSize: screenSize.width * 0.033,
+                  fontSize: screenSize.width * 0.038,
                   color: isCur ? AppColors.primary : Colors.black),
             ),
             const SizedBox(height: 10),
@@ -50,7 +45,7 @@ class Bar extends StatelessWidget {
                 chord[1],
                 style: TextStyle(
                     fontFamily: 'Noto Music',
-                    fontSize: screenSize.width * 0.025,
+                    fontSize: screenSize.width * 0.028,
                     color: isCur ? AppColors.primary : Colors.black),
               ),
           ],
