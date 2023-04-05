@@ -22,19 +22,20 @@ class Bar extends StatelessWidget {
       width: screenSize.width * 0.25,
       padding: const EdgeInsets.all(10.0),
       child: Container(
-        padding: EdgeInsets.symmetric(
-          vertical: screenSize.height * 0.03,
-          horizontal: screenSize.width * 0.01,
-        ),
         decoration: const BoxDecoration(
           border: Border(
             left: BorderSide(
               color: Colors.black,
               width: 1.0,
             ),
+            right: BorderSide(
+              color: Colors.black,
+              width: 1.0,
+            ),
           ),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               chord[0],
