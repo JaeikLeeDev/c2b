@@ -206,12 +206,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   /* shuffle */
                   ElevatedButton(
                     onPressed: _shuffle,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 0, horizontal: 5),
-                      minimumSize: const Size(36, 36),
-                      fixedSize: const Size(50, 36),
-                    ),
                     child: const Icon(Icons.shuffle),
                   ),
                   /* Show/Hide chord notes */
