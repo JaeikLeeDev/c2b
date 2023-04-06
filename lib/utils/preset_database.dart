@@ -15,8 +15,10 @@ class PresetDatabase {
   bool _isInit = false;
   final String _tableName = 'Presets';
   final String _dbName = 'c2b_jaeiklee_chord_presets.db';
-  late final String _databasesPath;
-  late Database _chordPresetDb;
+  final String _schema =
+      '(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, chords TEXT)';
+  late final String _path;
+  late Database _db;
 
   Future<void> init() async {
     await getDbPath();
@@ -27,18 +29,17 @@ class PresetDatabase {
   Future<void> getDbPath() async {
     if (_isInit) return;
     var path = await getDatabasesPath();
-    _databasesPath = join(path, _dbName);
+    _path = join(path, _dbName);
   }
 
   Future<void> openDb() async {
     if (_isOpened) return;
 
-    _chordPresetDb = await openDatabase(
-      _databasesPath,
+    _db = await openDatabase(
+      _path,
       version: 1,
       onCreate: (Database db, int version) async {
-        await db.execute(
-            'CREATE TABLE $_tableName (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, chords TEXT)');
+        await db.execute('CREATE TABLE $_tableName $_schema');
       },
     );
     _isOpened = true;
@@ -48,21 +49,21 @@ class PresetDatabase {
   // but only in the top node of the widget tree
   // since PresetDatabase is singleton.
   Future<void> closeDb() async {
-    if (_isOpened) return;
+    if (!_isOpened) return;
 
-    await _chordPresetDb.close();
+    await _db.close();
     _isOpened = false;
   }
 
   Future<void> cleanUpDb() async {
     await closeDb();
-    await deleteDatabase(_databasesPath);
+    await deleteDatabase(_path);
     await openDb();
   }
 
   Future<void> saveAsPreset(String presetName, List<Chord> chords) async {
     final encodedPreset = _encode(chords);
-    await _chordPresetDb.transaction((txn) async {
+    await _db.transaction((txn) async {
       var id = await txn.rawInsert(
         'INSERT INTO $_tableName(name, chords) VALUES(?, ?)',
         [presetName, encodedPreset],
@@ -71,7 +72,7 @@ class PresetDatabase {
   }
 
   Future<void> deletePreset(int id) async {
-    await _chordPresetDb.delete(
+    await _db.delete(
       _tableName,
       where: 'id = ?',
       whereArgs: [id],
@@ -79,8 +80,7 @@ class PresetDatabase {
   }
 
   Future<List<Preset>> getPresetList() async {
-    final presetList =
-        await _chordPresetDb.rawQuery('SELECT * FROM $_tableName');
+    final presetList = await _db.rawQuery('SELECT * FROM $_tableName');
 
     return List.generate(presetList.length, (index) {
       var id = presetList[index]['id'] as int;
