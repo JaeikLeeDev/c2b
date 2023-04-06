@@ -6,6 +6,8 @@ import "../models/preset.dart";
 import "../utils/chord_table.dart";
 import "../utils/preset_database.dart";
 import '../controllers/select_controller.dart';
+import 'package:c2b/theme/app_colors.dart';
+import 'package:c2b/theme/app_text_styles.dart';
 
 class ChordSelectScreen extends StatefulWidget {
   const ChordSelectScreen({super.key});
@@ -64,12 +66,26 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
+
+    var title2Style =
+        AppTextStyle.title2.copyWith(fontSize: screenWidth * 0.024);
+    var listItemStyle =
+        AppTextStyle.button1.copyWith(fontSize: screenWidth * 0.023);
+    var selectorStyle =
+        AppTextStyle.button1.copyWith(fontSize: screenWidth * 0.024);
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        actions: [
-          /* Key */
-          DropdownButton(
+        leadingWidth: screenWidth * 0.21,
+        /* Set key */
+        leading: Padding(
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
+          child: DropdownButton(
+            alignment: AlignmentDirectional.center,
+            iconEnabledColor: Colors.white,
             value: _selectController.getKeyIndex(),
             items: keyListUtil.map((keyStr) {
               var keyIndex = keyIndexUtil(keyStr);
@@ -78,9 +94,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                 value: keyIndexUtil(keyStr),
                 child: Text(
                   '${keyStr}M(${relativeKeyStr}m)',
-                  style: const TextStyle(
-                    fontFamily: 'Noto Music',
-                  ),
+                  style: title2Style.copyWith(color: Colors.black),
                 ),
               );
             }).toList(),
@@ -90,21 +104,17 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
               });
             },
           ),
+        ),
+        actions: [
           /* Diatonic */
           TextButton(
             onPressed: () => _selectController.setDiatonic(),
-            child: const Text(
-              'Diatonic',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: Text('Diatonic', style: title2Style),
           ),
           /* Reset */
           TextButton(
             onPressed: _reset,
-            child: const Text(
-              'Reset',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: Text('Reset', style: title2Style),
           ),
           /* Save Preset */
           TextButton(
@@ -144,10 +154,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                 },
               )
             },
-            child: const Text(
-              "Save Preset",
-              style: TextStyle(color: Colors.white),
-            ),
+            child: Text("Save Preset", style: title2Style),
           ),
           /* clean up db */
           TextButton(
@@ -155,10 +162,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
               await _db.cleanUpDb();
               _reset();
             },
-            child: const Text(
-              'cleanUpDb',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: Text('cleanUpDb', style: title2Style),
           ),
           /* Done */
           TextButton(
@@ -172,10 +176,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
               ];
               Navigator.pop(context, trainingSet);
             },
-            child: const Text(
-              'Done',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: Text('Done', style: title2Style),
           ),
         ],
       ),
@@ -195,8 +196,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                       }),
                       child: Text(
                         rootStringUtil(_selectController.getKeyIndex(), index),
-                        style: const TextStyle(
-                            fontFamily: 'Noto Music', fontSize: 18),
+                        style: selectorStyle,
                       ),
                     );
                   },
@@ -209,23 +209,31 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                 flex: 4,
                 child: ListView.builder(
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(
-                        '${rootStringUtil(_selectController.getKeyIndex(), _selectedRootIndex)}${qualityToStringUtil(index)}',
-                        style: const TextStyle(fontFamily: 'Noto Music'),
-                      ),
-                      leading: Checkbox(
-                          value: _selectController.isCheckedAt(
-                              _selectedRootIndex, index),
-                          onChanged: (isSelected) {
-                            if (isSelected!) {
-                              _selectController.select(
-                                  _selectedRootIndex, index);
-                            } else {
-                              _selectController.deselect(
-                                  _selectedRootIndex, index);
-                            }
-                          }),
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Transform.scale(
+                          scale: 0.8,
+                          child: Checkbox(
+                            value: _selectController.isCheckedAt(
+                                _selectedRootIndex, index),
+                            onChanged: (isSelected) {
+                              if (isSelected!) {
+                                _selectController.select(
+                                    _selectedRootIndex, index);
+                              } else {
+                                _selectController.deselect(
+                                    _selectedRootIndex, index);
+                              }
+                            },
+                            activeColor: AppColors.secondary,
+                          ),
+                        ),
+                        Text(
+                          '${rootStringUtil(_selectController.getKeyIndex(), _selectedRootIndex)}${qualityToStringUtil(index)}',
+                          style: listItemStyle,
+                        ),
+                      ],
                     );
                   },
                   itemCount: qualityUtil.length,
@@ -238,18 +246,26 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                 child: ListView.builder(
                   itemBuilder: (context, index) {
                     var chord = _selectController.atIndex(index);
-                    return ListTile(
-                      title: Text(
-                        chord.name(),
-                        style: const TextStyle(fontFamily: 'Noto Music'),
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.remove_circle_rounded),
-                        onPressed: () {
-                          _selectController.deselect(
-                              chord.rootIndex, chord.qualityIndex);
-                        },
-                      ),
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          chord.name(),
+                          style: listItemStyle,
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.remove_circle_rounded,
+                            size: screenWidth * 0.03,
+                          ),
+                          onPressed: () {
+                            _selectController.deselect(
+                                chord.rootIndex, chord.qualityIndex);
+                          },
+                          color: AppColors.secondary,
+                        ),
+                      ],
                     );
                   },
                   itemCount: _selectController.length(),
@@ -282,36 +298,39 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                                   content:
                                       Text('Delete preset "${preset.name}"?'),
                                   actions: <Widget>[
-                                    ElevatedButton(
+                                    TextButton(
                                       onPressed: () {
                                         return Navigator.of(context).pop(false);
                                       },
-                                      child: const Text('CANCEL'),
+                                      child: const Text('NO'),
                                     ),
-                                    ElevatedButton(
+                                    TextButton(
                                       onPressed: () {
                                         return Navigator.of(context).pop(true);
                                       },
-                                      child: const Text('DELETE'),
-                                    ),
+                                      child: const Text('YES'),
+                                    )
                                   ],
                                 );
                               }).then((value) => Future.value(value));
                         },
                         background: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 15.0,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.03,
                           ),
                           alignment: Alignment.centerRight,
-                          color: Colors.red,
-                          child: const Icon(Icons.delete),
+                          color: AppColors.secondary,
+                          child: const Icon(
+                            Icons.delete,
+                          ),
                         ),
-                        child: ListTile(
-                          onTap: () => _selectController.set(
+                        child: TextButton(
+                          onPressed: () => _selectController.set(
                               checkedChords: (preset.chordList).toList()),
-                          title: Text(
+                          child: Text(
                             preset.name,
                             overflow: TextOverflow.ellipsis,
+                            style: selectorStyle,
                           ),
                         ),
                       );

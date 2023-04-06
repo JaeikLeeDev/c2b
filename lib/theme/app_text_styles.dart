@@ -19,10 +19,13 @@ class AppTextStyle {
     height: 29 / 20,
   );
 
+  // AppBar menuItem
   static TextStyle title2 = const TextStyle(
-    fontWeight: FontWeight.w700,
-    fontSize: 18,
-    height: 26 / 18,
+    fontFamily: 'Noto Music',
+    color: Colors.white,
+    fontWeight: FontWeight.w500,
+    fontSize: 15,
+    height: 15 / 15,
   );
 
   static TextStyle subtitle1 = const TextStyle(
@@ -49,10 +52,12 @@ class AppTextStyle {
     height: 20 / 14,
   );
 
+  // For items with chord notation
   static TextStyle button1 = const TextStyle(
-    fontWeight: FontWeight.w400,
-    fontSize: 14,
-    height: 20 / 14,
+    fontWeight: FontWeight.w500,
+    fontFamily: 'Noto Music',
+    fontSize: 16,
+    height: 18 / 18,
   );
 
   static TextStyle button2 = const TextStyle(
