@@ -17,7 +17,7 @@ class ChordSelectScreen extends StatefulWidget {
 }
 
 class _ChordSelectScreenState extends State<ChordSelectScreen> {
-  final SelectController _selectController = Get.find();
+  final _selectController = Get.put(SelectController());
 
   int _selectedRootIndex = 0;
   final _presetNameTextController = TextEditingController();
@@ -78,34 +78,36 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leadingWidth: screenWidth * 0.21,
-        /* Set key */
-        leading: Padding(
-          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
-          child: DropdownButton(
-            alignment: AlignmentDirectional.center,
-            iconEnabledColor: Colors.white,
-            value: _selectController.getKeyIndex(),
-            items: keyListUtil.map((keyStr) {
-              var keyIndex = keyIndexUtil(keyStr);
-              var relativeKeyStr = keyListUtil[(keyIndex + 9) % 12];
-              return DropdownMenuItem(
-                value: keyIndexUtil(keyStr),
-                child: Text(
-                  '${keyStr}M(${relativeKeyStr}m)',
-                  style: title2Style.copyWith(color: Colors.black),
-                ),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectController.setKeyIndex(value!);
-              });
-            },
-          ),
-        ),
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Icons.arrow_back)),
         actions: [
+          /* Set key */
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
+            child: DropdownButton(
+              alignment: AlignmentDirectional.center,
+              iconEnabledColor: Colors.white,
+              value: _selectController.getKeyIndex(),
+              items: keyListUtil.map((keyStr) {
+                var keyIndex = keyIndexUtil(keyStr);
+                var relativeKeyStr = keyListUtil[(keyIndex + 9) % 12];
+                return DropdownMenuItem(
+                  value: keyIndexUtil(keyStr),
+                  child: Text(
+                    '${keyStr}M(${relativeKeyStr}m)',
+                    style: title2Style.copyWith(color: Colors.black),
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectController.setKeyIndex(value!);
+                });
+              },
+            ),
+          ),
           /* Diatonic */
           TextButton(
             onPressed: () => _selectController.setDiatonic(),
@@ -167,14 +169,8 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
           /* Done */
           TextButton(
             onPressed: () {
-              var trainingSet = [
-                ..._selectController.get().map(
-                  (chord) {
-                    return [chord.name(), chordNotesUtil(chord)];
-                  },
-                )
-              ];
-              Navigator.pop(context, trainingSet);
+              _selectController.setChordList();
+              Get.toNamed('/training');
             },
             child: Text('Done', style: title2Style),
           ),

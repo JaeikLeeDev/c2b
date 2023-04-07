@@ -7,6 +7,7 @@ class SelectController extends GetxController {
   int _selectedKeyIndex = 0;
   List<Chord> _selected = [];
   List<List<bool>> _checked = [];
+  List<List<String>> chordList = [];
 
   @override
   void onInit() {
@@ -16,6 +17,10 @@ class SelectController extends GetxController {
 
   Chord atIndex(int index) {
     return _selected[index];
+  }
+
+  List<List<String>> getTrainingList() {
+    return chordList;
   }
 
   List<Chord> get() {
@@ -62,6 +67,22 @@ class SelectController extends GetxController {
       select(chord.rootIndex, chord.qualityIndex);
     }
     update();
+  }
+
+  void setChordList() {
+    var curSelected = [
+      ...get().map(
+        (chord) {
+          return [chord.name(), chordNotesUtil(chord)];
+        },
+      )
+    ];
+    // Do nothing if user selected nothing
+    if (curSelected.isEmpty) return;
+
+    // If user selected more than one, replace the list of the chord with that
+    chordList.clear();
+    chordList = [for (var value in chordList) List.from(value)];
   }
 
   void setDiatonic() {
