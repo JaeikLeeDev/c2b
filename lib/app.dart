@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
+import '../controllers/select_controller.dart';
+
 import 'package:c2b/theme/app_theme.dart';
 import 'screens/home.dart';
 import 'screens/chord_select.dart';
@@ -10,7 +12,9 @@ import 'screens/chord_lookup.dart';
 import 'screens/settings.dart';
 
 class C2bApp extends StatelessWidget {
-  const C2bApp({super.key});
+  C2bApp({super.key});
+
+  final _selectController = Get.put(SelectController());
 
   @override
   Widget build(BuildContext context) {

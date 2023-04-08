@@ -14,9 +14,16 @@ class HomeScreen extends StatelessWidget {
         children: [
           TextButton(
             onPressed: () => Get.toNamed('/chord_select'),
-            child: Text('Chord Training'),
+            child: const Text('Chord Training'),
           ),
-          TextButton(onPressed: () => {}, child: Text('Chord Table')),
+          TextButton(
+            onPressed: () => Get.toNamed('/chord_lookup'),
+            child: const Text('Chord Table'),
+          ),
+          TextButton(
+            onPressed: () => Get.toNamed('/settings'),
+            child: const Text('Settings'),
+          ),
         ],
       ),
     );

@@ -17,7 +17,7 @@ class ChordSelectScreen extends StatefulWidget {
 }
 
 class _ChordSelectScreenState extends State<ChordSelectScreen> {
-  final _selectController = Get.put(SelectController());
+  final SelectController _selectController = Get.find();
 
   int _selectedRootIndex = 0;
   final _presetNameTextController = TextEditingController();
@@ -40,7 +40,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
   void _saveAsPreset() async {
     await _db.saveAsPreset(
       _presetNameTextController.text,
-      _selectController.get(),
+      _selectController.getSelected(),
     );
     await _loadPresetList();
     _presetNameTextController.clear();
@@ -161,8 +161,18 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
           /* Done */
           TextButton(
             onPressed: () {
-              _selectController.setChordList();
-              Get.toNamed('/training');
+              if (_selectController.setTraining()) {
+                Get.offNamed('/training');
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (ctx) {
+                    return const AlertDialog(
+                      content: Text("No chord selected"),
+                    );
+                  },
+                );
+              }
             },
             child: Text('Done', style: title2Style),
           ),
