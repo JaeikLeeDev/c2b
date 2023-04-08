@@ -8,6 +8,7 @@ class Metronome {
     return _instance;
   }
 
+  bool _isInit = false;
   final _soundpoolOptions =
       const SoundpoolOptions(streamType: StreamType.notification);
   late Soundpool _pool;
@@ -26,11 +27,13 @@ class Metronome {
   }
 
   void init() {
+    if (_isInit) return;
     _pool = Soundpool.fromOptions(options: _soundpoolOptions);
     _soundBId = _loadSound("assets/audio/assets_tone_tone1_b.wav");
     _soundAId = _loadSound("assets/audio/assets_tone_tone1_a.wav");
     playSoundB();
     playSoundA();
+    _isInit = true;
   }
 
   Future<void> playSoundB() async {

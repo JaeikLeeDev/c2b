@@ -14,5 +14,5 @@ Future main() async {
   ]);
   // debugRepaintRainbowEnabled = true;
   // debugRepaintTextRainbowEnabled = true;
-  runApp(const C2bApp());
+  runApp(C2bApp());
 }

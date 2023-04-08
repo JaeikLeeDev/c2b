@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
-import '../widgets/bar.dart';
+import 'package:get/get.dart';
+
+import '../controllers/select_controller.dart';
+import 'bar.dart';
 
 class Score extends StatelessWidget {
-  final bool _chordConstructOn;
-  final List<List<String>> chordList;
-  final List<int> randomChordIndexList;
-  final int chordCounter;
-  final int chordPerPhrase;
-
-  const Score(this._chordConstructOn,
-      {required this.chordList,
-      required this.randomChordIndexList,
+  Score(this._chordConstructOn,
+      {required this.randomChordIndexList,
       required this.chordCounter,
       required this.chordPerPhrase,
       super.key});
+
+  final bool _chordConstructOn;
+  final List<int> randomChordIndexList;
+  final int chordCounter;
+  final int chordPerPhrase;
+  final SelectController _selectController = Get.find();
+  late final List<List<String>> chordList;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +33,8 @@ class Score extends StatelessWidget {
               for (int i = 0; i < chordPerPhrase; i++)
                 Bar(
                   _chordConstructOn,
-                  chord: chordList[randomChordIndexList[i]],
+                  chord: (_selectController
+                      .getTraining())[randomChordIndexList[i]],
                   isCur: i == chordCounter,
                 ),
             ],
@@ -43,7 +47,8 @@ class Score extends StatelessWidget {
               for (int i = chordPerPhrase; i < chordPerPhrase * 2; i++)
                 Bar(
                   _chordConstructOn,
-                  chord: chordList[randomChordIndexList[i]],
+                  chord: (_selectController
+                      .getTraining())[randomChordIndexList[i]],
                   isCur: i == chordCounter,
                 ),
             ],

@@ -11,7 +11,7 @@ class PresetDatabase {
     return _instance;
   }
 
-  bool _isOpened = false;
+  bool _isOpen = false;
   bool _isInit = false;
   final String _tableName = 'Presets';
   final String _dbName = 'c2b_jaeiklee_chord_presets.db';
@@ -19,6 +19,10 @@ class PresetDatabase {
       '(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, chords TEXT)';
   late final String _path;
   late Database _db;
+
+  bool isOpen() {
+    return _isOpen;
+  }
 
   Future<void> init() async {
     await getDbPath();
@@ -33,7 +37,7 @@ class PresetDatabase {
   }
 
   Future<void> openDb() async {
-    if (_isOpened) return;
+    if (_isOpen) return;
 
     _db = await openDatabase(
       _path,
@@ -42,17 +46,17 @@ class PresetDatabase {
         await db.execute('CREATE TABLE $_tableName $_schema');
       },
     );
-    _isOpened = true;
+    _isOpen = true;
   }
 
   // Out of the class, `closeDb()` should be called nowhere
   // but only in the top node of the widget tree
   // since PresetDatabase is singleton.
   Future<void> closeDb() async {
-    if (!_isOpened) return;
+    if (!_isOpen) return;
 
     await _db.close();
-    _isOpened = false;
+    _isOpen = false;
   }
 
   Future<void> cleanUpDb() async {

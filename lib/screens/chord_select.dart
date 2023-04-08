@@ -40,7 +40,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
   void _saveAsPreset() async {
     await _db.saveAsPreset(
       _presetNameTextController.text,
-      _selectController.get(),
+      _selectController.getSelected(),
     );
     await _loadPresetList();
     _presetNameTextController.clear();
@@ -78,34 +78,36 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leadingWidth: screenWidth * 0.21,
-        /* Set key */
-        leading: Padding(
-          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
-          child: DropdownButton(
-            alignment: AlignmentDirectional.center,
-            iconEnabledColor: Colors.white,
-            value: _selectController.getKeyIndex(),
-            items: keyListUtil.map((keyStr) {
-              var keyIndex = keyIndexUtil(keyStr);
-              var relativeKeyStr = keyListUtil[(keyIndex + 9) % 12];
-              return DropdownMenuItem(
-                value: keyIndexUtil(keyStr),
-                child: Text(
-                  '${keyStr}M(${relativeKeyStr}m)',
-                  style: title2Style.copyWith(color: Colors.black),
-                ),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectController.setKeyIndex(value!);
-              });
-            },
-          ),
-        ),
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Icons.arrow_back)),
         actions: [
+          /* Set key */
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
+            child: DropdownButton(
+              alignment: AlignmentDirectional.center,
+              iconEnabledColor: Colors.white,
+              value: _selectController.getKeyIndex(),
+              items: keyListUtil.map((keyStr) {
+                var keyIndex = keyIndexUtil(keyStr);
+                var relativeKeyStr = keyListUtil[(keyIndex + 9) % 12];
+                return DropdownMenuItem(
+                  value: keyIndexUtil(keyStr),
+                  child: Text(
+                    '${keyStr}M(${relativeKeyStr}m)',
+                    style: title2Style.copyWith(color: Colors.black),
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectController.setKeyIndex(value!);
+                });
+              },
+            ),
+          ),
           /* Diatonic */
           TextButton(
             onPressed: () => _selectController.setDiatonic(),
@@ -156,25 +158,21 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
             },
             child: Text("Save Preset", style: title2Style),
           ),
-          /* clean up db */
-          TextButton(
-            onPressed: () async {
-              await _db.cleanUpDb();
-              _reset();
-            },
-            child: Text('cleanUpDb', style: title2Style),
-          ),
           /* Done */
           TextButton(
             onPressed: () {
-              var trainingSet = [
-                ..._selectController.get().map(
-                  (chord) {
-                    return [chord.name(), chordNotesUtil(chord)];
+              if (_selectController.setTraining()) {
+                Get.offNamed('/training');
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (ctx) {
+                    return const AlertDialog(
+                      content: Text("No chord selected"),
+                    );
                   },
-                )
-              ];
-              Navigator.pop(context, trainingSet);
+                );
+              }
             },
             child: Text('Done', style: title2Style),
           ),
@@ -204,7 +202,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                 ),
               ),
               const RowDivider(),
-              /* List of chords that can user select*/
+              /* List of chords that can user select */
               Flexible(
                 flex: 4,
                 child: ListView.builder(
@@ -291,28 +289,27 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                         },
                         confirmDismiss: (direction) {
                           return showDialog(
-                              context: context,
-                              builder: (ctx) {
-                                return AlertDialog(
-                                  title: const Text('Are you sure?'),
-                                  content:
-                                      Text('Delete preset "${preset.name}"?'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        return Navigator.of(context).pop(false);
-                                      },
-                                      child: const Text('NO'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        return Navigator.of(context).pop(true);
-                                      },
-                                      child: const Text('YES'),
-                                    )
-                                  ],
-                                );
-                              }).then((value) => Future.value(value));
+                            context: context,
+                            builder: (ctx) {
+                              return AlertDialog(
+                                title: Text('Delete preset "${preset.name}"?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(ctx).pop(false),
+                                    child: const Text('NO'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(ctx).pop(true),
+                                    child: const Text('YES'),
+                                  )
+                                ],
+                              );
+                            },
+                          ).then(
+                            (value) => Future.value(value),
+                          );
                         },
                         background: Container(
                           padding: EdgeInsets.symmetric(
