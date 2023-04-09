@@ -8,9 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../controllers/select_controller.dart';
-import "../utils/chord_table.dart";
+import '../controllers/training_controller.dart';
 import "../utils/preset_database.dart";
-import "../utils/metronome.dart";
+import '../utils/beep.dart';
 import '../widgets/score.dart';
 import '../widgets/beat_indicator.dart';
 
@@ -23,14 +23,13 @@ class TrainingScreen extends StatefulWidget {
 
 class _TrainingScreenState extends State<TrainingScreen> {
   final SelectController _selectController = Get.find();
+  final _trainingController = Get.put(TrainingController());
   final _presetDb = PresetDatabase();
   var rng = Random(DateTime.now().millisecond);
 
   // A sequence of 8 random numbers and each number is randomly picked in
   // range [0, length of training chord list]
   final List<int> _randomChordIndexList = [];
-
-  double _bpm = 60.0;
 
   // Time siqnature top: the number of beats in a bar
   int _beatsPerBar = 4;
@@ -52,12 +51,8 @@ class _TrainingScreenState extends State<TrainingScreen> {
   late Timer _timer;
   bool _isTimerStarted = false;
 
-  // _onOffOptions[0]: answer ON/OFF
-  // _onOffOptions[1]: interval repetition ON/OFF
-  List<bool> _onOffOptions = [true, false];
-
   // For sound
-  final _metronome = Metronome();
+  final _beep = Beep();
 
   void _nextChord() {
     setState(() {
@@ -89,7 +84,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
   }
 
   void _shuffle() {
-    if (_onOffOptions[1]) {
+    if (_trainingController.onOffOptions[1]) {
       var phrase = _randomChordIndexList.sublist(0, _chordPerPhrase);
       phrase.shuffle();
       setState(() {
@@ -111,10 +106,10 @@ class _TrainingScreenState extends State<TrainingScreen> {
   }
 
   Future<void> _startTimer() async {
-    _metronome.playSoundB();
+    _beep.playB();
     _timer = Timer.periodic(
       Duration(
-        milliseconds: (60 / (_bpm * _meter) * 1000).round(),
+        milliseconds: (60 / (_trainingController.bpm * _meter) * 1000).round(),
       ),
       (timer) {
         setState(() {
@@ -123,13 +118,14 @@ class _TrainingScreenState extends State<TrainingScreen> {
         });
         if (_divisionCounter % (_beatsPerBar * _meter) == 0) {
           // 1st beat
-          _metronome.playSoundB();
+          _beep.playB();
           _nextChord();
         } else {
           // 2nd, 3rd, 4th beat
-          _metronome.playSoundA();
+          _beep.playA();
         }
-        if (_divisionCounter == 0 && _onOffOptions[1] == false) {
+        if (_divisionCounter == 0 &&
+            _trainingController.onOffOptions[1] == false) {
           _nextPhrase();
         }
       },
@@ -143,7 +139,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
     if (_isTimerStarted) {
       _timer.cancel();
     }
-    await _metronome.stopBeat();
+    await _beep.stopBeat();
     setState(() {
       _chordCounter = 0;
       _divisionCounter = 0;
@@ -155,7 +151,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     _presetDb.init();
-    _metronome.init();
+    _beep.init();
     _randomChordIndexList.addAll(genRandChordIdxs(_chordPerPhrase * 2));
     super.initState();
   }
@@ -175,110 +171,106 @@ class _TrainingScreenState extends State<TrainingScreen> {
   Widget build(BuildContext context) {
     var mq = MediaQuery.of(context);
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 30.0,
-                  horizontal: 10.0,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    /* volume slider */
-                    SizedBox(
-                      width: mq.size.width * 0.17,
-                      child: Slider(
-                        value: _metronome.volume,
-                        min: 0.0,
-                        max: 1.0,
-                        divisions: 20,
-                        label:
-                            'vol: ${(_metronome.volume * 100).toStringAsFixed(0)}',
-                        onChanged: (newVolume) {
-                          setState(() {
-                            _metronome.updateVolume(newVolume);
-                          });
-                        },
-                        activeColor: AppColors.primary,
-                      ),
+      body: GetBuilder<TrainingController>(
+        builder: (controller) {
+          return SafeArea(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 30.0,
+                      horizontal: 10.0,
                     ),
-                    /* shuffle */
-                    ElevatedButton(
-                      onPressed: _shuffle,
-                      child: const Icon(Icons.shuffle),
-                    ),
-                    /* ON/OFF options */
-                    ToggleButtons(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(Icons.abc), // Show/Hide chord notes
-                        Icon(Icons.repeat), // ON/OFF interval repetition
-                      ],
-                      isSelected: _onOffOptions,
-                      onPressed: (int index) {
-                        setState(() {
-                          _onOffOptions[index] = !_onOffOptions[index];
-                        });
-                      },
-                    ),
-                    /* Go to chord selection screen */
-                    ElevatedButton(
-                      onPressed: () {
-                        _stop();
-                        Get.offNamed('/chord_select');
-                      },
-                      child: const Icon(Icons.settings),
-                    ),
-                    /* Start/Stop Training */
-                    _isTimerStarted
-                        ? ElevatedButton(
-                            onPressed: _stop,
-                            child: const Icon(Icons.stop_circle),
-                          )
-                        : ElevatedButton(
-                            onPressed: _startTimer,
-                            child: const Icon(Icons.play_circle),
+                        /* volume slider */
+                        SizedBox(
+                          width: mq.size.width * 0.17,
+                          child: Slider(
+                            value: _beep.volume,
+                            min: 0.0,
+                            max: 1.0,
+                            divisions: 20,
+                            label:
+                                'vol: ${(_beep.volume * 100).toStringAsFixed(0)}',
+                            onChanged: (newVolume) {
+                              setState(() {
+                                _beep.updateVolume(newVolume);
+                              });
+                            },
+                            activeColor: AppColors.primary,
                           ),
-                    /* beat indicator */
-                    BeatIndicator(
-                        currentBeat:
-                            ((_divisionCounter % (_beatsPerBar * _meter)) /
-                                    _meter)
-                                .floor(),
-                        beatsPerBar: _beatsPerBar,
-                        radius: mq.size.width * 0.02),
-                    /* bpm slider */
-                    SizedBox(
-                      width: mq.size.width * 0.2,
-                      child: Slider(
-                        value: _bpm,
-                        min: 20,
-                        max: 180,
-                        divisions: 160,
-                        label: '${_bpm.toStringAsFixed(1)}bpm',
-                        onChanged: (bpm) {
-                          setState(() {
-                            _bpm = bpm;
-                          });
-                        },
-                        activeColor: AppColors.primary,
-                      ),
+                        ),
+                        /* shuffle */
+                        ElevatedButton(
+                          onPressed: _shuffle,
+                          child: const Icon(Icons.shuffle),
+                        ),
+                        /* ON/OFF options */
+                        ToggleButtons(
+                          isSelected: controller.onOffOptions,
+                          onPressed: (idx) => controller.toggleOption(idx),
+                          children: const [
+                            Icon(Icons.abc), // Show/Hide chord notes
+                            Icon(Icons.repeat), // ON/OFF interval repetition
+                          ],
+                        ),
+                        /* Go to chord selection screen */
+                        ElevatedButton(
+                          onPressed: () {
+                            _stop();
+                            Get.offNamed('/chord_select');
+                          },
+                          child: const Icon(Icons.settings),
+                        ),
+                        /* Start/Stop Training */
+                        _isTimerStarted
+                            ? ElevatedButton(
+                                onPressed: _stop,
+                                child: const Icon(Icons.stop_circle),
+                              )
+                            : ElevatedButton(
+                                onPressed: _startTimer,
+                                child: const Icon(Icons.play_circle),
+                              ),
+                        /* beat indicator */
+                        BeatIndicator(
+                            currentBeat:
+                                ((_divisionCounter % (_beatsPerBar * _meter)) /
+                                        _meter)
+                                    .floor(),
+                            beatsPerBar: _beatsPerBar,
+                            radius: mq.size.width * 0.02),
+                        /* bpm slider */
+                        SizedBox(
+                          width: mq.size.width * 0.2,
+                          child: Slider(
+                            value: controller.bpm,
+                            min: 20,
+                            max: 180,
+                            divisions: 160,
+                            label: '${controller.bpm.toStringAsFixed(1)}bpm',
+                            onChanged: (bpm) => controller.setBpm(bpm),
+                            activeColor: AppColors.primary,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  Score(
+                    controller.onOffOptions[0],
+                    randomChordIndexList: _randomChordIndexList,
+                    chordCounter: _chordCounter,
+                    chordPerPhrase: _chordPerPhrase,
+                  ),
+                ],
               ),
-              Score(
-                _onOffOptions[0],
-                randomChordIndexList: _randomChordIndexList,
-                chordCounter: _chordCounter,
-                chordPerPhrase: _chordPerPhrase,
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -1,10 +1,10 @@
 import 'package:soundpool/soundpool.dart';
 import 'package:flutter/services.dart';
 
-class Metronome {
-  Metronome._();
-  static final Metronome _instance = Metronome._();
-  factory Metronome() {
+class Beep {
+  Beep._();
+  static final Beep _instance = Beep._();
+  factory Beep() {
     return _instance;
   }
 
@@ -31,18 +31,18 @@ class Metronome {
     _pool = Soundpool.fromOptions(options: _soundpoolOptions);
     _soundBId = _loadSound("assets/audio/assets_tone_tone1_b.wav");
     _soundAId = _loadSound("assets/audio/assets_tone_tone1_a.wav");
-    playSoundB();
-    playSoundA();
+    playB();
+    playA();
     _isInit = true;
   }
 
-  Future<void> playSoundB() async {
+  Future<void> playB() async {
     var soundBId = await _soundBId;
     _pool.setVolume(soundId: soundBId, volume: _volume);
     _soundBStreamId = await _pool.play(soundBId);
   }
 
-  Future<void> playSoundA() async {
+  Future<void> playA() async {
     var soundAId = await _soundAId;
     _pool.setVolume(soundId: soundAId, volume: _volume);
     _soundAStreamId = await _pool.play(soundAId);
