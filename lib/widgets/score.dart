@@ -2,25 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controllers/select_controller.dart';
+import '../controllers/training_controller.dart';
 import 'bar.dart';
 
 class Score extends StatelessWidget {
   Score(this._chordConstructOn,
       {required this.randomChordIndexList,
       required this.chordCounter,
-      required this.chordPerPhrase,
       super.key});
 
+  final TrainingController _trainingController = Get.find();
   final bool _chordConstructOn;
   final List<int> randomChordIndexList;
   final int chordCounter;
-  final int chordPerPhrase;
   final SelectController _selectController = Get.find();
   late final List<List<String>> chordList;
 
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
+    final chordPerPhrase = _trainingController.chordPerPhrase;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
       child: Column(
