@@ -6,22 +6,14 @@ import '../controllers/training_controller.dart';
 import 'bar.dart';
 
 class Score extends StatelessWidget {
-  Score(this._chordConstructOn,
-      {required this.randomChordIndexList,
-      required this.chordCounter,
-      super.key});
+  Score({super.key});
 
-  final TrainingController _trainingController = Get.find();
-  final bool _chordConstructOn;
-  final List<int> randomChordIndexList;
-  final int chordCounter;
-  final SelectController _selectController = Get.find();
-  late final List<List<String>> chordList;
+  final TrainingController _tc = Get.find();
+  final SelectController _sc = Get.find();
 
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    final chordPerPhrase = _trainingController.chordPerPhrase;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
       child: Column(
@@ -31,12 +23,11 @@ class Score extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              for (int i = 0; i < chordPerPhrase; i++)
+              for (int i = 0; i < _tc.chordPerPhrase; i++)
                 Bar(
-                  _chordConstructOn,
-                  chord: (_selectController
-                      .getTraining())[randomChordIndexList[i]],
-                  isCur: i == chordCounter,
+                  _tc.onOffOptions[0],
+                  chord: (_sc.getTraining())[_tc.randomChordIndexList[i]],
+                  isCur: i == _tc.chordCounter,
                 ),
             ],
           ),
@@ -45,12 +36,11 @@ class Score extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              for (int i = chordPerPhrase; i < chordPerPhrase * 2; i++)
+              for (int i = _tc.chordPerPhrase; i < _tc.chordPerPhrase * 2; i++)
                 Bar(
-                  _chordConstructOn,
-                  chord: (_selectController
-                      .getTraining())[randomChordIndexList[i]],
-                  isCur: i == chordCounter,
+                  _tc.onOffOptions[0],
+                  chord: (_sc.getTraining())[_tc.randomChordIndexList[i]],
+                  isCur: i == _tc.chordCounter,
                 ),
             ],
           ),

@@ -105,13 +105,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
                                 child: const Icon(Icons.play_circle),
                               ),
                         /* beat indicator */
-                        BeatIndicator(
-                            currentBeat: ((controller.divisionCounter %
-                                        (controller.beatsPerBar *
-                                            controller.meter)) /
-                                    controller.meter)
-                                .floor(),
-                            radius: mq.size.width * 0.02),
+                        BeatIndicator(radius: mq.size.width * 0.02),
                         /* bpm slider */
                         SizedBox(
                           width: mq.size.width * 0.2,
@@ -128,11 +122,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
                       ],
                     ),
                   ),
-                  Score(
-                    controller.onOffOptions[0],
-                    randomChordIndexList: controller.randomChordIndexList,
-                    chordCounter: controller.chordCounter,
-                  ),
+                  Score(),
                 ],
               ),
             ),
