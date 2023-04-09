@@ -25,17 +25,35 @@ class _TrainingScreenState extends State<TrainingScreen> {
   final SelectController _selectController = Get.find();
   final _presetDb = PresetDatabase();
   var rng = Random(DateTime.now().millisecond);
+
+  // A sequence of 8 random numbers and each number is randomly picked in
+  // range [0, length of training chord list]
   final List<int> _randomChordIndexList = [];
 
   double _bpm = 60.0;
-  int _beatsPerBar = 4; // Time siqnature top: the number of beats in a bar
-  int _chordPerPhrase = 4; // The number of chords(measures) per a phrase
-  int _meter = 1; // The number of divisions in one beat
-  int _divisionCounter = 0; // [0, _timeSignTop * _chordPerPhrase * _meter)
-  int _chordCounter = 0; // [0, _chordPerPhrase)
+
+  // Time siqnature top: the number of beats in a bar
+  int _beatsPerBar = 4;
+
+  // The number of chords(measures) per a phrase
+  int _chordPerPhrase = 4;
+
+  // The number of divisions in one beat
+  int _meter = 1;
+
+  // Increses at every timer event
+  // Range: [0, _beatsPerBar * _chordPerPhrase * _meter)
+  int _divisionCounter = 0;
+
+  // Index of chord that is currently playing
+  // Rnage: [0, _chordPerPhrase)
+  int _chordCounter = 0;
 
   late Timer _timer;
   bool _isTimerStarted = false;
+
+  // _onOffOptions[0]: answer ON/OFF
+  // _onOffOptions[1]: interval repetition ON/OFF
   List<bool> _onOffOptions = [true, false];
 
   // For sound

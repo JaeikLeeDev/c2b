@@ -26,7 +26,7 @@ class Score extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Phrase - top
+          /* Phrase - top */
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -40,7 +40,7 @@ class Score extends StatelessWidget {
             ],
           ),
           SizedBox(height: screenSize.height * 0.03),
-          // Phrase - bottom
+          /* Phrase - bottom */
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
