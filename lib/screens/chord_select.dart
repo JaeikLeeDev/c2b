@@ -61,6 +61,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
 
   @override
   void dispose() {
+    _db.closeDb();
     super.dispose();
   }
 

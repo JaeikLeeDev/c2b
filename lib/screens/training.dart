@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 
 import '../controllers/select_controller.dart';
 import '../controllers/training_controller.dart';
-import "../utils/preset_database.dart";
 import '../utils/beep.dart';
 import '../widgets/score.dart';
 import '../widgets/beat_indicator.dart';
@@ -24,7 +23,6 @@ class TrainingScreen extends StatefulWidget {
 class _TrainingScreenState extends State<TrainingScreen> {
   final SelectController _selectController = Get.find();
   final _trainingController = Get.put(TrainingController());
-  final _presetDb = PresetDatabase();
   var rng = Random(DateTime.now().millisecond);
 
   // A sequence of 8 random numbers and each number is randomly picked in
@@ -150,7 +148,6 @@ class _TrainingScreenState extends State<TrainingScreen> {
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    _presetDb.init();
     _beep.init();
     _randomChordIndexList.addAll(genRandChordIdxs(_chordPerPhrase * 2));
     super.initState();
@@ -161,7 +158,6 @@ class _TrainingScreenState extends State<TrainingScreen> {
     if (_isTimerStarted) {
       _timer.cancel();
     }
-    _presetDb.closeDb();
     super.dispose();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: SystemUiOverlay.values);
