@@ -25,7 +25,6 @@ class Score extends StatelessWidget {
             children: [
               for (int i = 0; i < _tc.chordPerPhrase; i++)
                 Bar(
-                  _tc.onOffOptions[0],
                   chord: (_sc.training)[_tc.randomChordIndexList[i]],
                   isCur: i == _tc.chordCounter,
                 ),
@@ -38,9 +37,8 @@ class Score extends StatelessWidget {
             children: [
               for (int i = _tc.chordPerPhrase; i < _tc.chordPerPhrase * 2; i++)
                 Bar(
-                  _tc.onOffOptions[0],
                   chord: (_sc.training)[_tc.randomChordIndexList[i]],
-                  isCur: i == _tc.chordCounter,
+                  isCur: false,
                 ),
             ],
           ),

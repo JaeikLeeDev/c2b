@@ -122,6 +122,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
                       ],
                     ),
                   ),
+                  /* Random chords for training */
                   Score(),
                 ],
               ),
