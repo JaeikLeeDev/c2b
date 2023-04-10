@@ -54,6 +54,7 @@ class SelectController extends GetxController {
 
   void setKeyIndex(int index) {
     _keyIndex = index;
+    update();
   }
 
   List<Chord> get selected {

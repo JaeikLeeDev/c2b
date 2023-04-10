@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controllers/select_controller.dart';
-import 'controllers/preset_db_controller.dart';
 
 import 'package:c2b/theme/app_theme.dart';
 import 'screens/home.dart';
@@ -16,7 +15,6 @@ class C2bApp extends StatelessWidget {
   C2bApp({super.key});
 
   final _selectController = Get.put(SelectController());
-  final _presetDbController = Get.put(PresetDbController());
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +28,7 @@ class C2bApp extends StatelessWidget {
         GetPage(name: '/training', page: () => const TrainingScreen()),
         GetPage(name: '/chord_select', page: () => const ChordSelectScreen()),
         GetPage(name: '/chord_lookup', page: () => const ChordLookupScreen()),
-        GetPage(name: '/settings', page: () => const SettingsScreen()),
+        GetPage(name: '/settings', page: () => SettingsScreen()),
       ],
     );
   }
