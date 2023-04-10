@@ -1,23 +1,26 @@
-import 'package:c2b/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import 'package:c2b/theme/app_colors.dart';
+import '../controllers/training_controller.dart';
 
 class BeatIndicator extends StatelessWidget {
-  final int currentBeat;
-  final int beatsPerBar;
-  final double radius;
-
-  const BeatIndicator({
-    required this.currentBeat,
+  BeatIndicator({
     required this.radius,
-    required this.beatsPerBar,
     super.key,
   });
 
+  final TrainingController _tc = Get.find();
+  final double radius;
+
   @override
   Widget build(BuildContext context) {
+    var currentBeat =
+        ((_tc.divisionCounter % (_tc.beatsPerBar * _tc.meter)) / _tc.meter)
+            .floor();
     return Row(
       children: [
-        for (int i = 0; i < beatsPerBar; i++)
+        for (int i = 0; i < _tc.beatsPerBar; i++)
           BeatCircle(
             isCurrentBeat: currentBeat == i,
             radius: radius,

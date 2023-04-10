@@ -15,24 +15,21 @@ class SelectController extends GetxController {
   // T/F value that each chord has for representing if currently selected
   List<List<bool>> _checked = [];
 
-  int _selectedKeyIndex = 0;
+  int _keyIndex = 0;
 
-  @override
-  void onInit() {
-    set();
-    super.onInit();
+  int _rootIndex = 0;
+
+  int get rootIndex {
+    return _rootIndex;
+  }
+
+  set rootIndex(int index) {
+    _rootIndex = index;
+    update();
   }
 
   Chord atIndex(int index) {
     return _selected[index];
-  }
-
-  List<List<String>> getTraining() {
-    return _training;
-  }
-
-  List<Chord> getSelected() {
-    return _selected;
   }
 
   int length() {
@@ -47,19 +44,23 @@ class SelectController extends GetxController {
     return _selected.isNotEmpty;
   }
 
-  bool isCheckedAt(int rootIndex, int qualityIndex) {
-    return _checked[rootIndex][qualityIndex];
+  bool isCheckedAt(int qualityIndex) {
+    return _checked[_rootIndex][qualityIndex];
+  }
+
+  int get keyIndex {
+    return _keyIndex;
   }
 
   void setKeyIndex(int index) {
-    _selectedKeyIndex = index;
+    _keyIndex = index;
   }
 
-  int getKeyIndex() {
-    return _selectedKeyIndex;
+  List<Chord> get selected {
+    return _selected;
   }
 
-  void set({List<Chord> checkedChords = const []}) {
+  void setSelected({List<Chord> checkedChords = const []}) {
     // Reset
     _selected = [];
     _checked = List.generate(
@@ -77,9 +78,13 @@ class SelectController extends GetxController {
     update();
   }
 
+  List<List<String>> get training {
+    return _training;
+  }
+
   bool setTraining() {
     var curSelected = [
-      ...getSelected().map(
+      ...selected.map(
         (chord) {
           return [chord.name(), chordNotesUtil(chord)];
         },
@@ -100,36 +105,36 @@ class SelectController extends GetxController {
 
   void setDiatonic() {
     // root
-    select(_selectedKeyIndex, qualityIndexOf('M'));
-    select(_selectedKeyIndex, qualityIndexOf('M7'));
-    select(_selectedKeyIndex, qualityIndexOf('M9'));
+    select(_keyIndex, qualityIndexOf('M'));
+    select(_keyIndex, qualityIndexOf('M7'));
+    select(_keyIndex, qualityIndexOf('M9'));
     // 2 of the key
-    select(_selectedKeyIndex + 2, qualityIndexOf('m'));
-    select(_selectedKeyIndex + 2, qualityIndexOf('m7'));
-    select(_selectedKeyIndex + 2, qualityIndexOf('m9'));
+    select(_keyIndex + 2, qualityIndexOf('m'));
+    select(_keyIndex + 2, qualityIndexOf('m7'));
+    select(_keyIndex + 2, qualityIndexOf('m9'));
     // 3 of the key
-    select(_selectedKeyIndex + 4, qualityIndexOf('m'));
-    select(_selectedKeyIndex + 4, qualityIndexOf('m7'));
-    select(_selectedKeyIndex + 4, qualityIndexOf('m7♭9'));
+    select(_keyIndex + 4, qualityIndexOf('m'));
+    select(_keyIndex + 4, qualityIndexOf('m7'));
+    select(_keyIndex + 4, qualityIndexOf('m7♭9'));
     // 4 of the key
-    select(_selectedKeyIndex + 5, qualityIndexOf('M'));
-    select(_selectedKeyIndex + 5, qualityIndexOf('M7'));
-    select(_selectedKeyIndex + 5, qualityIndexOf('M9'));
+    select(_keyIndex + 5, qualityIndexOf('M'));
+    select(_keyIndex + 5, qualityIndexOf('M7'));
+    select(_keyIndex + 5, qualityIndexOf('M9'));
     // 5 of the key
-    select(_selectedKeyIndex + 7, qualityIndexOf('M'));
-    select(_selectedKeyIndex + 7, qualityIndexOf('7'));
-    select(_selectedKeyIndex + 7, qualityIndexOf('9'));
-    select(_selectedKeyIndex + 7, qualityIndexOf('sus4'));
-    select(_selectedKeyIndex + 7, qualityIndexOf('7sus4'));
-    select(_selectedKeyIndex + 7, qualityIndexOf('9sus4'));
+    select(_keyIndex + 7, qualityIndexOf('M'));
+    select(_keyIndex + 7, qualityIndexOf('7'));
+    select(_keyIndex + 7, qualityIndexOf('9'));
+    select(_keyIndex + 7, qualityIndexOf('sus4'));
+    select(_keyIndex + 7, qualityIndexOf('7sus4'));
+    select(_keyIndex + 7, qualityIndexOf('9sus4'));
     // 6 of the key
-    select(_selectedKeyIndex + 9, qualityIndexOf('m'));
-    select(_selectedKeyIndex + 9, qualityIndexOf('m7'));
-    select(_selectedKeyIndex + 9, qualityIndexOf('m9'));
+    select(_keyIndex + 9, qualityIndexOf('m'));
+    select(_keyIndex + 9, qualityIndexOf('m7'));
+    select(_keyIndex + 9, qualityIndexOf('m9'));
     // 7 of the key
-    select(_selectedKeyIndex + 11, qualityIndexOf('dim'));
-    select(_selectedKeyIndex + 11, qualityIndexOf('m7♭5'));
-    select(_selectedKeyIndex + 11, qualityIndexOf('m7♭9♭5'));
+    select(_keyIndex + 11, qualityIndexOf('dim'));
+    select(_keyIndex + 11, qualityIndexOf('m7♭5'));
+    select(_keyIndex + 11, qualityIndexOf('m7♭9♭5'));
     update();
   }
 
@@ -158,5 +163,11 @@ class SelectController extends GetxController {
     _selected.removeWhere((chord) =>
         rootIndex == chord.rootIndex && qualityIndex == chord.qualityIndex);
     update();
+  }
+
+  @override
+  void onInit() {
+    setSelected();
+    super.onInit();
   }
 }

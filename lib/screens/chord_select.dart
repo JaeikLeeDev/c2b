@@ -19,17 +19,14 @@ class ChordSelectScreen extends StatefulWidget {
 class _ChordSelectScreenState extends State<ChordSelectScreen> {
   final SelectController _selectController = Get.find();
 
-  int _selectedRootIndex = 0;
   final _presetNameTextController = TextEditingController();
   List<Preset> _presetList = [];
   final _db = PresetDatabase();
 
   //TODO: Remove or encapsulate
   void _reset() {
-    _selectController.set();
-    setState(() {
-      _selectedRootIndex = 0;
-    });
+    _selectController.setSelected();
+    _selectController.rootIndex = 0;
   }
 
   void _initPreset() async {
@@ -40,7 +37,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
   void _saveAsPreset() async {
     await _db.saveAsPreset(
       _presetNameTextController.text,
-      _selectController.getSelected(),
+      _selectController.selected,
     );
     await _loadPresetList();
     _presetNameTextController.clear();
@@ -61,6 +58,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
 
   @override
   void dispose() {
+    _db.closeDb();
     super.dispose();
   }
 
@@ -81,7 +79,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
         automaticallyImplyLeading: true,
         leading: IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.arrow_back)),
+            icon: const Icon(Icons.arrow_back)),
         actions: [
           /* Set key */
           Padding(
@@ -89,7 +87,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
             child: DropdownButton(
               alignment: AlignmentDirectional.center,
               iconEnabledColor: Colors.white,
-              value: _selectController.getKeyIndex(),
+              value: _selectController.keyIndex,
               items: keyListUtil.map((keyStr) {
                 var keyIndex = keyIndexUtil(keyStr);
                 var relativeKeyStr = keyListUtil[(keyIndex + 9) % 12];
@@ -179,7 +177,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
         ],
       ),
       body: GetBuilder<SelectController>(
-        builder: (_) {
+        builder: (selCtrlr) {
           return Row(
             // mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -189,11 +187,9 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                 child: ListView.builder(
                   itemBuilder: (context, index) {
                     return TextButton(
-                      onPressed: () => setState(() {
-                        _selectedRootIndex = index;
-                      }),
+                      onPressed: () => selCtrlr.rootIndex = index,
                       child: Text(
-                        rootStringUtil(_selectController.getKeyIndex(), index),
+                        rootStringUtil(selCtrlr.keyIndex, index),
                         style: selectorStyle,
                       ),
                     );
@@ -213,22 +209,19 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                         Transform.scale(
                           scale: 0.8,
                           child: Checkbox(
-                            value: _selectController.isCheckedAt(
-                                _selectedRootIndex, index),
+                            value: selCtrlr.isCheckedAt(index),
                             onChanged: (isSelected) {
                               if (isSelected!) {
-                                _selectController.select(
-                                    _selectedRootIndex, index);
+                                selCtrlr.select(selCtrlr.rootIndex, index);
                               } else {
-                                _selectController.deselect(
-                                    _selectedRootIndex, index);
+                                selCtrlr.deselect(selCtrlr.rootIndex, index);
                               }
                             },
                             activeColor: AppColors.secondary,
                           ),
                         ),
                         Text(
-                          '${rootStringUtil(_selectController.getKeyIndex(), _selectedRootIndex)}${qualityToStringUtil(index)}',
+                          '${rootStringUtil(selCtrlr.keyIndex, selCtrlr.rootIndex)}${qualityToStringUtil(index)}',
                           style: listItemStyle,
                         ),
                       ],
@@ -243,7 +236,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                 flex: 4,
                 child: ListView.builder(
                   itemBuilder: (context, index) {
-                    var chord = _selectController.atIndex(index);
+                    var chord = selCtrlr.atIndex(index);
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -258,7 +251,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                             size: screenWidth * 0.03,
                           ),
                           onPressed: () {
-                            _selectController.deselect(
+                            selCtrlr.deselect(
                                 chord.rootIndex, chord.qualityIndex);
                           },
                           color: AppColors.secondary,
@@ -266,7 +259,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                       ],
                     );
                   },
-                  itemCount: _selectController.length(),
+                  itemCount: selCtrlr.length(),
                 ),
               ),
               const RowDivider(),
@@ -322,7 +315,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                           ),
                         ),
                         child: TextButton(
-                          onPressed: () => _selectController.set(
+                          onPressed: () => selCtrlr.setSelected(
                               checkedChords: (preset.chordList).toList()),
                           child: Text(
                             preset.name,
