@@ -32,12 +32,11 @@ class PresetsController extends GetxController {
     if (!_isOpen) return;
 
     final encodedPreset = _encode(chords);
-    await _db.transaction((txn) async {
-      var id = await txn.rawInsert(
-        'INSERT INTO $_tableName(name, chords) VALUES(?, ?)',
-        [presetName, encodedPreset],
-      );
-    });
+    await _db.insert(
+      _tableName,
+      {'name': presetName, 'chords': encodedPreset},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
     _fetchPresetList();
   }
 
@@ -56,7 +55,7 @@ class PresetsController extends GetxController {
     if (!_isOpen) return;
 
     final result = await _db.rawQuery('SELECT * FROM $_tableName');
-
+    _presetList.clear();
     _presetList = List.generate(result.length, (index) {
       var id = result[index]['id'] as int;
       var name = result[index]['name'] as String;

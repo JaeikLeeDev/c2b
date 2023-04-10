@@ -22,7 +22,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
 
   //TODO: Remove or encapsulate
   void _reset() {
-    _sc.setSelected();
+    _sc.setSelected(const []);
     _sc.rootIndex = 0;
   }
 
@@ -122,7 +122,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                 },
               )
             },
-            child: Text("Save Preset", style: title2Style),
+            child: Text("Save", style: title2Style),
           ),
           /* Done */
           TextButton(
@@ -293,8 +293,11 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                           ),
                         ),
                         child: TextButton(
-                          onPressed: () => _sc.setSelected(
-                              checkedChords: (preset.chordList).toList()),
+                          style: TextButton.styleFrom(
+                            alignment: Alignment.centerLeft,
+                          ),
+                          onPressed: () =>
+                              _sc.setSelected((preset.chordList).toList()),
                           child: Text(
                             preset.name,
                             overflow: TextOverflow.ellipsis,

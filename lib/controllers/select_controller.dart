@@ -61,7 +61,7 @@ class SelectController extends GetxController {
     return _selected;
   }
 
-  void setSelected({List<Chord> checkedChords = const []}) {
+  void setSelected(List<Chord> checkedChords) {
     // Reset
     _selected = [];
     _checked = List.generate(
@@ -168,7 +168,7 @@ class SelectController extends GetxController {
 
   @override
   void onInit() {
-    setSelected();
+    setSelected(const []);
     super.onInit();
   }
 }
