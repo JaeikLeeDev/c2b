@@ -1,22 +1,18 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:get/get.dart';
 
-import "../models/chord.dart";
-import "../models/preset.dart";
+import '../models/chord.dart';
+import '../models/preset.dart';
 
-class PresetDatabase {
-  PresetDatabase._();
-  static final PresetDatabase _instance = PresetDatabase._();
-  factory PresetDatabase() {
-    return _instance;
-  }
-
+class PresetDbController extends GetxController {
   bool _isOpen = false;
   bool _isInit = false;
   final String _tableName = 'Presets';
   final String _dbName = 'c2b_jaeiklee_chord_presets.db';
-  final String _schema =
-      '(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, chords TEXT)';
+  final String _schema = '''(id INTEGER PRIMARY KEY AUTOINCREMENT,
+                             name TEXT,
+                             chords TEXT)''';
   late final String _path;
   late Database _db;
 
@@ -25,18 +21,18 @@ class PresetDatabase {
   }
 
   Future<void> init() async {
-    await getDbPath();
-    await openDb();
+    await _setPath();
+    await _open();
     _isInit = true;
   }
 
-  Future<void> getDbPath() async {
+  Future<void> _setPath() async {
     if (_isInit) return;
     var path = await getDatabasesPath();
     _path = join(path, _dbName);
   }
 
-  Future<void> openDb() async {
+  Future<void> _open() async {
     if (_isOpen) return;
 
     _db = await openDatabase(
@@ -62,7 +58,7 @@ class PresetDatabase {
   Future<void> cleanUpDb() async {
     await closeDb();
     await deleteDatabase(_path);
-    await openDb();
+    await _open();
   }
 
   Future<void> saveAsPreset(String presetName, List<Chord> chords) async {
@@ -113,5 +109,11 @@ class PresetDatabase {
         qualityIndex: qualityIndex,
       );
     });
+  }
+
+  @override
+  void onInit() {
+    print('onInit preset db');
+    super.onInit();
   }
 }

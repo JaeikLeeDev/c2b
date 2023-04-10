@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 import "../models/preset.dart";
 import "../utils/chord_table.dart";
-import "../utils/preset_database.dart";
+import '../controllers/preset_db_controller.dart';
 import '../controllers/select_controller.dart';
 import 'package:c2b/theme/app_colors.dart';
 import 'package:c2b/theme/app_text_styles.dart';
@@ -18,10 +18,10 @@ class ChordSelectScreen extends StatefulWidget {
 
 class _ChordSelectScreenState extends State<ChordSelectScreen> {
   final SelectController _selectController = Get.find();
+  final PresetDbController _db = Get.find();
 
   final _presetNameTextController = TextEditingController();
   List<Preset> _presetList = [];
-  final _db = PresetDatabase();
 
   //TODO: Remove or encapsulate
   void _reset() {

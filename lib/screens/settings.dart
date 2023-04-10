@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-import "../utils/preset_database.dart";
+import '../controllers/preset_db_controller.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -18,11 +19,11 @@ class SettingsScreen extends StatelessWidget {
             Card(
               child: TextButton(
                 onPressed: () async {
-                  final db = PresetDatabase();
+                  final PresetDbController db = Get.find();
                   if (db.isOpen() == false) db.init();
                   await db.cleanUpDb();
                 },
-                child: const Text('Clean up DB'),
+                child: const Text('Clean up preset DB'),
               ),
             ),
           ],
