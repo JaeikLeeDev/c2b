@@ -11,7 +11,7 @@ class Chord {
 
   String name() {
     final SelectController selectController = Get.find();
-    return isSharpGroup(selectController.getKeyIndex())
+    return isSharpGroup(selectController.keyIndex)
         ? '${rootListSharpUtil[rootIndex]}${qualityToStringUtil(qualityIndex)}'
         : '${rootListFlatUtil[rootIndex]}${qualityToStringUtil(qualityIndex)}';
   }

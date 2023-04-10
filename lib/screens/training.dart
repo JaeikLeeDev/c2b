@@ -40,7 +40,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
     var mq = MediaQuery.of(context);
     return Scaffold(
       body: GetBuilder<TrainingController>(
-        builder: (controller) {
+        builder: (trainCtrlr) {
           return SafeArea(
             child: Center(
               child: Column(
@@ -74,13 +74,13 @@ class _TrainingScreenState extends State<TrainingScreen> {
                         ),
                         /* shuffle */
                         ElevatedButton(
-                          onPressed: controller.shuffle,
+                          onPressed: trainCtrlr.shuffle,
                           child: const Icon(Icons.shuffle),
                         ),
                         /* ON/OFF options */
                         ToggleButtons(
-                          isSelected: controller.onOffOptions,
-                          onPressed: (idx) => controller.toggleOption(idx),
+                          isSelected: trainCtrlr.onOffOptions,
+                          onPressed: (idx) => trainCtrlr.toggleOption(idx),
                           children: const [
                             Icon(Icons.abc), // Show/Hide chord notes
                             Icon(Icons.repeat), // ON/OFF interval repetition
@@ -89,19 +89,19 @@ class _TrainingScreenState extends State<TrainingScreen> {
                         /* Go to chord selection screen */
                         ElevatedButton(
                           onPressed: () {
-                            controller.stop();
+                            trainCtrlr.stop();
                             Get.offNamed('/chord_select');
                           },
                           child: const Icon(Icons.settings),
                         ),
                         /* Start/Stop Training */
-                        controller.isTimerStarted
+                        trainCtrlr.isTimerStarted
                             ? ElevatedButton(
-                                onPressed: controller.stop,
+                                onPressed: trainCtrlr.stop,
                                 child: const Icon(Icons.stop_circle),
                               )
                             : ElevatedButton(
-                                onPressed: controller.start,
+                                onPressed: trainCtrlr.start,
                                 child: const Icon(Icons.play_circle),
                               ),
                         /* beat indicator */
@@ -110,12 +110,12 @@ class _TrainingScreenState extends State<TrainingScreen> {
                         SizedBox(
                           width: mq.size.width * 0.2,
                           child: Slider(
-                            value: controller.bpm,
+                            value: trainCtrlr.bpm,
                             min: 20,
                             max: 180,
                             divisions: 160,
-                            label: '${controller.bpm.toStringAsFixed(1)}bpm',
-                            onChanged: (bpm) => controller.setBpm(bpm),
+                            label: '${trainCtrlr.bpm.toStringAsFixed(1)}bpm',
+                            onChanged: (bpm) => trainCtrlr.setBpm(bpm),
                             activeColor: AppColors.primary,
                           ),
                         ),
