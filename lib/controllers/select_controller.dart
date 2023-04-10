@@ -19,7 +19,7 @@ class SelectController extends GetxController {
 
   @override
   void onInit() {
-    set();
+    setSelected();
     super.onInit();
   }
 
@@ -27,12 +27,12 @@ class SelectController extends GetxController {
     return _selected[index];
   }
 
-  List<List<String>> getTraining() {
-    return _training;
+  List<List<String>> get training {
+    return this._training;
   }
 
-  List<Chord> getSelected() {
-    return _selected;
+  List<Chord> get selected {
+    return this._selected;
   }
 
   int length() {
@@ -59,7 +59,7 @@ class SelectController extends GetxController {
     return _selectedKeyIndex;
   }
 
-  void set({List<Chord> checkedChords = const []}) {
+  void setSelected({List<Chord> checkedChords = const []}) {
     // Reset
     _selected = [];
     _checked = List.generate(
@@ -79,7 +79,7 @@ class SelectController extends GetxController {
 
   bool setTraining() {
     var curSelected = [
-      ...getSelected().map(
+      ...selected.map(
         (chord) {
           return [chord.name(), chordNotesUtil(chord)];
         },

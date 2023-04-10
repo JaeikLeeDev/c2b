@@ -26,7 +26,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
 
   //TODO: Remove or encapsulate
   void _reset() {
-    _selectController.set();
+    _selectController.setSelected();
     setState(() {
       _selectedRootIndex = 0;
     });
@@ -40,7 +40,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
   void _saveAsPreset() async {
     await _db.saveAsPreset(
       _presetNameTextController.text,
-      _selectController.getSelected(),
+      _selectController.selected,
     );
     await _loadPresetList();
     _presetNameTextController.clear();
@@ -323,7 +323,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                           ),
                         ),
                         child: TextButton(
-                          onPressed: () => _selectController.set(
+                          onPressed: () => _selectController.setSelected(
                               checkedChords: (preset.chordList).toList()),
                           child: Text(
                             preset.name,
