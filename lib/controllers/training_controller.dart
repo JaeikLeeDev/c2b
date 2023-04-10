@@ -11,10 +11,10 @@ class TrainingController extends GetxController {
    * onOffOptions[0]: answer ON/OFF
    * onOffOptions[1]: interval repetition ON/OFF
    */
-  List<bool> _onOffOptions = [true, false];
+  final List<bool> _onOffOptions = [true, false];
 
   List<bool> get onOffOptions {
-    return this._onOffOptions;
+    return _onOffOptions;
   }
 
   void toggleOption(int index) {
@@ -42,23 +42,23 @@ class TrainingController extends GetxController {
   int _chordCounter = 0;
 
   int get chordPerPhrase {
-    return this._chordPerPhrase;
+    return _chordPerPhrase;
   }
 
   int get beatsPerBar {
-    return this._beatsPerBar;
+    return _beatsPerBar;
   }
 
   int get meter {
-    return this._meter;
+    return _meter;
   }
 
   int get divisionCounter {
-    return this._divisionCounter;
+    return _divisionCounter;
   }
 
   int get chordCounter {
-    return this._chordCounter;
+    return _chordCounter;
   }
 
   void nextChord() {
@@ -92,11 +92,11 @@ class TrainingController extends GetxController {
   bool _isTimerStarted = false;
 
   bool get isTimerStarted {
-    return this._isTimerStarted;
+    return _isTimerStarted;
   }
 
   double get bpm {
-    return this._bpm;
+    return _bpm;
   }
 
   void setBpm(double newBpm) {
@@ -153,7 +153,7 @@ class TrainingController extends GetxController {
   final List<int> _randomChordIndexList = [];
 
   List<int> get randomChordIndexList {
-    return this._randomChordIndexList;
+    return _randomChordIndexList;
   }
 
   var rng = Random(DateTime.now().millisecond);

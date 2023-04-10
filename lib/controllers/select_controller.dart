@@ -20,7 +20,7 @@ class SelectController extends GetxController {
   int _rootIndex = 0;
 
   int get rootIndex {
-    return this._rootIndex;
+    return _rootIndex;
   }
 
   set rootIndex(int index) {
@@ -49,7 +49,7 @@ class SelectController extends GetxController {
   }
 
   int get keyIndex {
-    return this._keyIndex;
+    return _keyIndex;
   }
 
   void setKeyIndex(int index) {
@@ -57,7 +57,7 @@ class SelectController extends GetxController {
   }
 
   List<Chord> get selected {
-    return this._selected;
+    return _selected;
   }
 
   void setSelected({List<Chord> checkedChords = const []}) {
@@ -79,7 +79,7 @@ class SelectController extends GetxController {
   }
 
   List<List<String>> get training {
-    return this._training;
+    return _training;
   }
 
   bool setTraining() {
@@ -138,8 +138,8 @@ class SelectController extends GetxController {
     update();
   }
 
-  void select(int _rootIndex, int qualityIndex) {
-    int rootIndexBounded = _rootIndex % 12;
+  void select(int rootIndex, int qualityIndex) {
+    int rootIndexBounded = rootIndex % 12;
     if (_checked[rootIndexBounded][qualityIndex] == true) return;
     /* TODO:
      * Remove input manipulation (converting to be within range 0~11) from high level function.

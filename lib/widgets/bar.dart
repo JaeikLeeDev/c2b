@@ -17,7 +17,7 @@ class Bar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    return Container(
+    return SizedBox(
       height: screenSize.height * 0.30,
       width: screenSize.width * 0.24,
       child: Container(

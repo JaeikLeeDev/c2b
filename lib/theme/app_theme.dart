@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'app_colors.dart';
-import 'app_text_styles.dart';
 
 class AppTheme {
   static final ThemeData lightTheme = ThemeData(
-    appBarTheme: AppBarTheme(
-      systemOverlayStyle: const SystemUiOverlayStyle(
+    appBarTheme: const AppBarTheme(
+      systemOverlayStyle: SystemUiOverlayStyle(
         statusBarColor: AppColors.primary,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
@@ -30,20 +29,20 @@ class AppTheme {
         ),
         minimumSize: const Size(36, 36),
         fixedSize: const Size(40, 36),
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
         backgroundColor: AppColors.primary,
       ),
     ),
-    toggleButtonsTheme: ToggleButtonsThemeData(
-      borderRadius: const BorderRadius.all(Radius.circular(20)),
+    toggleButtonsTheme: const ToggleButtonsThemeData(
+      borderRadius: BorderRadius.all(Radius.circular(20)),
       borderColor: AppColors.secondary,
       color: AppColors.secondary,
       selectedBorderColor: AppColors.secondary,
       selectedColor: Colors.white,
       fillColor: AppColors.secondary,
-      constraints: const BoxConstraints(
+      constraints: BoxConstraints(
         minHeight: 36.0,
         minWidth: 36.0,
       ),

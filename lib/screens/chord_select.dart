@@ -79,7 +79,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
         automaticallyImplyLeading: true,
         leading: IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.arrow_back)),
+            icon: const Icon(Icons.arrow_back)),
         actions: [
           /* Set key */
           Padding(

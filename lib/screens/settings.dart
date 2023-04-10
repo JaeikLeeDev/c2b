@@ -22,7 +22,7 @@ class SettingsScreen extends StatelessWidget {
                   if (db.isOpen() == false) db.init();
                   await db.cleanUpDb();
                 },
-                child: Text('Clean up DB'),
+                child: const Text('Clean up DB'),
               ),
             ),
           ],
