@@ -44,7 +44,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
           return SafeArea(
             child: Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -52,7 +52,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
                       horizontal: 10.0,
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         /* volume slider */
                         SizedBox(
@@ -104,21 +104,23 @@ class _TrainingScreenState extends State<TrainingScreen> {
                                 onPressed: trainCtrlr.start,
                                 child: const Icon(Icons.play_circle),
                               ),
-                        /* beat indicator */
-                        BeatIndicator(radius: mq.size.width * 0.02),
-                        /* bpm slider */
                         SizedBox(
                           width: mq.size.width * 0.2,
-                          child: Slider(
-                            value: trainCtrlr.bpm,
-                            min: 20,
-                            max: 180,
-                            divisions: 160,
-                            label: '${trainCtrlr.bpm.toStringAsFixed(1)}bpm',
-                            onChanged: (bpm) => trainCtrlr.setBpm(bpm),
-                            activeColor: AppColors.primary,
-                          ),
-                        ),
+                          child: trainCtrlr.isTimerStarted
+                              ? /* beat indicator */
+                              BeatIndicator(radius: mq.size.width * 0.02)
+                              : /* bpm slider */
+                              Slider(
+                                  value: trainCtrlr.bpm,
+                                  min: 20,
+                                  max: 180,
+                                  divisions: 160,
+                                  label:
+                                      '${trainCtrlr.bpm.toStringAsFixed(1)}bpm',
+                                  onChanged: (bpm) => trainCtrlr.setBpm(bpm),
+                                  activeColor: AppColors.primary,
+                                ),
+                        )
                       ],
                     ),
                   ),

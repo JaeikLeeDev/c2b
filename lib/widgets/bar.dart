@@ -18,10 +18,16 @@ class Bar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
+    final screenWidth = MediaQuery.of(context).size.width -
+        MediaQuery.of(context).padding.left -
+        MediaQuery.of(context).padding.right;
+    final screenHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        MediaQuery.of(context).padding.bottom;
+
     return SizedBox(
-      height: screenSize.height * 0.30,
-      width: screenSize.width * 0.24,
+      height: screenHeight * 0.30,
+      width: screenWidth * 0.24,
       child: Container(
         decoration: const BoxDecoration(
           border: Border(
@@ -38,7 +44,7 @@ class Bar extends StatelessWidget {
               chord[0],
               style: TextStyle(
                   fontFamily: 'Noto Music',
-                  fontSize: screenSize.width * 0.038,
+                  fontSize: screenWidth * 0.038,
                   color: isCur ? AppColors.primary : Colors.black),
             ),
             const SizedBox(height: 10),
@@ -47,7 +53,7 @@ class Bar extends StatelessWidget {
                 chord[1],
                 style: TextStyle(
                     fontFamily: 'Noto Music',
-                    fontSize: screenSize.width * 0.028,
+                    fontSize: screenWidth * 0.028,
                     color: isCur ? AppColors.primary : Colors.black),
               ),
           ],
