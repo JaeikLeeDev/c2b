@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-import "../utils/preset_database.dart";
+import '../controllers/presets_controller.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  SettingsScreen({super.key});
+  final _db = Get.put(PresetsController());
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +20,9 @@ class SettingsScreen extends StatelessWidget {
             Card(
               child: TextButton(
                 onPressed: () async {
-                  final db = PresetDatabase();
-                  if (db.isOpen() == false) db.init();
-                  await db.cleanUpDb();
+                  await _db.clear();
                 },
-                child: const Text('Clean up DB'),
+                child: const Text('Clean up preset DB'),
               ),
             ),
           ],

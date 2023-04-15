@@ -28,7 +28,7 @@ class C2bApp extends StatelessWidget {
         GetPage(name: '/training', page: () => const TrainingScreen()),
         GetPage(name: '/chord_select', page: () => const ChordSelectScreen()),
         GetPage(name: '/chord_lookup', page: () => const ChordLookupScreen()),
-        GetPage(name: '/settings', page: () => const SettingsScreen()),
+        GetPage(name: '/settings', page: () => SettingsScreen()),
       ],
     );
   }

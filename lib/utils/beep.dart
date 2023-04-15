@@ -9,14 +9,14 @@ class Beep {
   }
 
   bool _isInit = false;
+  double _volume = 0.5;
   final _soundpoolOptions =
       const SoundpoolOptions(streamType: StreamType.notification);
-  late Soundpool _pool;
   int? _soundBStreamId;
   int? _soundAStreamId;
+  late Soundpool _pool;
   late final Future<int> _soundBId;
   late final Future<int> _soundAId;
-  double _volume = 0.5;
 
   double get volume => _volume;
   // set volume(double volume) => _volume = volume;
@@ -28,6 +28,7 @@ class Beep {
 
   void init() {
     if (_isInit) return;
+
     _pool = Soundpool.fromOptions(options: _soundpoolOptions);
     _soundBId = _loadSound("assets/audio/assets_tone_tone1_b.wav");
     _soundAId = _loadSound("assets/audio/assets_tone_tone1_a.wav");
@@ -57,7 +58,7 @@ class Beep {
     }
   }
 
-  Future<void> updateVolume(newVolume) async {
+  Future<void> updateVolume(double newVolume) async {
     _volume = newVolume;
     var soundBId = await _soundBId;
     _pool.setVolume(soundId: soundBId, volume: _volume);

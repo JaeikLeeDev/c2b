@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import "../models/preset.dart";
 import "../utils/chord_table.dart";
-import "../utils/preset_database.dart";
+import '../controllers/presets_controller.dart';
 import '../controllers/select_controller.dart';
 import 'package:c2b/theme/app_colors.dart';
 import 'package:c2b/theme/app_text_styles.dart';
@@ -17,49 +16,14 @@ class ChordSelectScreen extends StatefulWidget {
 }
 
 class _ChordSelectScreenState extends State<ChordSelectScreen> {
-  final SelectController _selectController = Get.find();
-
+  final SelectController _sc = Get.find();
+  final _db = Get.put(PresetsController());
   final _presetNameTextController = TextEditingController();
-  List<Preset> _presetList = [];
-  final _db = PresetDatabase();
 
   //TODO: Remove or encapsulate
   void _reset() {
-    _selectController.setSelected();
-    _selectController.rootIndex = 0;
-  }
-
-  void _initPreset() async {
-    await _db.init();
-    await _loadPresetList();
-  }
-
-  void _saveAsPreset() async {
-    await _db.saveAsPreset(
-      _presetNameTextController.text,
-      _selectController.selected,
-    );
-    await _loadPresetList();
-    _presetNameTextController.clear();
-  }
-
-  Future<void> _loadPresetList() async {
-    var presetList = await _db.getPresetList();
-    setState(() {
-      _presetList = presetList;
-    });
-  }
-
-  @override
-  void initState() {
-    _initPreset();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _db.closeDb();
-    super.dispose();
+    _sc.setSelected(const []);
+    _sc.rootIndex = 0;
   }
 
   @override
@@ -82,33 +46,33 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
             icon: const Icon(Icons.arrow_back)),
         actions: [
           /* Set key */
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
-            child: DropdownButton(
-              alignment: AlignmentDirectional.center,
-              iconEnabledColor: Colors.white,
-              value: _selectController.keyIndex,
-              items: keyListUtil.map((keyStr) {
-                var keyIndex = keyIndexUtil(keyStr);
-                var relativeKeyStr = keyListUtil[(keyIndex + 9) % 12];
-                return DropdownMenuItem(
-                  value: keyIndexUtil(keyStr),
-                  child: Text(
-                    '${keyStr}M(${relativeKeyStr}m)',
-                    style: title2Style.copyWith(color: Colors.black),
-                  ),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectController.setKeyIndex(value!);
-                });
-              },
-            ),
+          GetBuilder<SelectController>(
+            builder: (selCtrlr) {
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
+                child: DropdownButton(
+                  alignment: AlignmentDirectional.center,
+                  iconEnabledColor: Colors.white,
+                  value: _sc.keyIndex,
+                  items: keyListUtil.map((keyStr) {
+                    var keyIndex = keyIndexUtil(keyStr);
+                    var relativeKeyStr = keyListUtil[(keyIndex + 9) % 12];
+                    return DropdownMenuItem(
+                      value: keyIndexUtil(keyStr),
+                      child: Text(
+                        '${keyStr}M(${relativeKeyStr}m)',
+                        style: title2Style.copyWith(color: Colors.black),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) => _sc.setKeyIndex(value!),
+                ),
+              );
+            },
           ),
           /* Diatonic */
           TextButton(
-            onPressed: () => _selectController.setDiatonic(),
+            onPressed: () => _sc.setDiatonic(),
             child: Text('Diatonic', style: title2Style),
           ),
           /* Reset */
@@ -123,7 +87,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   // Dialog - get preset name
-                  return _selectController.isNotEmpty()
+                  return _sc.isNotEmpty()
                       ? AlertDialog(
                           title: const Text('Save preset'),
                           content: TextFormField(
@@ -142,7 +106,11 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                             TextButton(
                               child: const Text('OK'),
                               onPressed: () {
-                                _saveAsPreset();
+                                _db.saveAsPreset(
+                                  _presetNameTextController.text,
+                                  _sc.selected,
+                                );
+                                _presetNameTextController.clear();
                                 Navigator.of(context).pop();
                               },
                             ),
@@ -154,12 +122,12 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                 },
               )
             },
-            child: Text("Save Preset", style: title2Style),
+            child: Text("Save", style: title2Style),
           ),
           /* Done */
           TextButton(
             onPressed: () {
-              if (_selectController.setTraining()) {
+              if (_sc.setTraining()) {
                 Get.offNamed('/training');
               } else {
                 showDialog(
@@ -176,13 +144,12 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
           ),
         ],
       ),
-      body: GetBuilder<SelectController>(
-        builder: (selCtrlr) {
-          return Row(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              /* List of roots */
-              Flexible(
+      body: Row(
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GetBuilder<SelectController>(
+            builder: (selCtrlr) {
+              return Flexible(
                 flex: 2,
                 child: ListView.builder(
                   itemBuilder: (context, index) {
@@ -196,10 +163,14 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                   },
                   itemCount: numOfKeysUtil,
                 ),
-              ),
-              const RowDivider(),
-              /* List of chords that can user select */
-              Flexible(
+              );
+            },
+          ),
+          const RowDivider(),
+          /* List of chords that can user select */
+          GetBuilder<SelectController>(
+            builder: (selCtrlr) {
+              return Flexible(
                 flex: 4,
                 child: ListView.builder(
                   itemBuilder: (context, index) {
@@ -229,10 +200,14 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                   },
                   itemCount: qualityUtil.length,
                 ),
-              ),
-              const RowDivider(),
-              /* List of selected chords */
-              Flexible(
+              );
+            },
+          ),
+          const RowDivider(),
+          /* List of selected chords */
+          GetBuilder<SelectController>(
+            builder: (selCtrlr) {
+              return Flexible(
                 flex: 4,
                 child: ListView.builder(
                   itemBuilder: (context, index) {
@@ -261,15 +236,19 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                   },
                   itemCount: selCtrlr.length(),
                 ),
-              ),
-              const RowDivider(),
-              /* List of presets */
-              Flexible(
-                flex: 3,
-                child: ClipRect(
+              );
+            },
+          ),
+          const RowDivider(),
+          /* List of presets */
+          Flexible(
+            flex: 3,
+            child: GetBuilder<PresetsController>(
+              builder: (db) {
+                return ClipRect(
                   child: ListView.builder(
                     itemBuilder: (context, index) {
-                      var preset = _presetList[index];
+                      var preset = db.presetList[index];
                       return Dismissible(
                         key: UniqueKey(),
                         direction: DismissDirection.endToStart,
@@ -277,8 +256,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                           DismissDirection.endToStart: 0.5
                         },
                         onDismissed: (direction) async {
-                          await _db.deletePreset(preset.id);
-                          _loadPresetList();
+                          await db.deletePreset(preset.id);
                         },
                         confirmDismiss: (direction) {
                           return showDialog(
@@ -315,8 +293,11 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                           ),
                         ),
                         child: TextButton(
-                          onPressed: () => selCtrlr.setSelected(
-                              checkedChords: (preset.chordList).toList()),
+                          style: TextButton.styleFrom(
+                            alignment: Alignment.centerLeft,
+                          ),
+                          onPressed: () =>
+                              _sc.setSelected((preset.chordList).toList()),
                           child: Text(
                             preset.name,
                             overflow: TextOverflow.ellipsis,
@@ -325,13 +306,13 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                         ),
                       );
                     },
-                    itemCount: _presetList.length,
+                    itemCount: db.presetList.length,
                   ),
-                ),
-              ),
-            ],
-          );
-        },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
