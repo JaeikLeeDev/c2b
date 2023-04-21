@@ -44,7 +44,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
           return SafeArea(
             child: Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(
