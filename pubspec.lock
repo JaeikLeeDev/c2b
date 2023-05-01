@@ -269,6 +269,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.16"
+  tonic:
+    dependency: "direct main"
+    description:
+      name: tonic
+      sha256: "2676ba51dade95b2d92274c75a3b0ac85d645d387193cb8137dc92ca6e1298b0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.4"
   typed_data:
     dependency: transitive
     description:

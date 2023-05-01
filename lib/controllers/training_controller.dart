@@ -10,8 +10,9 @@ class TrainingController extends GetxController {
   /* Options
    * onOffOptions[0]: answer ON/OFF
    * onOffOptions[1]: interval repetition ON/OFF
+   * onOffOptions[2]: training method
    */
-  final List<bool> _onOffOptions = [true, false];
+  final List<bool> _onOffOptions = [true, false, false];
 
   List<bool> get onOffOptions {
     return _onOffOptions;
@@ -141,6 +142,20 @@ class TrainingController extends GetxController {
       _timer.cancel();
     }
     _isTimerStarted = false;
+    update();
+  }
+
+  /* Chord's Note Quiz */
+
+  // Start from 24(C1)
+  List<bool> _selectedNotes = List.generate(12 * (7 + 2), (_) => false);
+
+  List<bool> get selectedNotes {
+    return _selectedNotes;
+  }
+
+  void toggleSelectedNote(index) {
+    _selectedNotes[index] = !_selectedNotes[index];
     update();
   }
 
