@@ -26,7 +26,7 @@ class Bar extends StatelessWidget {
         MediaQuery.of(context).padding.bottom;
 
     return SizedBox(
-      height: screenHeight * 0.30,
+      height: screenHeight * 0.27,
       width: screenWidth * 0.24,
       child: Container(
         decoration: const BoxDecoration(
@@ -48,7 +48,7 @@ class Bar extends StatelessWidget {
                   color: isCur ? AppColors.primary : Colors.black),
             ),
             const SizedBox(height: 10),
-            if (_tc.onOffOptions[0] == true)
+            if (_tc.answerOn == true)
               Text(
                 chord[1],
                 style: TextStyle(

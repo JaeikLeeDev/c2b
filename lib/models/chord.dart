@@ -9,6 +9,8 @@ class Chord {
 
   Chord({required this.rootIndex, required this.qualityIndex});
 
+  // return a String of a chord notation
+  // ex) C#m7, E7sus4, Gadd9, ...
   String name() {
     final SelectController selectController = Get.find();
     return isSharpGroup(selectController.keyIndex)

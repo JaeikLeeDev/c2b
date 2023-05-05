@@ -16,14 +16,11 @@ const BorderRadiusGeometry borderRadius = BorderRadius.only(
 class Piano extends StatelessWidget {
   Piano({super.key});
 
-  double get keyWidth => 80 + (80 * _widthRatio);
-  final double _widthRatio = 0.0;
   final bool _showLabels = true;
-  final int _octaveCount = 7;
   final TrainingController _tc = Get.find();
 
   // accidental: #(sharp), b(flat), natural, ...
-  Widget _buildKey(int midi, bool accidental) {
+  Widget _buildKey(int midi, bool accidental, double keyWidth) {
     final pitchName = Pitch.fromMidiNumber(midi).toString();
 
     final pianoKey = Stack(
@@ -33,7 +30,7 @@ class Piano extends StatelessWidget {
           hint: pitchName,
           child: Material(
             borderRadius: borderRadius,
-            color: _tc.selectedNotes[midi]
+            color: _tc.noteStates[midi]
                 ? AppColors.secondary
                 : accidental
                     ? Colors.black
@@ -41,7 +38,7 @@ class Piano extends StatelessWidget {
             child: InkWell(
               borderRadius: borderRadius as BorderRadius,
               highlightColor: Colors.grey,
-              onTap: () => _tc.toggleSelectedNote(midi),
+              onTap: () => _tc.toggleNoteState(midi),
             ),
           ),
         ),
@@ -54,8 +51,9 @@ class Piano extends StatelessWidget {
                   pitchName,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontFamily: 'Noto Music',
-                      color: !accidental ? Colors.black : Colors.white),
+                    fontFamily: 'Noto Music',
+                    color: !accidental ? Colors.black : Colors.white,
+                  ),
                 )
               : Container(),
         ),
@@ -68,10 +66,11 @@ class Piano extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 2.0),
         padding: EdgeInsets.symmetric(horizontal: keyWidth * 0.1),
         child: Material(
-            elevation: 6.0,
-            borderRadius: borderRadius,
-            shadowColor: const Color(0x802196F3),
-            child: pianoKey),
+          elevation: 6.0,
+          borderRadius: borderRadius,
+          shadowColor: const Color(0x802196F3),
+          child: pianoKey,
+        ),
       );
     } else {
       return Container(
@@ -84,8 +83,11 @@ class Piano extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    final double keyWidth = size.width * 0.08;
+
     return ListView.builder(
-      itemCount: _octaveCount,
+      itemCount: _tc.octaveCount,
       scrollDirection: Axis.horizontal,
       itemBuilder: (BuildContext context, int index) {
         final int i = index * 12;
@@ -94,31 +96,31 @@ class Piano extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                _buildKey(24 + i, false),
-                _buildKey(26 + i, false),
-                _buildKey(28 + i, false),
-                _buildKey(29 + i, false),
-                _buildKey(31 + i, false),
-                _buildKey(33 + i, false),
-                _buildKey(35 + i, false),
+                _buildKey(24 + i, false, keyWidth),
+                _buildKey(26 + i, false, keyWidth),
+                _buildKey(28 + i, false, keyWidth),
+                _buildKey(29 + i, false, keyWidth),
+                _buildKey(31 + i, false, keyWidth),
+                _buildKey(33 + i, false, keyWidth),
+                _buildKey(35 + i, false, keyWidth),
               ],
             ),
             Positioned(
               left: 0.0,
               right: 0.0,
-              bottom: 100,
+              bottom: size.height * 0.2,
               top: 0.0,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Container(width: keyWidth * 0.5),
-                  _buildKey(25 + i, true),
-                  _buildKey(27 + i, true),
+                  _buildKey(25 + i, true, keyWidth),
+                  _buildKey(27 + i, true, keyWidth),
                   Container(width: keyWidth),
-                  _buildKey(30 + i, true),
-                  _buildKey(32 + i, true),
-                  _buildKey(34 + i, true),
+                  _buildKey(30 + i, true, keyWidth),
+                  _buildKey(32 + i, true, keyWidth),
+                  _buildKey(34 + i, true, keyWidth),
                   Container(width: keyWidth * 0.5),
                 ],
               ),

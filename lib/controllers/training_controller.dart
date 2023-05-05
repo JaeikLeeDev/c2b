@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:get/get.dart';
+import 'package:tonic/tonic.dart';
 
 import '../controllers/select_controller.dart';
 import '../utils/beep.dart';
@@ -16,6 +17,18 @@ class TrainingController extends GetxController {
 
   List<bool> get onOffOptions {
     return _onOffOptions;
+  }
+
+  bool get answerOn {
+    return _onOffOptions[0];
+  }
+
+  bool get repeatOn {
+    return _onOffOptions[1];
+  }
+
+  bool get pianoOn {
+    return _onOffOptions[2];
   }
 
   void toggleOption(int index) {
@@ -148,15 +161,39 @@ class TrainingController extends GetxController {
   /* Chord's Note Quiz */
 
   // Start from 24(C1)
-  List<bool> _selectedNotes = List.generate(12 * (7 + 2), (_) => false);
+  static const int _octaveCount = 3;
+  final List<bool> _noteStates =
+      List.generate(12 * (_octaveCount + 2), (_) => false);
+  final Set<int> _selected = {};
 
-  List<bool> get selectedNotes {
-    return _selectedNotes;
+  int get octaveCount {
+    return _octaveCount;
   }
 
-  void toggleSelectedNote(index) {
-    _selectedNotes[index] = !_selectedNotes[index];
+  List<bool> get noteStates {
+    return _noteStates;
+  }
+
+  void toggleNoteState(index) {
+    _noteStates[index] = !_noteStates[index];
+    if (_noteStates[index] == true) {
+      _selected.add(index);
+    } else {
+      _selected.remove(index);
+    }
     update();
+  }
+
+  Set<int> get selected => _selected;
+  List<int> get selectedList => _selected.toList()..sort();
+
+  String selectedToString() {
+    var sortedList = _selected.toList()..sort();
+    String selected = "";
+    for (var element in sortedList) {
+      selected += '${Pitch.fromMidiNumber(element).pitchClass} ';
+    }
+    return selected;
   }
 
   /* Random Training Chord List */

@@ -127,9 +127,8 @@ class _TrainingScreenState extends State<TrainingScreen> {
                     ),
                   ),
                   /* Random chords for training */
-                  if (trainCtrlr.onOffOptions[2] == false)
-                    Score()
-                  else
+                  Score(),
+                  if (trainCtrlr.pianoOn == true)
                     Expanded(
                       child: Piano(),
                     ),
