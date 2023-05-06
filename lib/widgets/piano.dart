@@ -23,41 +23,39 @@ class Piano extends StatelessWidget {
   Widget _buildKey(int midi, bool accidental, double keyWidth) {
     final pitchName = Pitch.fromMidiNumber(midi).toString();
 
-    final pianoKey = Stack(
-      children: <Widget>[
-        Semantics(
-          button: true,
-          hint: pitchName,
-          child: Material(
-            borderRadius: borderRadius,
-            color: _tc.noteStates[midi]
-                ? AppColors.secondary
-                : accidental
-                    ? Colors.black
-                    : Colors.white,
-            child: InkWell(
-              borderRadius: borderRadius as BorderRadius,
-              highlightColor: Colors.grey,
-              onTap: () => _tc.toggleNoteState(midi),
+    final pianoKey = InkWell(
+      borderRadius: borderRadius as BorderRadius,
+      child: Stack(
+        children: <Widget>[
+          DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: borderRadius,
+              color: _tc.noteStates[midi]
+                  ? AppColors.secondary
+                  : accidental
+                      ? Colors.black
+                      : Colors.white,
             ),
+            child: Container(),
           ),
-        ),
-        Positioned(
-          left: 0.0,
-          right: 0.0,
-          bottom: 20.0,
-          child: _showLabels
-              ? Text(
-                  pitchName,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'Noto Music',
-                    color: !accidental ? Colors.black : Colors.white,
-                  ),
-                )
-              : Container(),
-        ),
-      ],
+          Positioned(
+            left: 0.0,
+            right: 0.0,
+            bottom: 20.0,
+            child: _showLabels
+                ? Text(
+                    pitchName,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Noto Music',
+                      color: !accidental ? Colors.black : Colors.white,
+                    ),
+                  )
+                : Container(),
+          ),
+        ],
+      ),
+      onTap: () => _tc.toggleNoteState(midi),
     );
 
     if (accidental) {

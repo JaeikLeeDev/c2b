@@ -15,16 +15,18 @@ class Score extends StatelessWidget {
   final SelectController _sc = Get.find();
 
   bool _isCorrect() {
-    return listEquals([
-      ...(_tc.selectedList).map((e) => e % 24),
-    ], [
-      ...(qualityUtil[_sc.selected[_tc.randomChordIndexList[_tc.chordCounter]]
-              .qualityIndex][1] as List<int>)
-          .map((e) =>
-              e +
-              (_sc.selected[_tc.randomChordIndexList[_tc.chordCounter]])
-                  .rootIndex),
-    ]);
+    return listEquals(
+      [...(_tc.selected).map((e) => e % 12)]..sort(),
+      [
+        ...(qualityUtil[_sc.selected[_tc.randomChordIndexList[_tc.chordCounter]]
+                .qualityIndex][1] as List<int>)
+            .map((e) =>
+                (e +
+                    (_sc.selected[_tc.randomChordIndexList[_tc.chordCounter]])
+                        .rootIndex) %
+                12),
+      ]..sort(),
+    );
   }
 
   @override
