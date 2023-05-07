@@ -8,13 +8,11 @@ import 'package:c2b/theme/app_theme.dart';
 import 'screens/home.dart';
 import 'screens/chord_select.dart';
 import 'screens/training.dart';
-import 'screens/chord_lookup.dart';
+import 'screens/chord_dictionary.dart';
 import 'screens/settings.dart';
 
 class C2bApp extends StatelessWidget {
   C2bApp({super.key});
-
-  final _selectController = Get.put(SelectController());
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +25,9 @@ class C2bApp extends StatelessWidget {
         GetPage(name: '/', page: () => const HomeScreen()),
         GetPage(name: '/training', page: () => const TrainingScreen()),
         GetPage(name: '/chord_select', page: () => const ChordSelectScreen()),
-        GetPage(name: '/chord_lookup', page: () => const ChordLookupScreen()),
+        GetPage(
+            name: '/chord_dictionary',
+            page: () => const ChordDictionaryScreen()),
         GetPage(name: '/settings', page: () => SettingsScreen()),
       ],
     );

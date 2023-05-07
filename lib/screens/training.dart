@@ -92,7 +92,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
                         ElevatedButton(
                           onPressed: () {
                             trainCtrlr.stop();
-                            Get.offNamed('/chord_select');
+                            Get.back();
                           },
                           child: const Icon(Icons.settings),
                         ),
@@ -138,6 +138,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
           );
         },
       ),
+      /* Control panel - training options */
       drawer: Drawer(
         child: SafeArea(
             child: ListView(

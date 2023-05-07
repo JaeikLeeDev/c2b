@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:get/get.dart';
 
@@ -15,8 +16,14 @@ class ChordSelectScreen extends StatefulWidget {
   State<ChordSelectScreen> createState() => _ChordSelectScreenState();
 }
 
+/* 
+ * State Lifecycle
+ * initState(): Home -> ChordSelect
+ * Stay Alive: ChordSelect <- -> Training
+ * dispose(): ChordSelect -> Home
+ */
 class _ChordSelectScreenState extends State<ChordSelectScreen> {
-  final SelectController _sc = Get.find();
+  final _sc = Get.put(SelectController());
   final _db = Get.put(PresetsController());
   final _presetNameTextController = TextEditingController();
 
@@ -24,6 +31,28 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
   void _reset() {
     _sc.setSelected(const []);
     _sc.rootIndex = 0;
+  }
+
+  @override
+  void initState() {
+    /* Allow only landscape mode in ChordSelect and Training screen */
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    /* Remove orientation constraints */
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
   }
 
   @override
@@ -128,7 +157,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
           TextButton(
             onPressed: () {
               if (_sc.setTraining()) {
-                Get.offNamed('/training');
+                Get.toNamed('/training');
               } else {
                 showDialog(
                   context: context,
