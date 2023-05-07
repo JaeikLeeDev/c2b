@@ -1,11 +1,12 @@
-import 'package:c2b/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:get/get.dart';
 
+import 'package:c2b/theme/app_colors.dart';
 import '../controllers/training_controller.dart';
 import '../utils/beep.dart';
+import '../widgets/piano.dart';
 import '../widgets/score.dart';
 import '../widgets/beat_indicator.dart';
 
@@ -84,6 +85,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
                           children: const [
                             Icon(Icons.abc), // Show/Hide chord notes
                             Icon(Icons.repeat), // ON/OFF interval repetition
+                            Icon(Icons.piano), // training method
                           ],
                         ),
                         /* Go to chord selection screen */
@@ -126,11 +128,21 @@ class _TrainingScreenState extends State<TrainingScreen> {
                   ),
                   /* Random chords for training */
                   Score(),
+                  if (trainCtrlr.pianoOn == true)
+                    Expanded(
+                      child: Piano(),
+                    ),
                 ],
               ),
             ),
           );
         },
+      ),
+      drawer: Drawer(
+        child: SafeArea(
+            child: ListView(
+          children: [],
+        )),
       ),
     );
   }
