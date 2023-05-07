@@ -1,3 +1,5 @@
+import 'package:c2b/widgets/select_key.dart';
+import 'package:c2b/widgets/select_root.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -8,6 +10,8 @@ import '../controllers/presets_controller.dart';
 import '../controllers/select_controller.dart';
 import 'package:c2b/theme/app_colors.dart';
 import 'package:c2b/theme/app_text_styles.dart';
+
+import '../widgets/row_divider.dart';
 
 class ChordSelectScreen extends StatefulWidget {
   const ChordSelectScreen({super.key});
@@ -71,31 +75,16 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: true,
         leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back)),
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
+        ),
         actions: [
-          /* Set key */
+          /* Select key */
           GetBuilder<SelectController>(
             builder: (selCtrlr) {
-              return Padding(
-                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
-                child: DropdownButton(
-                  alignment: AlignmentDirectional.center,
-                  iconEnabledColor: Colors.white,
-                  value: _sc.keyIndex,
-                  items: keyListUtil.map((keyStr) {
-                    var keyIndex = keyIndexUtil(keyStr);
-                    var relativeKeyStr = keyListUtil[(keyIndex + 9) % 12];
-                    return DropdownMenuItem(
-                      value: keyIndexUtil(keyStr),
-                      child: Text(
-                        '${keyStr}M(${relativeKeyStr}m)',
-                        style: title2Style.copyWith(color: Colors.black),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (value) => _sc.setKeyIndex(value!),
-                ),
+              return SelectKey(
+                value: selCtrlr.keyIndex,
+                onChanged: (value) => selCtrlr.setKeyIndex(value!),
               );
             },
           ),
@@ -176,27 +165,20 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
       body: Row(
         // mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          /* Root note selector */
           GetBuilder<SelectController>(
             builder: (selCtrlr) {
               return Flexible(
                 flex: 2,
-                child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    return TextButton(
-                      onPressed: () => selCtrlr.rootIndex = index,
-                      child: Text(
-                        rootStringUtil(selCtrlr.keyIndex, index),
-                        style: selectorStyle,
-                      ),
-                    );
-                  },
-                  itemCount: numOfKeysUtil,
+                child: SelectRoot(
+                  keyIndex: selCtrlr.keyIndex,
+                  onPressed: (index) => selCtrlr.rootIndex = index,
                 ),
               );
             },
           ),
           const RowDivider(),
-          /* List of chords that can user select */
+          /* List of chords that user can select */
           GetBuilder<SelectController>(
             builder: (selCtrlr) {
               return Flexible(
@@ -343,20 +325,6 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class RowDivider extends StatelessWidget {
-  const RowDivider({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const VerticalDivider(
-      color: Colors.grey,
-      thickness: 1,
-      indent: 5,
-      endIndent: 5,
     );
   }
 }
