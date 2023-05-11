@@ -1,43 +1,4 @@
-// chord_table.dart
-
-import "../models/chord.dart";
-
-// sample chord training set
 final numOfKeysUtil = keyListUtil.length;
-
-const fMajorChordListUtil = [
-  ['FM', 'F A C'],
-  ['FM7', 'F A C E'],
-  ['FM9', 'F A C E G'],
-  ['Fsus4', 'F B♭ C'],
-  ['F7sus4', 'F B♭ C E♭'],
-  ['Gm', 'G B♭ D'],
-  ['Gm7', 'G B♭ D F'],
-  ['Gm9', 'G B♭ D F A'],
-  ['Gsus4', 'G C D'],
-  ['Am', 'A C E'],
-  ['Am7', 'A C E G'],
-  ['Asus4', 'A D E'],
-  ['B♭M', 'B♭ D F'],
-  ['B♭6', 'B♭ D F G'],
-  ['B♭m6', 'B♭ D♭ F G'],
-  ['B♭M7', 'B♭ D F A'],
-  ['B♭mM7', 'B♭ D♭ F A'],
-  ['B7(♭5)', 'B E♭ F A'],
-  ['CM', 'C E G'],
-  ['Cm7', 'C E♭ G B♭'],
-  ['C7', 'C E G B♭'],
-  ['Csus4', 'C F G'],
-  ['C7sus4', 'C F G B♭'],
-  ['C9sus4', 'C F G B♭ D'],
-  ['Dm', 'D F A'],
-  ['Dm7', 'D F A C'],
-  ['Dsus4', 'D G A'],
-  ['D7sus4', 'D G A C'],
-  ['Edim', 'E G B♭'],
-  ['Edim7', 'E G B♭ D♭'],
-  ['Em7(♭5)', 'E G B♭ D'],
-];
 
 const keyListUtil = [
   "C", // 0
@@ -302,7 +263,7 @@ int keyIndexUtil(String index) {
   return keyListUtil.indexOf(index);
 }
 
-// key: chord quality
+// key: chord quality name. ex) m7, 7sus4, ...
 // value: location(index) of a chord quality in qualityUtil
 final Map<String, int> _qualityToIndexMapUtil = {
   for (int qulityIndex = 0; qulityIndex < qualityUtil.length; qulityIndex++)
@@ -317,9 +278,9 @@ String qualityToStringUtil(int index) {
   return qualityUtil[index][0] as String;
 }
 
-String chordNotesUtil(Chord chord) {
-  var noteList = qualityUtil[chord.qualityIndex][1] as List<int>;
-  var rootIndex = chord.rootIndex;
+String chordNotesUtil(int rootIdx, int qualityIdx) {
+  var noteList = qualityUtil[qualityIdx][1] as List<int>;
+  var rootIndex = rootIdx;
   var rootList = isSharpGroup(rootIndex) ? rootListSharpUtil : rootListFlatUtil;
 
   String notesStr = rootList[rootIndex];
@@ -365,6 +326,41 @@ bool isSharpGroup(int keyIndex) {
 
   return isSharp;
 }
+
+// sample chord training set
+const fMajorChordListUtil = [
+  ['FM', 'F A C'],
+  ['FM7', 'F A C E'],
+  ['FM9', 'F A C E G'],
+  ['Fsus4', 'F B♭ C'],
+  ['F7sus4', 'F B♭ C E♭'],
+  ['Gm', 'G B♭ D'],
+  ['Gm7', 'G B♭ D F'],
+  ['Gm9', 'G B♭ D F A'],
+  ['Gsus4', 'G C D'],
+  ['Am', 'A C E'],
+  ['Am7', 'A C E G'],
+  ['Asus4', 'A D E'],
+  ['B♭M', 'B♭ D F'],
+  ['B♭6', 'B♭ D F G'],
+  ['B♭m6', 'B♭ D♭ F G'],
+  ['B♭M7', 'B♭ D F A'],
+  ['B♭mM7', 'B♭ D♭ F A'],
+  ['B7(♭5)', 'B E♭ F A'],
+  ['CM', 'C E G'],
+  ['Cm7', 'C E♭ G B♭'],
+  ['C7', 'C E G B♭'],
+  ['Csus4', 'C F G'],
+  ['C7sus4', 'C F G B♭'],
+  ['C9sus4', 'C F G B♭ D'],
+  ['Dm', 'D F A'],
+  ['Dm7', 'D F A C'],
+  ['Dsus4', 'D G A'],
+  ['D7sus4', 'D G A C'],
+  ['Edim', 'E G B♭'],
+  ['Edim7', 'E G B♭ D♭'],
+  ['Em7(♭5)', 'E G B♭ D'],
+];
 
 /* Integer Notation
 ["m", [0, 3, 7]],

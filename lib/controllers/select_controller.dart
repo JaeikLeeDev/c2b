@@ -87,7 +87,10 @@ class SelectController extends GetxController {
     var curSelected = [
       ...selected.map(
         (chord) {
-          return [chord.name(), chordNotesUtil(chord)];
+          return [
+            chord.name(),
+            chordNotesUtil(chord.rootIndex, chord.qualityIndex),
+          ];
         },
       )
     ];
