@@ -10,5 +10,5 @@ void main() {
 
   // debugRepaintRainbowEnabled = true;
   // debugRepaintTextRainbowEnabled = true;
-  runApp(C2bApp());
+  runApp(const C2bApp());
 }

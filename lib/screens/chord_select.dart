@@ -62,7 +62,6 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
   @override
   Widget build(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
-    var screenHeight = MediaQuery.of(context).size.height;
 
     var title2Style =
         AppTextStyle.title2.copyWith(fontSize: screenWidth * 0.024);

@@ -142,7 +142,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
       drawer: Drawer(
         child: SafeArea(
             child: ListView(
-          children: [],
+          children: const [],
         )),
       ),
     );
