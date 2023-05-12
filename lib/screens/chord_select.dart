@@ -1,4 +1,4 @@
-import 'package:c2b/widgets/select_key.dart';
+import 'package:c2b/widgets/select_key_dropdown.dart';
 import 'package:c2b/widgets/select_root.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -81,7 +81,7 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
           /* Select key */
           GetBuilder<SelectController>(
             builder: (selCtrlr) {
-              return SelectKey(
+              return SelectKeyDropdown(
                 value: selCtrlr.keyIndex,
                 onChanged: (value) => selCtrlr.setKeyIndex(value!),
               );

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../theme/app_text_styles.dart';
 import '../utils/chord_table.dart';
 
-class SelectKey extends StatelessWidget {
-  const SelectKey({
+class SelectKeyDropdown extends StatelessWidget {
+  const SelectKeyDropdown({
     required this.value,
     required this.onChanged,
     super.key,

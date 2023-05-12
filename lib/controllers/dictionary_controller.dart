@@ -1,6 +1,10 @@
 import 'package:get/get.dart';
 
+/*
+ * For ChordDictionayScreen
+ */
 class DictionaryController extends GetxController {
+  // Currently selected key
   int _keyIndex = 0;
 
   int get keyIndex {
@@ -12,6 +16,7 @@ class DictionaryController extends GetxController {
     update();
   }
 
+  // Currently selected root
   int _rootIndex = 0;
 
   int get rootIndex {
@@ -20,6 +25,19 @@ class DictionaryController extends GetxController {
 
   set rootIndex(int index) {
     _rootIndex = index;
+    update();
+  }
+
+  // true: show only diatonic chords
+  // false: show all chords
+  bool _showOnlyDiatonicOn = false;
+
+  bool get showOnlyDiatonicOn {
+    return _showOnlyDiatonicOn;
+  }
+
+  void toggleShowOnlyDiatonicOn() {
+    _showOnlyDiatonicOn = !_showOnlyDiatonicOn;
     update();
   }
 }
