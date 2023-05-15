@@ -88,8 +88,8 @@ class SelectController extends GetxController {
       ...selected.map(
         (chord) {
           return [
-            chord.name(),
-            chordNotesUtil(chord.rootIndex, chord.qualityIndex),
+            chordNameUtil(_keyIndex, chord.rootIndex, chord.qualityIndex),
+            chordNotesUtil(_keyIndex, chord.rootIndex, chord.qualityIndex),
           ];
         },
       )
@@ -108,37 +108,9 @@ class SelectController extends GetxController {
   }
 
   void setDiatonic() {
-    // root
-    select(_keyIndex, qualityIndexOf('M'));
-    select(_keyIndex, qualityIndexOf('M7'));
-    select(_keyIndex, qualityIndexOf('M9'));
-    // 2 of the key
-    select(_keyIndex + 2, qualityIndexOf('m'));
-    select(_keyIndex + 2, qualityIndexOf('m7'));
-    select(_keyIndex + 2, qualityIndexOf('m9'));
-    // 3 of the key
-    select(_keyIndex + 4, qualityIndexOf('m'));
-    select(_keyIndex + 4, qualityIndexOf('m7'));
-    select(_keyIndex + 4, qualityIndexOf('m7♭9'));
-    // 4 of the key
-    select(_keyIndex + 5, qualityIndexOf('M'));
-    select(_keyIndex + 5, qualityIndexOf('M7'));
-    select(_keyIndex + 5, qualityIndexOf('M9'));
-    // 5 of the key
-    select(_keyIndex + 7, qualityIndexOf('M'));
-    select(_keyIndex + 7, qualityIndexOf('7'));
-    select(_keyIndex + 7, qualityIndexOf('9'));
-    select(_keyIndex + 7, qualityIndexOf('sus4'));
-    select(_keyIndex + 7, qualityIndexOf('7sus4'));
-    select(_keyIndex + 7, qualityIndexOf('9sus4'));
-    // 6 of the key
-    select(_keyIndex + 9, qualityIndexOf('m'));
-    select(_keyIndex + 9, qualityIndexOf('m7'));
-    select(_keyIndex + 9, qualityIndexOf('m9'));
-    // 7 of the key
-    select(_keyIndex + 11, qualityIndexOf('dim'));
-    select(_keyIndex + 11, qualityIndexOf('m7♭5'));
-    select(_keyIndex + 11, qualityIndexOf('m7♭9♭5'));
+    for (var e in diatonicUtil) {
+      select(_keyIndex + e[0], e[1]);
+    }
     update();
   }
 

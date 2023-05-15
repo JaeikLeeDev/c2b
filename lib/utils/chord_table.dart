@@ -14,7 +14,8 @@ const keyListUtil = [
   "B♭", // 10
   "B", // 11
 ];
-const rootListSharpUtil = [
+
+const pitchSharpUtil = [
   "C", // 0
   "C♯", // 1
   "D", // 2
@@ -28,8 +29,7 @@ const rootListSharpUtil = [
   "A♯", // 10
   "B", // 11
 ];
-
-const rootListFlatUtil = [
+const pitchFlatUtil = [
   "C", // 0
   "D♭", // 1
   "D", // 2
@@ -43,6 +43,10 @@ const rootListFlatUtil = [
   "B♭", // 10
   "B", // 11
 ];
+
+String pitchUtil(bool isSharp, int index) {
+  return isSharp ? pitchSharpUtil[index % 12] : pitchFlatUtil[index % 12];
+}
 
 const qualityUtil = [
   [
@@ -68,10 +72,6 @@ const qualityUtil = [
   [
     "m9",
     [0, 3, 7, 10, 14]
-  ],
-  [
-    "m(add4)",
-    [0, 3, 7, 12]
   ],
   [
     "m(add9)",
@@ -126,8 +126,8 @@ const qualityUtil = [
     [0, 4, 7, 11, 14]
   ],
   [
-    "add4",
-    [0, 4, 7, 12]
+    "add2",
+    [0, 2, 4, 7]
   ],
   [
     "add9",
@@ -178,56 +178,48 @@ const qualityUtil = [
     [0, 3, 6, 9]
   ],
   [
-    "7♯9♯5",
-    [0, 4, 8, 10, 15]
-  ],
-  [
-    "7♯5",
-    [0, 4, 8, 10]
-  ],
-  [
-    "7♭9♯5",
-    [0, 4, 8, 10, 13]
-  ],
-  [
-    "7♯9♯5",
-    [0, 4, 8, 10, 15]
-  ],
-  [
-    "7♯9",
-    [0, 4, 7, 10, 15]
-  ],
-  [
-    "7(13)",
-    [0, 4, 7, 10, 14, 17, 21]
-  ],
-  [
     "7",
     [0, 4, 7, 10]
-  ],
-  [
-    "7alt",
-    [0, 4, 6, 10, 13]
-  ],
-  [
-    "7♭13",
-    [0, 4, 7, 10, 14, 17, 20]
   ],
   [
     "7♭5",
     [0, 4, 6, 10]
   ],
   [
-    "7♭9♭5",
-    [0, 4, 6, 10, 13]
-  ],
-  [
     "7♭9",
     [0, 4, 7, 10, 13]
   ],
   [
-    "9♯5",
-    [0, 4, 8, 10, 14]
+    "7♭9♭5",
+    [0, 4, 6, 10, 13]
+  ],
+  [
+    "7♭13",
+    [0, 4, 7, 10, 20]
+  ],
+  [
+    "7♯5",
+    [0, 4, 8, 10]
+  ],
+  [
+    "7♯9",
+    [0, 4, 7, 10, 15]
+  ],
+  [
+    "7♯9♯5",
+    [0, 4, 8, 10, 15]
+  ],
+  [
+    "7♭9♯5",
+    [0, 4, 8, 10, 13]
+  ],
+  [
+    "7(13)",
+    [0, 4, 7, 10, 21]
+  ],
+  [
+    "7alt",
+    [0, 4, 6, 10, 13]
   ],
   [
     "9",
@@ -238,7 +230,11 @@ const qualityUtil = [
     [0, 4, 6, 10, 14]
   ],
   [
-    "6/7",
+    "9♯5",
+    [0, 4, 8, 10, 14]
+  ],
+  [
+    "7/6",
     [0, 4, 7, 9, 10]
   ],
   [
@@ -257,6 +253,40 @@ const qualityUtil = [
     "13",
     [0, 4, 7, 10, 14, 17, 21]
   ],
+];
+
+final diatonicUtil = [
+  // root
+  [0, qualityIndexOf('M')],
+  [0, qualityIndexOf('M7')],
+  [0, qualityIndexOf('M9')],
+  // 2 of the key
+  [2, qualityIndexOf('m')],
+  [2, qualityIndexOf('m7')],
+  [2, qualityIndexOf('m9')],
+  // 3 of the key
+  [4, qualityIndexOf('m')],
+  [4, qualityIndexOf('m7')],
+  [4, qualityIndexOf('m7♭9')],
+  // 4 of the key
+  [5, qualityIndexOf('M')],
+  [5, qualityIndexOf('M7')],
+  [5, qualityIndexOf('M9')],
+  // 5 of the key
+  [7, qualityIndexOf('M')],
+  [7, qualityIndexOf('7')],
+  [7, qualityIndexOf('9')],
+  [7, qualityIndexOf('sus4')],
+  [7, qualityIndexOf('7sus4')],
+  [7, qualityIndexOf('9sus4')],
+  // 6 of the key
+  [9, qualityIndexOf('m')],
+  [9, qualityIndexOf('m7')],
+  [9, qualityIndexOf('m9')],
+  // 7 of the key
+  [11, qualityIndexOf('dim')],
+  [11, qualityIndexOf('m7♭5')],
+  [11, qualityIndexOf('m7♭9♭5')],
 ];
 
 int keyIndexUtil(String index) {
@@ -278,31 +308,35 @@ String qualityToStringUtil(int index) {
   return qualityUtil[index][0] as String;
 }
 
-String chordNotesUtil(int rootIdx, int qualityIdx) {
+String chordNotesUtil(int keyIdx, int rootIdx, int qualityIdx) {
   var noteList = qualityUtil[qualityIdx][1] as List<int>;
-  var rootIndex = rootIdx;
-  var rootList = isSharpGroup(rootIndex) ? rootListSharpUtil : rootListFlatUtil;
-
-  String notesStr = rootList[rootIndex];
+  bool isSharp = isSharpGroup(keyIdx);
 
   // Get notes of the chord using the key
   // and the distance (integer notation) from the root.
+  String notesStr = pitchUtil(isSharp, rootIdx);
   for (int i = 1; i < noteList.length; i++) {
-    notesStr += " ${rootList[(rootIndex + noteList[i]) % 12]}";
+    notesStr += " ${pitchUtil(isSharp, rootIdx + noteList[i])}";
   }
   return notesStr;
 }
 
+// return a String of a chord notation
+// ex) C#m7, E7sus4, Gadd9, ...
+String chordNameUtil(int keyIdx, int rootIdx, int qualityIdx) {
+  return isSharpGroup(keyIdx)
+      ? '${pitchUtil(true, rootIdx)}${qualityToStringUtil(qualityIdx)}'
+      : '${pitchUtil(false, rootIdx)}${qualityToStringUtil(qualityIdx)}';
+}
+
 String rootStringUtil(int keyIndex, int rootIndex) {
-  return isSharpGroup(keyIndex)
-      ? rootListSharpUtil[rootIndex]
-      : rootListFlatUtil[rootIndex];
+  return pitchUtil(isSharpGroup(keyIndex), rootIndex);
 }
 
 bool isSharpGroup(int keyIndex) {
   bool isSharp;
 
-  switch (keyIndex) {
+  switch (keyIndex % 12) {
     case 0: // C
     case 7: // G
     case 2: // D

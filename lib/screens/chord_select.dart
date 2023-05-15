@@ -227,7 +227,11 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          chord.name(),
+                          chordNameUtil(
+                            selCtrlr.keyIndex,
+                            chord.rootIndex,
+                            chord.qualityIndex,
+                          ),
                           style: listItemStyle,
                         ),
                         IconButton(

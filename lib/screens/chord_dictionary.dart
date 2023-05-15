@@ -75,55 +75,19 @@ class _ChordDictionaryScreenState extends State<ChordDictionaryScreen> {
         builder: (dicCtrlr) {
           return Row(
             children: [
-              Flexible(
-                flex: 1,
-                child: SelectRoot(
-                  keyIndex: dicCtrlr.keyIndex,
-                  onPressed: (index) => dicCtrlr.rootIndex = index,
+              if (dicCtrlr.showOnlyDiatonicOn == false)
+                Flexible(
+                  flex: 1,
+                  child: SelectRoot(
+                    keyIndex: dicCtrlr.keyIndex,
+                    onPressed: (index) => dicCtrlr.rootIndex = index,
+                  ),
                 ),
-              ),
               const RowDivider(),
               Flexible(
                 flex: 4,
-                child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        const Divider(
-                          indent: 10.0,
-                          endIndent: 10.0,
-                        ),
-                        Row(
-                          children: [
-                            Flexible(
-                              flex: 4,
-                              fit: FlexFit.tight,
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: screenHeight * 0.1,
-                                child: Text(
-                                  '${rootStringUtil(dicCtrlr.keyIndex, dicCtrlr.rootIndex)}${qualityToStringUtil(index)}',
-                                  style: listItemStyle,
-                                ),
-                              ),
-                            ),
-                            Flexible(
-                              flex: 5,
-                              child: Container(
-                                alignment: Alignment.centerLeft,
-                                height: screenHeight * 0.1,
-                                child: Text(
-                                  chordNotesUtil(dicCtrlr.rootIndex, index),
-                                  style: listItemStyle,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
-                  itemCount: qualityUtil.length,
+                child: _ChordList(
+                  showOnlyDiatonicOn: dicCtrlr.showOnlyDiatonicOn,
                 ),
               ),
             ],
@@ -131,5 +95,115 @@ class _ChordDictionaryScreenState extends State<ChordDictionaryScreen> {
         },
       ),
     );
+  }
+}
+
+class _ChordList extends StatelessWidget {
+  _ChordList({
+    required this.showOnlyDiatonicOn,
+    super.key,
+  });
+
+  final bool showOnlyDiatonicOn;
+  final DictionaryController _dc = Get.find();
+
+  @override
+  Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
+    var listItemStyle =
+        AppTextStyle.button1.copyWith(fontSize: screenWidth * 0.05);
+    return showOnlyDiatonicOn
+        ? ListView.builder(
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  const Divider(
+                    indent: 10.0,
+                    endIndent: 10.0,
+                  ),
+                  Row(
+                    children: [
+                      /* Chord name */
+                      Flexible(
+                        flex: 4,
+                        fit: FlexFit.tight,
+                        child: Container(
+                          alignment: Alignment.center,
+                          height: screenHeight * 0.1,
+                          child: Text(
+                            chordNameUtil(
+                              _dc.keyIndex,
+                              _dc.keyIndex + diatonicUtil[index][0],
+                              diatonicUtil[index][1],
+                            ),
+                            style: listItemStyle,
+                          ),
+                        ),
+                      ),
+                      /* Chord notes */
+                      Flexible(
+                        flex: 5,
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          height: screenHeight * 0.1,
+                          child: Text(
+                            chordNotesUtil(
+                                _dc.keyIndex,
+                                _dc.keyIndex + diatonicUtil[index][0],
+                                diatonicUtil[index][1]),
+                            style: listItemStyle,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+            itemCount: diatonicUtil.length,
+          )
+        : ListView.builder(
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  const Divider(
+                    indent: 10.0,
+                    endIndent: 10.0,
+                  ),
+                  Row(
+                    children: [
+                      /* Chord name */
+                      Flexible(
+                        flex: 4,
+                        fit: FlexFit.tight,
+                        child: Container(
+                          alignment: Alignment.center,
+                          height: screenHeight * 0.1,
+                          child: Text(
+                            chordNameUtil(_dc.keyIndex, _dc.rootIndex, index),
+                            style: listItemStyle,
+                          ),
+                        ),
+                      ),
+                      /* Chord notes */
+                      Flexible(
+                        flex: 5,
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          height: screenHeight * 0.1,
+                          child: Text(
+                            chordNotesUtil(_dc.keyIndex, _dc.rootIndex, index),
+                            style: listItemStyle,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+            itemCount: qualityUtil.length,
+          );
   }
 }
