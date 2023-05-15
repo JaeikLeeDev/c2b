@@ -1,43 +1,4 @@
-// chord_table.dart
-
-import "../models/chord.dart";
-
-// sample chord training set
 final numOfKeysUtil = keyListUtil.length;
-
-const fMajorChordListUtil = [
-  ['FM', 'F A C'],
-  ['FM7', 'F A C E'],
-  ['FM9', 'F A C E G'],
-  ['Fsus4', 'F B♭ C'],
-  ['F7sus4', 'F B♭ C E♭'],
-  ['Gm', 'G B♭ D'],
-  ['Gm7', 'G B♭ D F'],
-  ['Gm9', 'G B♭ D F A'],
-  ['Gsus4', 'G C D'],
-  ['Am', 'A C E'],
-  ['Am7', 'A C E G'],
-  ['Asus4', 'A D E'],
-  ['B♭M', 'B♭ D F'],
-  ['B♭6', 'B♭ D F G'],
-  ['B♭m6', 'B♭ D♭ F G'],
-  ['B♭M7', 'B♭ D F A'],
-  ['B♭mM7', 'B♭ D♭ F A'],
-  ['B7(♭5)', 'B E♭ F A'],
-  ['CM', 'C E G'],
-  ['Cm7', 'C E♭ G B♭'],
-  ['C7', 'C E G B♭'],
-  ['Csus4', 'C F G'],
-  ['C7sus4', 'C F G B♭'],
-  ['C9sus4', 'C F G B♭ D'],
-  ['Dm', 'D F A'],
-  ['Dm7', 'D F A C'],
-  ['Dsus4', 'D G A'],
-  ['D7sus4', 'D G A C'],
-  ['Edim', 'E G B♭'],
-  ['Edim7', 'E G B♭ D♭'],
-  ['Em7(♭5)', 'E G B♭ D'],
-];
 
 const keyListUtil = [
   "C", // 0
@@ -53,7 +14,8 @@ const keyListUtil = [
   "B♭", // 10
   "B", // 11
 ];
-const rootListSharpUtil = [
+
+const pitchSharpUtil = [
   "C", // 0
   "C♯", // 1
   "D", // 2
@@ -67,8 +29,7 @@ const rootListSharpUtil = [
   "A♯", // 10
   "B", // 11
 ];
-
-const rootListFlatUtil = [
+const pitchFlatUtil = [
   "C", // 0
   "D♭", // 1
   "D", // 2
@@ -82,6 +43,10 @@ const rootListFlatUtil = [
   "B♭", // 10
   "B", // 11
 ];
+
+String pitchUtil(bool isSharp, int index) {
+  return isSharp ? pitchSharpUtil[index % 12] : pitchFlatUtil[index % 12];
+}
 
 const qualityUtil = [
   [
@@ -107,10 +72,6 @@ const qualityUtil = [
   [
     "m9",
     [0, 3, 7, 10, 14]
-  ],
-  [
-    "m(add4)",
-    [0, 3, 7, 12]
   ],
   [
     "m(add9)",
@@ -165,8 +126,8 @@ const qualityUtil = [
     [0, 4, 7, 11, 14]
   ],
   [
-    "add4",
-    [0, 4, 7, 12]
+    "add2",
+    [0, 2, 4, 7]
   ],
   [
     "add9",
@@ -217,56 +178,48 @@ const qualityUtil = [
     [0, 3, 6, 9]
   ],
   [
-    "7♯9♯5",
-    [0, 4, 8, 10, 15]
-  ],
-  [
-    "7♯5",
-    [0, 4, 8, 10]
-  ],
-  [
-    "7♭9♯5",
-    [0, 4, 8, 10, 13]
-  ],
-  [
-    "7♯9♯5",
-    [0, 4, 8, 10, 15]
-  ],
-  [
-    "7♯9",
-    [0, 4, 7, 10, 15]
-  ],
-  [
-    "7(13)",
-    [0, 4, 7, 10, 14, 17, 21]
-  ],
-  [
     "7",
     [0, 4, 7, 10]
-  ],
-  [
-    "7alt",
-    [0, 4, 6, 10, 13]
-  ],
-  [
-    "7♭13",
-    [0, 4, 7, 10, 14, 17, 20]
   ],
   [
     "7♭5",
     [0, 4, 6, 10]
   ],
   [
-    "7♭9♭5",
-    [0, 4, 6, 10, 13]
-  ],
-  [
     "7♭9",
     [0, 4, 7, 10, 13]
   ],
   [
-    "9♯5",
-    [0, 4, 8, 10, 14]
+    "7♭9♭5",
+    [0, 4, 6, 10, 13]
+  ],
+  [
+    "7♭13",
+    [0, 4, 7, 10, 20]
+  ],
+  [
+    "7♯5",
+    [0, 4, 8, 10]
+  ],
+  [
+    "7♯9",
+    [0, 4, 7, 10, 15]
+  ],
+  [
+    "7♯9♯5",
+    [0, 4, 8, 10, 15]
+  ],
+  [
+    "7♭9♯5",
+    [0, 4, 8, 10, 13]
+  ],
+  [
+    "7(13)",
+    [0, 4, 7, 10, 21]
+  ],
+  [
+    "7alt",
+    [0, 4, 6, 10, 13]
   ],
   [
     "9",
@@ -277,7 +230,11 @@ const qualityUtil = [
     [0, 4, 6, 10, 14]
   ],
   [
-    "6/7",
+    "9♯5",
+    [0, 4, 8, 10, 14]
+  ],
+  [
+    "7/6",
     [0, 4, 7, 9, 10]
   ],
   [
@@ -298,11 +255,45 @@ const qualityUtil = [
   ],
 ];
 
+final diatonicUtil = [
+  // root
+  [0, qualityIndexOf('M')],
+  [0, qualityIndexOf('M7')],
+  [0, qualityIndexOf('M9')],
+  // 2 of the key
+  [2, qualityIndexOf('m')],
+  [2, qualityIndexOf('m7')],
+  [2, qualityIndexOf('m9')],
+  // 3 of the key
+  [4, qualityIndexOf('m')],
+  [4, qualityIndexOf('m7')],
+  [4, qualityIndexOf('m7♭9')],
+  // 4 of the key
+  [5, qualityIndexOf('M')],
+  [5, qualityIndexOf('M7')],
+  [5, qualityIndexOf('M9')],
+  // 5 of the key
+  [7, qualityIndexOf('M')],
+  [7, qualityIndexOf('7')],
+  [7, qualityIndexOf('9')],
+  [7, qualityIndexOf('sus4')],
+  [7, qualityIndexOf('7sus4')],
+  [7, qualityIndexOf('9sus4')],
+  // 6 of the key
+  [9, qualityIndexOf('m')],
+  [9, qualityIndexOf('m7')],
+  [9, qualityIndexOf('m9')],
+  // 7 of the key
+  [11, qualityIndexOf('dim')],
+  [11, qualityIndexOf('m7♭5')],
+  [11, qualityIndexOf('m7♭9♭5')],
+];
+
 int keyIndexUtil(String index) {
   return keyListUtil.indexOf(index);
 }
 
-// key: chord quality
+// key: chord quality name. ex) m7, 7sus4, ...
 // value: location(index) of a chord quality in qualityUtil
 final Map<String, int> _qualityToIndexMapUtil = {
   for (int qulityIndex = 0; qulityIndex < qualityUtil.length; qulityIndex++)
@@ -317,31 +308,35 @@ String qualityToStringUtil(int index) {
   return qualityUtil[index][0] as String;
 }
 
-String chordNotesUtil(Chord chord) {
-  var noteList = qualityUtil[chord.qualityIndex][1] as List<int>;
-  var rootIndex = chord.rootIndex;
-  var rootList = isSharpGroup(rootIndex) ? rootListSharpUtil : rootListFlatUtil;
-
-  String notesStr = rootList[rootIndex];
+String chordNotesUtil(int keyIdx, int rootIdx, int qualityIdx) {
+  var noteList = qualityUtil[qualityIdx][1] as List<int>;
+  bool isSharp = isSharpGroup(keyIdx);
 
   // Get notes of the chord using the key
   // and the distance (integer notation) from the root.
+  String notesStr = pitchUtil(isSharp, rootIdx);
   for (int i = 1; i < noteList.length; i++) {
-    notesStr += " ${rootList[(rootIndex + noteList[i]) % 12]}";
+    notesStr += " ${pitchUtil(isSharp, rootIdx + noteList[i])}";
   }
   return notesStr;
 }
 
+// return a String of a chord notation
+// ex) C#m7, E7sus4, Gadd9, ...
+String chordNameUtil(int keyIdx, int rootIdx, int qualityIdx) {
+  return isSharpGroup(keyIdx)
+      ? '${pitchUtil(true, rootIdx)}${qualityToStringUtil(qualityIdx)}'
+      : '${pitchUtil(false, rootIdx)}${qualityToStringUtil(qualityIdx)}';
+}
+
 String rootStringUtil(int keyIndex, int rootIndex) {
-  return isSharpGroup(keyIndex)
-      ? rootListSharpUtil[rootIndex]
-      : rootListFlatUtil[rootIndex];
+  return pitchUtil(isSharpGroup(keyIndex), rootIndex);
 }
 
 bool isSharpGroup(int keyIndex) {
   bool isSharp;
 
-  switch (keyIndex) {
+  switch (keyIndex % 12) {
     case 0: // C
     case 7: // G
     case 2: // D
@@ -365,6 +360,41 @@ bool isSharpGroup(int keyIndex) {
 
   return isSharp;
 }
+
+// sample chord training set
+const fMajorChordListUtil = [
+  ['FM', 'F A C'],
+  ['FM7', 'F A C E'],
+  ['FM9', 'F A C E G'],
+  ['Fsus4', 'F B♭ C'],
+  ['F7sus4', 'F B♭ C E♭'],
+  ['Gm', 'G B♭ D'],
+  ['Gm7', 'G B♭ D F'],
+  ['Gm9', 'G B♭ D F A'],
+  ['Gsus4', 'G C D'],
+  ['Am', 'A C E'],
+  ['Am7', 'A C E G'],
+  ['Asus4', 'A D E'],
+  ['B♭M', 'B♭ D F'],
+  ['B♭6', 'B♭ D F G'],
+  ['B♭m6', 'B♭ D♭ F G'],
+  ['B♭M7', 'B♭ D F A'],
+  ['B♭mM7', 'B♭ D♭ F A'],
+  ['B7(♭5)', 'B E♭ F A'],
+  ['CM', 'C E G'],
+  ['Cm7', 'C E♭ G B♭'],
+  ['C7', 'C E G B♭'],
+  ['Csus4', 'C F G'],
+  ['C7sus4', 'C F G B♭'],
+  ['C9sus4', 'C F G B♭ D'],
+  ['Dm', 'D F A'],
+  ['Dm7', 'D F A C'],
+  ['Dsus4', 'D G A'],
+  ['D7sus4', 'D G A C'],
+  ['Edim', 'E G B♭'],
+  ['Edim7', 'E G B♭ D♭'],
+  ['Em7(♭5)', 'E G B♭ D'],
+];
 
 /* Integer Notation
 ["m", [0, 3, 7]],

@@ -8,21 +8,27 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          TextButton(
-            onPressed: () => Get.toNamed('/chord_select'),
-            child: const Text('Chord Training'),
+          Card(
+            child: TextButton(
+              onPressed: () => Get.toNamed('/chord_select'),
+              child: const Text('Chord Training'),
+            ),
           ),
-          TextButton(
-            onPressed: () => Get.toNamed('/chord_lookup'),
-            child: const Text('Chord Table'),
+          Card(
+            child: TextButton(
+              onPressed: () => Get.toNamed('/chord_dictionary'),
+              child: const Text('Chord Dictionary'),
+            ),
           ),
-          TextButton(
-            onPressed: () => Get.toNamed('/settings'),
-            child: const Text('Settings'),
+          Card(
+            child: TextButton(
+              onPressed: () => Get.toNamed('/settings'),
+              child: const Text('Settings'),
+            ),
           ),
         ],
       ),
