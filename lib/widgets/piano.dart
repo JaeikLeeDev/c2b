@@ -26,11 +26,11 @@ class Piano extends StatelessWidget {
     final pianoKey = InkWell(
       borderRadius: borderRadius as BorderRadius,
       child: Stack(
-        children: <Widget>[
+        children: [
           DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: borderRadius,
-              color: _tc.noteStates[midi]
+              color: _tc.pianoStates[midi]
                   ? AppColors.secondary
                   : accidental
                       ? Colors.black
@@ -55,7 +55,7 @@ class Piano extends StatelessWidget {
           ),
         ],
       ),
-      onTap: () => _tc.toggleNoteState(midi),
+      onTap: () => _tc.togglePianoState(midi),
     );
 
     if (accidental) {

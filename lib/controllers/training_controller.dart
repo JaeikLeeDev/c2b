@@ -77,12 +77,12 @@ class TrainingController extends GetxController {
 
   void nextChord() {
     _chordCounter = (_chordCounter + 1) % _chordPerPhrase;
+    _resetPianoState();
     update();
   }
 
-  void setChordCounter(int counter) {
+  void _setChordCounter(int counter) {
     _chordCounter = counter;
-    update();
   }
 
   void nextDivision() {
@@ -91,9 +91,8 @@ class TrainingController extends GetxController {
     update();
   }
 
-  void setDivisionCounter(int counter) {
+  void _setDivisionCounter(int counter) {
     _divisionCounter = counter;
-    update();
   }
 
   /* Metronome */
@@ -146,8 +145,10 @@ class TrainingController extends GetxController {
   void stop() async {
     stopTimer();
     await _beep.stopBeat();
-    setChordCounter(0);
-    setDivisionCounter(0);
+    _setChordCounter(0);
+    _setDivisionCounter(0);
+    _resetPianoState();
+    update();
   }
 
   void stopTimer() {
@@ -155,40 +156,46 @@ class TrainingController extends GetxController {
       _timer.cancel();
     }
     _isTimerStarted = false;
-    update();
   }
 
   /* Chord's Note Quiz */
 
   // Start from 24(C1)
   static const int _octaveCount = 3;
-  final List<bool> _noteStates =
+  final List<bool> _pianoStates =
       List.generate(12 * (_octaveCount + 2), (_) => false);
-  final Set<int> _selected = {};
+  final Set<int> _selectedNotes = {};
 
   int get octaveCount {
     return _octaveCount;
   }
 
-  List<bool> get noteStates {
-    return _noteStates;
+  List<bool> get pianoStates {
+    return _pianoStates;
   }
 
-  void toggleNoteState(index) {
-    _noteStates[index] = !_noteStates[index];
-    if (_noteStates[index] == true) {
-      _selected.add(index);
+  void togglePianoState(index) {
+    _pianoStates[index] = !_pianoStates[index];
+    if (_pianoStates[index] == true) {
+      _selectedNotes.add(index);
     } else {
-      _selected.remove(index);
+      _selectedNotes.remove(index);
     }
     update();
   }
 
-  Set<int> get selected => _selected;
-  List<int> get selectedList => _selected.toList()..sort();
+  void _resetPianoState() {
+    for (int i = 0; i < _pianoStates.length; i++) {
+      _pianoStates[i] = false;
+    }
+    _selectedNotes.clear();
+  }
+
+  Set<int> get selected => _selectedNotes;
+  List<int> get selectedList => _selectedNotes.toList()..sort();
 
   String selectedToString() {
-    var sortedList = _selected.toList()..sort();
+    var sortedList = _selectedNotes.toList()..sort();
     String selected = "";
     for (var element in sortedList) {
       selected += '${Pitch.fromMidiNumber(element).pitchClass} ';
