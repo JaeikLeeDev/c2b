@@ -35,9 +35,11 @@ class Score extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
       child: _tc.pianoOn
+          /* 가상 건반 모드 UI */
           ? Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                /* 현재 선택된(누른) 건반의 음들 나열 */
                 Expanded(
                   child: Center(
                     child: Text(
@@ -51,6 +53,7 @@ class Score extends StatelessWidget {
                     ),
                   ),
                 ),
+                /* 두 마디 */
                 Bar(
                   chord: (_sc
                       .training)[_tc.randomChordIndexList[_tc.chordCounter]],
@@ -63,6 +66,7 @@ class Score extends StatelessWidget {
                 ),
               ],
             )
+          /* 기본 연습 모드 UI */
           : Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
