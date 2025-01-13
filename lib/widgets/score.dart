@@ -9,11 +9,14 @@ import "../utils/chord_table.dart";
 import 'bar.dart';
 
 class Score extends StatelessWidget {
+  /// 코드 연습을 위한 악보를 생성.
   Score({super.key});
 
   final TrainingController _tc = Get.find();
   final SelectController _sc = Get.find();
 
+  /// 가상건반 연습모드에서 사용자가 정답을 맞췄는지 검사하는 함수.
+  /// 현재 chordCounter가 가리키고 있는 코드의 구성음과 사용자가 가상건반에서 선택한 건반의 음이 동일한지 검사
   bool _isCorrect() {
     return listEquals(
       [...(_tc.selected).map((e) => e % 12)]..sort(),
@@ -35,7 +38,7 @@ class Score extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
       child: _tc.pianoOn
-          /* 가상 건반 모드 UI */
+          /* 가상 건반 모드 선택시 UI */
           ? Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -66,11 +69,11 @@ class Score extends StatelessWidget {
                 ),
               ],
             )
-          /* 기본 연습 모드 UI */
+          /* 기본 연습 모드 선택시 UI */
           : Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                /* Phrase - top */
+                /* Phrase - top (윗줄) */
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -82,7 +85,7 @@ class Score extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: screenSize.height * 0.03),
-                /* Phrase - bottom */
+                /* Phrase - bottom (아래줄) */
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

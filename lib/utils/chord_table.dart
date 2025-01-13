@@ -1,5 +1,9 @@
+/// 연습에 탑재된 key(scale)의 수.
+/// 현재 메이저스케일과 각 메이저스케일에 매칭되는 마이너스케일만 고려. 총 12개
+/// 추후 다양한 스케일 탑재 예정.
 final numOfKeysUtil = keyListUtil.length;
 
+/// 연습에 탑재된 key(scale) 리스트
 const keyListUtil = [
   "C", // 0
   "D♭", // 1
@@ -15,6 +19,7 @@ const keyListUtil = [
   "B", // 11
 ];
 
+/// #방식 표기의 C~B 12개 음이름 리스트
 const pitchSharpUtil = [
   "C", // 0
   "C♯", // 1
@@ -29,6 +34,8 @@ const pitchSharpUtil = [
   "A♯", // 10
   "B", // 11
 ];
+
+/// b방식 표기의 C~B 12개 음이름 리스트
 const pitchFlatUtil = [
   "C", // 0
   "D♭", // 1
@@ -44,10 +51,15 @@ const pitchFlatUtil = [
   "B", // 11
 ];
 
+/// 음이름을 bool값에 따라 #방식 또는 b방식으로 return해주는 함수
 String pitchUtil(bool isSharp, int index) {
   return isSharp ? pitchSharpUtil[index % 12] : pitchFlatUtil[index % 12];
 }
 
+/// 각 화성들의 [표기, quality] 리스트.
+/// quality(규칙, 화성)는 코드의 구성음을 다음과 같은 방식으로 표현
+/// - 근음: 0
+/// - 구성음: 반음을 1로 하는 근음과의 거리
 const qualityUtil = [
   [
     "m",
@@ -255,59 +267,70 @@ const qualityUtil = [
   ],
 ];
 
+/// diatonic 코드 모음.
+/// 리스트의 각 요소는 [코드의 root, quality index].
+/// models/chord.dart의 Chord 객체와 동일한 구조.
 final diatonicUtil = [
-  // root
+  // I of the key
   [0, qualityIndexOf('M')],
   [0, qualityIndexOf('M7')],
   [0, qualityIndexOf('M9')],
-  // 2 of the key
+  // II of the key
   [2, qualityIndexOf('m')],
   [2, qualityIndexOf('m7')],
   [2, qualityIndexOf('m9')],
-  // 3 of the key
+  // III of the key
   [4, qualityIndexOf('m')],
   [4, qualityIndexOf('m7')],
   [4, qualityIndexOf('m7♭9')],
-  // 4 of the key
+  // IV of the key
   [5, qualityIndexOf('M')],
   [5, qualityIndexOf('M7')],
   [5, qualityIndexOf('M9')],
-  // 5 of the key
+  // V of the key
   [7, qualityIndexOf('M')],
   [7, qualityIndexOf('7')],
   [7, qualityIndexOf('9')],
   [7, qualityIndexOf('sus4')],
   [7, qualityIndexOf('7sus4')],
   [7, qualityIndexOf('9sus4')],
-  // 6 of the key
+  // VI of the key
   [9, qualityIndexOf('m')],
   [9, qualityIndexOf('m7')],
   [9, qualityIndexOf('m9')],
-  // 7 of the key
+  // VII of the key
   [11, qualityIndexOf('dim')],
   [11, qualityIndexOf('m7♭5')],
   [11, qualityIndexOf('m7♭9♭5')],
 ];
 
+/// 리스트 keyListUtil에서 특정 key 문자열의 인덱스를 return하는 함수
 int keyIndexUtil(String index) {
   return keyListUtil.indexOf(index);
 }
 
-// key: chord quality name. ex) m7, 7sus4, ...
-// value: location(index) of a chord quality in qualityUtil
+/// 코드 quality 이름 문자열("m7", "m7♭9")을 key로,
+/// 해당 quality의 qualityUtil에서의 인덱스("m7"의 경우 1, "m7♭9"의 경우 3)를 value로 하는 Map
 final Map<String, int> _qualityToIndexMapUtil = {
   for (int qulityIndex = 0; qulityIndex < qualityUtil.length; qulityIndex++)
     qualityUtil[qulityIndex][0] as String: qulityIndex,
 };
 
+/// 코드 quality 이름 문자열("m7", "m7♭9") [quality]을 파라미터로 받아서
+/// 해당 quality의 qualityUtil에서의 인덱스("m7"의 경우 1, "m7♭9"의 경우 3)를 return하는 함수
 int qualityIndexOf(String quality) {
   return _qualityToIndexMapUtil[quality] as int;
 }
 
+/// 리스트 qualityUtil의 인덱스 [index]를 파라미터로 받아
+/// 해당 quality 이름 문자열("m7", "m7♭9")을 return하는 함수
 String qualityToStringUtil(int index) {
   return qualityUtil[index][0] as String;
 }
 
+/// key(scale)의 인덱스 [keyIdx], 코드의 근음 [rootIdx], 코드의 화성 [qualityIdx]을 파라미터로 받아
+/// 해당 코드의 구성음 문자열을 key에 알맞은 방식으로 return하는 함수.
+/// CM7 코드인 경우 "C E G B"를 return.
 String chordNotesUtil(int keyIdx, int rootIdx, int qualityIdx) {
   var noteList = qualityUtil[qualityIdx][1] as List<int>;
   bool isSharp = isSharpGroup(keyIdx);
@@ -321,8 +344,9 @@ String chordNotesUtil(int keyIdx, int rootIdx, int qualityIdx) {
   return notesStr;
 }
 
-// return a String of a chord notation
-// ex) C#m7, E7sus4, Gadd9, ...
+/// key(scale)의 인덱스 [keyIdx], 코드의 근음 [rootIdx], 코드의 화성 [qualityIdx]을 파라미터로 받아
+/// 해당 코드의 표기 문자열을 key에 알맞은 방식으로 return하는 함수.
+/// ex) "C#m7", "E7sus4", "Gadd9", ...
 String chordNameUtil(int keyIdx, int rootIdx, int qualityIdx) {
   return isSharpGroup(keyIdx)
       ? '${pitchUtil(true, rootIdx)}${qualityToStringUtil(qualityIdx)}'
@@ -333,6 +357,8 @@ String rootStringUtil(int keyIndex, int rootIndex) {
   return pitchUtil(isSharpGroup(keyIndex), rootIndex);
 }
 
+/// key(scale)의 인덱스 [keyIndex]를 받아
+/// 해당 key를 어떤 방식(#/b)으로 표기할지 결정하는 함수
 bool isSharpGroup(int keyIndex) {
   bool isSharp;
 

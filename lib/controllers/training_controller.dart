@@ -7,6 +7,7 @@ import 'package:tonic/tonic.dart';
 import '../controllers/select_controller.dart';
 import '../utils/beep.dart';
 
+/// TrainingScreen에서 필요한 데이터 및 기능을 다루는 Controller
 class TrainingController extends GetxController {
   final SelectController _selectController = Get.find();
 
@@ -125,7 +126,7 @@ class TrainingController extends GetxController {
   /// 다음 bar(다음 코드)로 넘어갈 때 호출
   void nextChord() {
     _chordCounter = (_chordCounter + 1) % _chordPerPhrase;
-    _resetPianoState(); // 가상피아노모드인 경우, 선택된 건반 모두 클리어
+    _resetPianoState(); // 가상건반모드인 경우, 선택된 건반 모두 클리어
     update();
   }
 
@@ -245,7 +246,7 @@ class TrainingController extends GetxController {
   ///
   /// ```onOffOptions[1]```: 윗줄 코드 4개만 반복 ON/OFF
   ///
-  /// ```onOffOptions[2]```: 연습 모드 기본/가상피아노 전환
+  /// ```onOffOptions[2]```: 연습 모드 기본/가상건반 전환
   final List<bool> _onOffOptions = [true, false, false];
 
   List<bool> get onOffOptions {

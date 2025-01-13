@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import "../models/chord.dart";
 import "../utils/chord_table.dart";
 
+/// ChordSelectScreen에서 필요한 데이터 및 기능을 다루는 Controller
 class SelectController extends GetxController {
   /// 연습에 포함시킬 코드와 해당 코드 구성음 쌍을 요소로 갖는 리스트
   /// 이 리스트의 인덱스를 랜덤으로 뽑아 연습 화면에 해당 인덱스의 코드를 띄움
