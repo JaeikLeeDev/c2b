@@ -1,6 +1,7 @@
 import 'package:soundpool/soundpool.dart';
 import 'package:flutter/services.dart';
 
+/// 메트로놈의 beat 소리
 class Beep {
   Beep._();
   static final Beep _instance = Beep._();

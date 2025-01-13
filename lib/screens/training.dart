@@ -23,6 +23,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
 
   @override
   void initState() {
+    // 화면 Orientation 고정, 풀스크린 모드
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     _trainingController.initRandomChord();
     super.initState();
@@ -47,6 +48,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
+                  /* 연습 설정 컨트롤러 섹션 */
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: 30.0,
@@ -126,7 +128,7 @@ class _TrainingScreenState extends State<TrainingScreen> {
                       ],
                     ),
                   ),
-                  /* Random chords for training */
+                  /* 악보 섹션 */
                   Score(),
                   if (trainCtrlr.pianoOn == true)
                     Expanded(

@@ -6,6 +6,7 @@ import '../controllers/training_controller.dart';
 import 'package:c2b/theme/app_colors.dart';
 
 class Bar extends StatelessWidget {
+  /// 한 마디를 생성
   Bar({
     required this.chord,
     required this.isCur,
@@ -40,6 +41,7 @@ class Bar extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            /* 코드 notation */
             Text(
               chord[0],
               style: TextStyle(
@@ -48,6 +50,7 @@ class Bar extends StatelessWidget {
                   color: isCur ? AppColors.primary : Colors.black),
             ),
             const SizedBox(height: 10),
+            /* 코드 구성음 */
             if (_tc.answerOn == true)
               Text(
                 chord[1],

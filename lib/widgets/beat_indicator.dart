@@ -5,6 +5,7 @@ import 'package:c2b/theme/app_colors.dart';
 import '../controllers/training_controller.dart';
 
 class BeatIndicator extends StatelessWidget {
+  /// 현재 bar 내에서 몇번째 bear(division)을 재생중인지 표시하는 UI를 생성
   BeatIndicator({
     required this.radius,
     super.key,
@@ -33,6 +34,8 @@ class BeatIndicator extends StatelessWidget {
 class BeatCircle extends StatelessWidget {
   final bool isCurrentBeat;
   final double radius;
+
+  /// 한 beat를 나타내는 원을 생성
   const BeatCircle(
       {required this.isCurrentBeat, required this.radius, super.key});
 

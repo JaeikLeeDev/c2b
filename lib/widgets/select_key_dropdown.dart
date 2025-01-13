@@ -4,6 +4,7 @@ import '../theme/app_text_styles.dart';
 import '../utils/chord_table.dart';
 
 class SelectKeyDropdown extends StatelessWidget {
+  /// 12개의 key(scale) 중 선택할 수 있도록 하는 드롭다운 UI를 생성
   const SelectKeyDropdown({
     required this.value,
     required this.onChanged,

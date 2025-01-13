@@ -1,12 +1,9 @@
 import 'package:get/get.dart';
 
-/*
- * For ChordDictionayScreen
- */
+/// ChordDictionayScreen에서 필요한 데이터 및 기능을 다루는 Controller
 class DictionaryController extends GetxController {
-  // Currently selected key
+  /// key 선택 드롭다운을 통해 선택된 key의 인덱스
   int _keyIndex = 0;
-
   int get keyIndex {
     return _keyIndex;
   }

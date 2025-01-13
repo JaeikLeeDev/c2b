@@ -20,11 +20,11 @@ class ChordSelectScreen extends StatefulWidget {
   State<ChordSelectScreen> createState() => _ChordSelectScreenState();
 }
 
-/* 
- * State Lifecycle
- * initState(): Home -> ChordSelect
- * Stay Alive: ChordSelect <- -> Training
- * dispose(): ChordSelect -> Home
+/* State Lifecycle
+ * 
+ * initState(): HomeScreen에서 ChordSelectScreen으로 이동할 때.
+ * dispose(): ChordSelectScreen에서 HomeScreen으로 이동할 때
+ * ChordSelectScreen, TrainingScreen 간 이동할 때는 State 유지
  */
 class _ChordSelectScreenState extends State<ChordSelectScreen> {
   final _sc = Get.put(SelectController());
@@ -39,7 +39,10 @@ class _ChordSelectScreenState extends State<ChordSelectScreen> {
 
   @override
   void initState() {
-    /* Allow only landscape mode in ChordSelect and Training screen */
+    /* Orientation을 landscape로 강제
+     * TrainingScreen에서 ChordSelectScreen로 가는 것 이외 이동경로는 없기 때문에
+     * TrainingScreen의 Orientation도 동일하게 landscape로 강제됨
+     */
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
