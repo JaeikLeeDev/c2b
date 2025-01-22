@@ -19,13 +19,13 @@
 
 홈 화면. 앱 실행시 처음으로 나타나는 화면
 
-<img src="screenshots/IMG_EC55C3C95F07-1.jpeg" width="45%" alt="홈 화면"/>
+<img src="docs/screenshots/home.jpeg" width="45%" alt="홈 화면"/>
 
 ## 2. 코드 선택 화면
 
 연습하기 원하는 코드를 선택하여 코드 모음을 만드는 화면. 연습 화면으로 넘어가면 코드 모음 내에서 코드를 랜덤으로 뽑아 차례로 띄워줌.
 
-![코드 선택](screenshots/image.png)
+![코드 선택](docs/screenshots/chord-select.png)
 
 - 앱바 섹션
     - `←`: 홈 화면으로 가기
@@ -50,13 +50,13 @@
 두 마디의 랜덤 코드를 보여준다. 현재 연습해야하는 코드를 파란색으로 표시한다. 연습을 시작하면 메트로놈 4박이 지날 때마다 코드가 넘어간다. 
 
 대기 상태
-![대기 상태](screenshots/image-1.png)
+![대기 상태](docs/screenshots/training_1.png)
 
 대기 상태 - 코드 구성음 표시 ON
-![대기 상태 - 코드 구성음 표시 ON](screenshots/image-2.png)
+![대기 상태 - 코드 구성음 표시 ON](docs/screenshots/training_2.png)
 
 연습중 상태
-![연습중 상태](screenshots/image-3.png)
+![연습중 상태](docs/screenshots/training_3.png)
 
 **악보 섹션 (랜덤 코드 나열)**
 
@@ -81,10 +81,10 @@
 ### 가상피아노 연습 모드
 
 대기 상태 - 가상건반 모드
-![대기 상태 - 가상건반 모드](screenshots/image-4.png)
+![대기 상태 - 가상건반 모드](docs/screenshots/training-virtual-keyboard_1.png)
 
 대기 상태 - 가상건반 모드 - 정답 맞춘 상태
-![대기 상태 - 가상건반 모드 - 정답 맞춘 상태](screenshots/image-5.png)
+![대기 상태 - 가상건반 모드 - 정답 맞춘 상태](docs/screenshots/training-virtual-keyboard_2.png)
 
 - 각 건반은 한번 터치하여 선택/미선택 상태로 만들 수 있음.
 - 코드는 두개씩만 보여줌
@@ -96,8 +96,8 @@
 
 코드 이름과 해당 코드의 구성음을 보여줌.
 
-<img src="screenshots/image-6.png" width="45%" alt="코드 사전 화면"/>
-<img src="screenshots/IMG_77C98833CB3D-1.jpeg" width="45%" alt= "코드 사전 화면 - diatonic만 보기 모드"/> 
+<img src="docs/screenshots/chord-dictionary_1.png" width="45%" alt="코드 사전 화면"/>
+<img src="docs/screenshots/chord-dictionary_2.jpeg" width="45%" alt= "코드 사전 화면 - diatonic만 보기 모드"/> 
 
 - `CM(Am) 드롭다운`: Key 선택
 - `Diatonic`: 현재 선택된 key에 대한 diatonic 코드만 보여주기
@@ -105,6 +105,6 @@
 ## 5. 설정 화면
 각종 앱 정보와 앱 설정이 들어가는 페이지
 
-<img src="screenshots/image-7.png" width="45%" alt="설정 화면"/>
+<img src="docs/screenshots/settings.png" width="45%" alt="설정 화면"/>
 
 - 사용자가 만든 코드 모음 preset을 모두 삭제하는 기능
