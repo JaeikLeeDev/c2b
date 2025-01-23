@@ -23,7 +23,9 @@
 
 ### Time signature
 
-박자표. "meter signature", "measure signature"로도 부름. 아래(3/4)의 경우, "4분음 3박자"로 읽음. "4분음"은 한 박의 상대적 길이(한마디를 4분할한 길이)를 "3박"은 한마디에 들어가는 박의 개수.
+박자표. "meter signature", "measure signature"로도 부름. 아래(3/4)의 경우, "4분음 3박자"로 읽음. "4분음"은 한 박의 상대적 길이, "3박"은 한마디에 들어가는 박의 개수.
+
+"4분음 3박자" 악보는 4분음표 3개가 한 마디를 구성.
 
 <img src="images/music-score-notation.png" width="80%" alt="Time signature"/>
 
@@ -49,8 +51,9 @@ Beat Per Minute. 한 박의 길이 단위. 110BPM인 경우 한 박의 길이는
 
 ## 2. Semitone 표기
 
-반음(semitone) 간격을 1로 정의. root는 0으로 하여 root 위 음들을 정수로 표현.
+반음(semitone) 간격을 1로 정의. root를 기준으로 root 위 음들을 정수로 표현.
 
+- 근음(root): 0
 - 반음 위 음: 1
 - 온음 위 음: 2
 - 한 옥타브 위 음: 12
@@ -87,8 +90,8 @@ root note, 근음. 코드의 가장 낮은 음. CMaj7 코드의 root는 C.
 
 "A set of intervals between the root and the others"
 
-화성. root로부터 코드의 구성음, 화음을 쌓아올리는 규칙. CMaj7 코드의 quality는 'Maj7'. 각 quality는 구성음들의 semitone 표현으로 나타낼 수 있다.
+화성. root로부터 코드의 구성음, 화음을 쌓아올리는 규칙. CMaj7 코드의 quality는 'Maj7'. 각 quality는 코드 구성음을 [semitone 표기](#2-semitone-표기)로 나열하는 방식으로 나타낼 수 있다.
 
-- Maj7: 0, 4, 7, 11(N),
-- min9: 0, 3, 7, 10,(X), 14(2)
-- dim9: 0, 3, 6, 9, 14(2)
+- Maj7: 0, 4, 7, 11 (Or 047N)
+- min9: 0, 3, 7, 10, 14 (Or 037X2)
+- dim9: 0, 3, 6, 9, 14 (Or 03692)
